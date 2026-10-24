@@ -1,0 +1,31 @@
+<section class="page-container flex justify-center py-12">
+  <div class="card card-body w-full max-w-md">
+    <h1 class="heading-xl mb-6"><%= t('site.auth.register.heading') %></h1>
+    <% if (formError) { %><div class="mb-4"><%- include('../../partials/alert', { kind: 'error', message: formError }) %></div><% } %>
+
+    <form method="post" action="/register" class="flex flex-col gap-4" novalidate>
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+      <%- include('../../partials/auth-continuation', { continuation }) %>
+      <%- include('../../partials/form-field', { id: 'register-name', name: 'name', label: t('site.auth.register.name'), value: values.name, error: errors.name, autocomplete: 'name', required: true }) %>
+      <%- include('../../partials/form-field', { id: 'register-email', name: 'email', type: 'email', label: t('site.auth.register.email'), value: values.email, error: errors.email, autocomplete: 'email', required: true }) %>
+      <%- include('../../partials/form-field', { id: 'register-password', name: 'password', type: 'password', label: t('site.auth.register.password'), hint: t('site.auth.register.passwordHint'), error: errors.password, autocomplete: 'new-password', required: true }) %>
+      <%- include('../../partials/form-field', { id: 'register-password-confirm', name: 'passwordConfirm', type: 'password', label: t('site.auth.register.passwordConfirm'), error: errors.passwordConfirm, autocomplete: 'new-password', required: true }) %>
+
+      <div class="field">
+        <div class="flex items-start gap-2">
+          <input id="register-terms" name="acceptTerms" type="checkbox" class="checkbox mt-1" <% if (values.acceptTerms) { %>checked<% } %> <% if (errors.acceptTerms) { %>aria-invalid="true" aria-describedby="register-terms-error"<% } %> required />
+          <label for="register-terms"><%= t('site.auth.register.acceptTerms') %></label>
+        </div>
+        <a class="link text-sm" href="/terms" target="_blank" rel="noopener"><%= t('site.auth.register.termsLink') %></a>
+        <% if (errors.acceptTerms) { %><p id="register-terms-error" class="field-error"><%= errors.acceptTerms %></p><% } %>
+      </div>
+
+      <button type="submit" class="btn btn-primary"><%= t('site.auth.register.submit') %></button>
+    </form>
+
+    <p class="mt-6 text-center text-sm text-text-muted">
+      <%= t('site.auth.register.hasAccount') %>
+      <a class="link" href="/login<%= switchQuery %>"><%= t('site.auth.register.loginLink') %></a>
+    </p>
+  </div>
+</section>

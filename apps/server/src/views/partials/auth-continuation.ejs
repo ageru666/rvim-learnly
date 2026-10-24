@@ -1,0 +1,4 @@
+<%# Hidden fields that carry returnTo / intent / course through login and registration. Usage: include('../../partials/auth-continuation', { continuation }) %>
+<% for (const key of ['returnTo', 'intent', 'course']) { %>
+  <% if (continuation[key]) { %><input type="hidden" name="<%= key %>" value="<%= continuation[key] %>" /><% } %>
+<% } %>

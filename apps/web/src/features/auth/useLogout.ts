@@ -1,19 +1,25 @@
 import { useCallback } from 'react';
 import { storageApi } from '../../shared/api/storageApi';
 import { config } from '../../shared/config';
-import { useLogoutMutation } from './authApi';
+import { useLogoutAllMutation, useLogoutMutation } from './authApi';
 
-/** Ends the session, removes personal data from this device and returns to the public site. */
-export function useLogout(): () => void {
+type LogoutScope = 'current' | 'everywhere';
+
+/**
+ * Ends the session (or every session of the account), removes personal data from this device and
+ * returns to the public site.
+ */
+export function useLogout(scope: LogoutScope = 'current'): () => void {
   const [logout] = useLogoutMutation();
+  const [logoutAll] = useLogoutAllMutation();
   const [clearPersonalData] = storageApi.useClearPersonalDataMutation();
   return useCallback(() => {
     void (async () => {
-      await logout()
+      await (scope === 'everywhere' ? logoutAll() : logout())
         .unwrap()
         .catch(() => undefined);
       await clearPersonalData();
       window.location.assign(config.siteUrl);
     })();
-  }, [logout, clearPersonalData]);
+  }, [scope, logout, logoutAll, clearPersonalData]);
 }

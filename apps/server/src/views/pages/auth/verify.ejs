@@ -1,0 +1,8 @@
+<section class="page-container flex flex-col items-center gap-4 py-24 text-center">
+  <span class="<%= verified ? 'text-success' : 'text-danger' %>" aria-hidden="true">
+    <%- include('../../partials/icon', { name: verified ? 'check-circle' : 'x-circle', size: 48 }) %>
+  </span>
+  <h1 class="heading-xl"><%= verified ? t('site.auth.verify.successHeading') : t('site.auth.verify.failedHeading') %></h1>
+  <p class="text-lead max-w-xl"><%= verified ? t('site.auth.verify.successText') : t('site.auth.verify.failedText') %></p>
+  <a class="btn btn-primary mt-4" href="/app"><%= t('site.auth.verify.toDashboard') %></a>
+</section>

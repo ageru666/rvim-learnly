@@ -1,0 +1,14 @@
+<section class="page-container flex justify-center py-12">
+  <div class="card card-body w-full max-w-md">
+    <h1 class="heading-xl mb-2"><%= t('site.auth.forgot.heading') %></h1>
+    <p class="text-lead mb-6"><%= t('site.auth.forgot.intro') %></p>
+
+    <form method="post" action="/forgot-password" class="flex flex-col gap-4" novalidate>
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+      <%- include('../../partials/form-field', { id: 'forgot-email', name: 'email', type: 'email', label: t('site.auth.forgot.email'), value: values.email, error: errors.email, autocomplete: 'email', required: true }) %>
+      <button type="submit" class="btn btn-primary"><%= t('site.auth.forgot.submit') %></button>
+    </form>
+
+    <a class="link mt-6 self-center text-sm" href="/login"><%= t('site.auth.forgot.backToLogin') %></a>
+  </div>
+</section>

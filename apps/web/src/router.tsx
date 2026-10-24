@@ -13,7 +13,13 @@ export const router = createBrowserRouter(
           <AppLayout />
         </RequireAuth>
       ),
-      children: [{ path: '*', element: <NotFoundPage /> }],
+      children: [
+        {
+          path: 'settings',
+          lazy: async () => ({ Component: (await import('./features/settings/SettingsPage')).SettingsPage }),
+        },
+        { path: '*', element: <NotFoundPage /> },
+      ],
     },
   ],
   { basename: config.appBasePath },

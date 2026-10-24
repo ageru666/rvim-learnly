@@ -6,9 +6,11 @@ export function testApp(options?: AppOptions): Express {
   return createApp(options);
 }
 
-/** Cookie-keeping agent with a valid CSRF token for state-changing requests. */
+const BROWSER_ORIGIN = 'http://localhost:3100';
+
+/** Cookie-keeping agent that behaves like a browser (sends `Origin`) and knows its CSRF token. */
 export async function browserAgent(app: Express) {
-  const agent = request.agent(app);
+  const agent = request.agent(app).set('Origin', BROWSER_ORIGIN);
   const response = await agent.get('/health');
   const cookies = response.headers['set-cookie'];
   const list = Array.isArray(cookies) ? cookies : [];

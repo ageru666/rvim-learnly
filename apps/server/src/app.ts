@@ -15,6 +15,8 @@ import { errorHandler, notFoundHandler } from './middlewares/errorHandler.js';
 import { resolveRequestLocale } from './middlewares/locale.js';
 import { templateLocals } from './middlewares/locals.js';
 import { createRateLimiters, type RateLimits } from './middlewares/rateLimit.js';
+import { authApiRouter } from './modules/auth/auth.api.js';
+import { authWebRouter } from './modules/auth/auth.web.js';
 import { catalogApiRouter } from './modules/catalog/catalog.api.js';
 import { catalogWebRouter } from './modules/catalog/catalog.web.js';
 import { healthRouter } from './modules/pages/health.api.js';
@@ -22,6 +24,7 @@ import { preferencesRouter } from './modules/pages/preferences.web.js';
 import { seoRouter } from './modules/pages/seo.web.js';
 import { staticPagesRouter } from './modules/pages/static.web.js';
 import { spaRouter } from './modules/spa/spa.web.js';
+import { meApiRouter } from './modules/users/me.api.js';
 import { docsRouter } from './openapi/docs.web.js';
 
 const STATIC_MAX_AGE = '1h';
@@ -69,7 +72,10 @@ function routers(): Router[] {
     healthRouter,
     docsRouter,
     preferencesRouter,
+    authApiRouter,
+    meApiRouter,
     catalogApiRouter,
+    authWebRouter,
     catalogWebRouter,
     staticPagesRouter,
     seoRouter,

@@ -44,8 +44,8 @@ type CourseCard = {
 ### Headers and conventions
 
 - Authentication: `Authorization: Bearer <access>` or cookies. When both are present, Bearer wins
-  and the CSRF check is skipped. State-changing requests authenticated by cookie require
-  `X-CSRF-Token`. Cookies `access_token` and `refresh_token`: httpOnly, SameSite=Lax, path `/`.
+  and the CSRF check is skipped. State-changing browser requests (they carry `Origin` or
+  `Sec-Fetch-Site`) require `X-CSRF-Token`; non-browser clients such as Postman are not checked. Cookies `access_token` and `refresh_token`: httpOnly, SameSite=Lax, path `/`.
 - Locale: the request locale is resolved as `?lang` → `locale` cookie → user's `locale` →
   `Accept-Language` → `uk`. It selects the language of `message`, `details[].message`, category
   names and CSV headers. Responses carry `Content-Language`. Error `code`s, `rule`s and `unmet` keys

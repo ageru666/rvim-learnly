@@ -1,0 +1,18 @@
+<section class="page-container flex justify-center py-12">
+  <div class="card card-body w-full max-w-md">
+    <% if (invalid) { %>
+      <h1 class="heading-xl mb-2"><%= t('site.auth.reset.invalidHeading') %></h1>
+      <p class="text-lead mb-6"><%= t('site.auth.reset.invalidText') %></p>
+      <a class="btn btn-primary" href="/forgot-password"><%= t('site.auth.reset.requestNew') %></a>
+    <% } else { %>
+      <h1 class="heading-xl mb-6"><%= t('site.auth.reset.heading') %></h1>
+      <form method="post" action="/reset-password" class="flex flex-col gap-4" novalidate>
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+        <input type="hidden" name="token" value="<%= token %>" />
+        <%- include('../../partials/form-field', { id: 'reset-password', name: 'password', type: 'password', label: t('site.auth.reset.password'), hint: t('site.auth.register.passwordHint'), error: errors.password, autocomplete: 'new-password', required: true }) %>
+        <%- include('../../partials/form-field', { id: 'reset-password-confirm', name: 'passwordConfirm', type: 'password', label: t('site.auth.reset.passwordConfirm'), error: errors.passwordConfirm, autocomplete: 'new-password', required: true }) %>
+        <button type="submit" class="btn btn-primary"><%= t('site.auth.reset.submit') %></button>
+      </form>
+    <% } %>
+  </div>
+</section>

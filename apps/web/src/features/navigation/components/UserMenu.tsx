@@ -1,5 +1,6 @@
 import type { Me } from '@learnly/contracts/me';
-import { ChevronDown, LogOut, Shield } from 'lucide-react';
+import { ChevronDown, LogOut, Settings, Shield } from 'lucide-react';
+import { Link } from 'react-router';
 import { Avatar } from '../../../shared/components/Avatar';
 import { DropdownMenu } from '../../../shared/components/DropdownMenu';
 import { DropdownMenuItem } from '../../../shared/components/DropdownMenuItem';
@@ -22,6 +23,12 @@ export function UserMenu({ me, onLogout }: UserMenuProps) {
         </button>
       }
     >
+      <DropdownMenuItem asChild>
+        <Link to="/settings">
+          <Settings aria-hidden size={16} />
+          {t('app.settings.title')}
+        </Link>
+      </DropdownMenuItem>
       {me.role === 'admin' && (
         <DropdownMenuItem asChild>
           <a href="/admin">

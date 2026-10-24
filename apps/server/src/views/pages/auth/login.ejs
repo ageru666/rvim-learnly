@@ -1,0 +1,21 @@
+<section class="page-container flex justify-center py-12">
+  <div class="card card-body w-full max-w-md">
+    <h1 class="heading-xl mb-2"><%= t('site.auth.login.heading') %></h1>
+    <% if (continuation.intent === 'enroll') { %><p class="text-lead mb-4"><%= t('site.auth.login.enrollHint') %></p><% } %>
+    <% if (formError) { %><div class="mb-4"><%- include('../../partials/alert', { kind: 'error', message: formError }) %></div><% } %>
+
+    <form method="post" action="/login" class="flex flex-col gap-4" novalidate>
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+      <%- include('../../partials/auth-continuation', { continuation }) %>
+      <%- include('../../partials/form-field', { id: 'login-email', name: 'email', type: 'email', label: t('site.auth.login.email'), value: values.email, error: errors.email, autocomplete: 'email', required: true }) %>
+      <%- include('../../partials/form-field', { id: 'login-password', name: 'password', type: 'password', label: t('site.auth.login.password'), error: errors.password, autocomplete: 'current-password', required: true }) %>
+      <a class="link self-end text-sm" href="/forgot-password"><%= t('site.auth.login.forgot') %></a>
+      <button type="submit" class="btn btn-primary"><%= t('site.auth.login.submit') %></button>
+    </form>
+
+    <p class="mt-6 text-center text-sm text-text-muted">
+      <%= t('site.auth.login.noAccount') %>
+      <a class="link" href="/register<%= switchQuery %>"><%= t('site.auth.login.registerLink') %></a>
+    </p>
+  </div>
+</section>

@@ -5,6 +5,7 @@ import { Drawer } from '../../shared/components/Drawer';
 import { IconButton } from '../../shared/components/IconButton';
 import { useGetMeQuery } from '../auth/authApi';
 import { useLogout } from '../auth/useLogout';
+import { VerifyEmailBanner } from '../auth/VerifyEmailBanner';
 import { LocaleSwitcher } from '../locale/LocaleSwitcher';
 import { useT } from '../locale/useT';
 import { ThemeToggle } from '../theme/ThemeToggle';
@@ -52,7 +53,8 @@ export function AppLayout() {
         <LocaleSwitcher />
       </Drawer>
 
-      <main id="main" tabIndex={-1} className="page-container flex-1 py-8">
+      <main id="main" tabIndex={-1} className="page-container flex flex-1 flex-col gap-6 py-8">
+        <VerifyEmailBanner />
         <Outlet />
       </main>
     </div>

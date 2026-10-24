@@ -75,8 +75,10 @@ Versions checked with `npm view` on 2026-10-24.
 - **Decision**: double-submit cookie. The server sets a non-httpOnly `csrf_token` cookie; SSR forms
   contain a hidden field, and the SPA sends an `X-CSRF-Token` header (added by `baseQuery`). The
   check applies to every state-changing method except requests whose user was resolved from a
-  Bearer header (`req.authVia === 'bearer'`). A request with both Bearer and cookies (Swagger UI) is
-  treated as a Bearer request. Anonymous SSR forms (login, registration, locale switch) also require
+  Bearer header (`req.authVia === 'bearer'`) and requests that carry neither `Origin` nor
+  `Sec-Fetch-Site` (non-browser clients such as Postman or curl; browsers send one of them on every
+  unsafe request, so a forged cross-site request is always checked). A request with both Bearer and
+  cookies (Swagger UI) is treated as a Bearer request. Anonymous SSR forms (login, registration, locale switch) also require
   the token. Implemented as an own middleware (~40 lines).
 - **Rationale**: SameSite=Lax already blocks most attacks; the token covers the remaining cases and
   gives material for lab 5.

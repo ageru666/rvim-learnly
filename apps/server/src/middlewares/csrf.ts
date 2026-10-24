@@ -16,6 +16,14 @@ function submittedToken(req: Request): string | undefined {
   return typeof field === 'string' ? field : undefined;
 }
 
+/**
+ * CSRF is a browser attack, and browsers mark every unsafe request with `Origin` or
+ * `Sec-Fetch-Site`. API clients (Postman, curl) send neither, so they are not checked.
+ */
+function isBrowserRequest(req: Request): boolean {
+  return req.get('origin') !== undefined || req.get('sec-fetch-site') !== undefined;
+}
+
 function tokensMatch(expected: string, actual: string | undefined): boolean {
   if (!actual) return false;
   const a = Buffer.from(expected);
@@ -26,6 +34,7 @@ function tokensMatch(expected: string, actual: string | undefined): boolean {
 /**
  * Double-submit cookie: the token lives in a readable cookie and must come back in a header (SPA)
  * or a hidden form field (SSR). Bearer requests carry no ambient credentials, so they are exempt.
+ * `Origin` alone is not trusted: a request without the token is refused even from our own origin.
  */
 export function csrfProtection(req: Request, res: Response, next: NextFunction): void {
   let token = readCookie(req, COOKIES.csrf);
@@ -35,7 +44,7 @@ export function csrfProtection(req: Request, res: Response, next: NextFunction):
   }
   res.locals.csrfToken = token;
 
-  if (SAFE_METHODS.has(req.method) || req.authVia === 'bearer') {
+  if (SAFE_METHODS.has(req.method) || req.authVia === 'bearer' || !isBrowserRequest(req)) {
     next();
     return;
   }

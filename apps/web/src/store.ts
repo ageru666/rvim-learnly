@@ -8,6 +8,7 @@ import { authReducer } from './features/auth/authSlice';
 import { startLocaleListeners } from './features/locale/localeListeners';
 import { initialLocaleState, localeReducer } from './features/locale/localeSlice';
 import { navigationReducer } from './features/navigation/navigationSlice';
+import { settingsReducer } from './features/settings/settingsSlice';
 import { startThemeListeners } from './features/theme/themeListeners';
 import { initialThemeState, themeReducer } from './features/theme/themeSlice';
 import { baseApi } from './shared/api/baseApi';
@@ -20,6 +21,7 @@ const rootReducer = combineReducers({
   auth: authReducer,
   locale: localeReducer,
   navigation: navigationReducer,
+  settings: settingsReducer,
   theme: themeReducer,
 });
 

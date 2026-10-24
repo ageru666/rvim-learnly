@@ -58,4 +58,15 @@
       </details>
     </div>
   </div>
+  <% if (user && !user.emailVerified) { %>
+    <div class="border-t border-border bg-warning-soft">
+      <form method="post" action="/verify-email/resend" class="page-container flex flex-wrap items-center gap-x-4 gap-y-2 py-2 text-sm">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+        <input type="hidden" name="returnTo" value="<%= currentPath %>" />
+        <%- include('icon', { name: 'alert-triangle', size: 16 }) %>
+        <p class="flex-1"><%= t('common.verifyBanner.text') %></p>
+        <button type="submit" class="btn btn-outline btn-sm"><%= t('common.verifyBanner.resend') %></button>
+      </form>
+    </div>
+  <% } %>
 </header>
