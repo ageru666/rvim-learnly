@@ -1,0 +1,13 @@
+node_modules/
+dist/
+build/
+coverage/
+package-lock.json
+apps/server/src/generated/
+apps/server/prisma/migrations/
+playwright-report/
+.specify/
+.claude/
+docs/labs-ukr.docx
+docs/
+specs/

@@ -1,0 +1,4 @@
+/* Local font files (no CDN requests). All three families include Cyrillic and Latin subsets. */
+@import '@fontsource-variable/inter';
+@import '@fontsource-variable/roboto-condensed';
+@import '@fontsource/jetbrains-mono/400.css';

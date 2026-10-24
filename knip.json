@@ -1,0 +1,27 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "workspaces": {
+    ".": {
+      "entry": ["scripts/*.mjs", "eslint.config.js", "prettier.config.js"]
+    },
+    "packages/contracts": {
+      "entry": ["src/*.ts"],
+      "project": ["src/**/*.ts"]
+    },
+    "packages/i18n": {
+      "entry": ["src/*.ts", "src/messages/*.ts"],
+      "project": ["src/**/*.ts"]
+    },
+    "packages/design-tokens": {
+      "entry": []
+    },
+    "apps/server": {
+      "entry": ["src/main.ts", "prisma/seed/index.ts", "prisma.config.ts"],
+      "project": ["src/**/*.ts", "prisma/**/*.ts", "tests/**/*.ts"]
+    },
+    "apps/web": {
+      "entry": ["src/index.tsx"],
+      "project": ["src/**/*.{ts,tsx}", "e2e/**/*.ts"]
+    }
+  }
+}

@@ -1,0 +1,30 @@
+# Explicit name: the repository folder name is not ASCII, so Compose cannot derive one.
+name: learnly
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_USER: learnly
+      POSTGRES_PASSWORD: learnly
+      POSTGRES_DB: learnly
+    ports:
+      # 5432 is often taken by a locally installed PostgreSQL.
+      - '5433:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U learnly -d learnly']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  mailpit:
+    image: axllent/mailpit:v1.29.7
+    ports:
+      - '1025:1025'
+      - '8025:8025'
+
+volumes:
+  pgdata:

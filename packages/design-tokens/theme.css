@@ -1,0 +1,164 @@
+/*
+ * Learnly design tokens (Tailwind CSS v4), shared by the SSR site, the admin panel and the SPA.
+ *
+ * Palette reference: monochrome base with accent colours. Semantic colours use light-dark(),
+ * so each token is declared once; the active scheme comes from `color-scheme`, which is driven
+ * by the `data-theme` attribute on <html> (light | dark | system).
+ */
+
+:root {
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+:root[data-theme='system'] {
+  color-scheme: light dark;
+}
+
+@theme {
+  --color-*: initial;
+  --font-*: initial;
+
+  /* Primitives */
+  --color-neutral-0: #ffffff;
+  --color-neutral-25: #fafafa;
+  --color-neutral-50: #f3f3f3;
+  --color-neutral-100: #e9e9eb;
+  --color-neutral-200: #d9d9dc;
+  --color-neutral-300: #c4c4c8;
+  --color-neutral-400: #9f9f9f;
+  --color-neutral-500: #8a8a8e;
+  --color-neutral-600: #626266;
+  --color-neutral-650: #696969;
+  --color-neutral-700: #3a3a3f;
+  --color-neutral-750: #323232;
+  --color-neutral-800: #222226;
+  --color-neutral-850: #17171a;
+  --color-neutral-900: #101113;
+  --color-neutral-950: #090a0b;
+  --color-neutral-1000: #000000;
+
+  --color-accent-yellow: #ffb411;
+  --color-accent-green: #10d690;
+  --color-accent-cyan: #1abbe5;
+  --color-accent-blue: #357cff;
+  --color-accent-indigo: #4123e8;
+  --color-accent-red: #f94128;
+  --color-accent-pink: #d81879;
+  --color-accent-magenta: #b20c6f;
+
+  /* Surfaces and text */
+  --color-bg: light-dark(var(--color-neutral-0), var(--color-neutral-950));
+  --color-bg-subtle: light-dark(var(--color-neutral-50), var(--color-neutral-900));
+  --color-bg-inverse: light-dark(var(--color-neutral-950), var(--color-neutral-0));
+  --color-surface: light-dark(var(--color-neutral-0), var(--color-neutral-850));
+  --color-surface-raised: light-dark(var(--color-neutral-0), var(--color-neutral-800));
+  --color-surface-sunken: light-dark(var(--color-neutral-50), var(--color-neutral-900));
+  --color-surface-hover: light-dark(var(--color-neutral-25), var(--color-neutral-800));
+  --color-surface-selected: light-dark(var(--color-neutral-100), rgb(255 255 255 / 0.1));
+  --color-overlay: light-dark(rgb(9 10 11 / 0.56), rgb(0 0 0 / 0.72));
+
+  --color-text: light-dark(var(--color-neutral-950), var(--color-neutral-0));
+  --color-text-muted: light-dark(var(--color-neutral-600), var(--color-neutral-400));
+  --color-text-subtle: light-dark(var(--color-neutral-500), #76767b);
+  --color-text-inverse: light-dark(var(--color-neutral-0), var(--color-neutral-950));
+  --color-text-disabled: light-dark(var(--color-neutral-300), var(--color-neutral-700));
+
+  --color-border: light-dark(var(--color-neutral-100), rgb(151 151 151 / 0.2));
+  --color-border-strong: light-dark(var(--color-neutral-200), rgb(151 151 151 / 0.36));
+  --color-border-input: light-dark(var(--color-neutral-500), var(--color-neutral-650));
+  --color-border-hover: light-dark(var(--color-neutral-950), var(--color-neutral-0));
+
+  /* Actions: the primary button is "ink" */
+  --color-primary: light-dark(var(--color-neutral-950), var(--color-neutral-0));
+  --color-primary-hover: light-dark(var(--color-neutral-750), var(--color-neutral-200));
+  --color-on-primary: light-dark(var(--color-neutral-0), var(--color-neutral-950));
+  --color-secondary: light-dark(var(--color-neutral-50), var(--color-neutral-750));
+  --color-secondary-hover: light-dark(var(--color-neutral-100), var(--color-neutral-650));
+  --color-on-secondary: light-dark(var(--color-neutral-950), var(--color-neutral-0));
+  --color-link: light-dark(var(--color-neutral-950), var(--color-neutral-0));
+  --color-link-hover: light-dark(var(--color-neutral-600), var(--color-neutral-400));
+  --color-focus: light-dark(var(--color-neutral-950), var(--color-neutral-0));
+
+  /* Status (always paired with text or an icon) */
+  --color-danger: light-dark(#c4311c, #ffb2ac);
+  --color-danger-soft: light-dark(#fdeceb, rgb(249 65 40 / 0.16));
+  --color-success: light-dark(#08805a, #3ee6aa);
+  --color-success-soft: light-dark(#e8fbf4, rgb(16 214 144 / 0.14));
+  --color-warning: light-dark(#8a5a00, #ffc94d);
+  --color-warning-soft: light-dark(#fff5dc, rgb(255 180 17 / 0.14));
+  --color-info: light-dark(#2a52e0, #8fb1ff);
+  --color-info-soft: light-dark(#eaf0ff, rgb(53 124 255 / 0.16));
+
+  /* Category and status tags: AA-contrast foregrounds per accent */
+  --color-tag-neutral-bg: light-dark(var(--color-neutral-50), rgb(255 255 255 / 0.08));
+  --color-tag-neutral-fg: light-dark(var(--color-neutral-950), var(--color-neutral-0));
+  --color-tag-yellow-bg: light-dark(#fff5dc, rgb(255 180 17 / 0.14));
+  --color-tag-yellow-fg: light-dark(#8a5a00, #ffc94d);
+  --color-tag-green-bg: light-dark(#e8fbf4, rgb(16 214 144 / 0.14));
+  --color-tag-green-fg: light-dark(#08805a, #3ee6aa);
+  --color-tag-cyan-bg: light-dark(#e3f7fd, rgb(26 187 229 / 0.14));
+  --color-tag-cyan-fg: light-dark(#0a7491, #5fd5f5);
+  --color-tag-blue-bg: light-dark(#eaf0ff, rgb(53 124 255 / 0.16));
+  --color-tag-blue-fg: light-dark(#2a52e0, #8fb1ff);
+  --color-tag-indigo-bg: light-dark(#ece9fd, rgb(65 35 232 / 0.24));
+  --color-tag-indigo-fg: light-dark(#4123e8, #a597ff);
+  --color-tag-red-bg: light-dark(#fdeceb, rgb(249 65 40 / 0.16));
+  --color-tag-red-fg: light-dark(#c4311c, #ff8a78);
+  --color-tag-pink-bg: light-dark(#fbe7f2, rgb(216 24 121 / 0.18));
+  --color-tag-pink-fg: light-dark(#b0145f, #ff7cbf);
+  --color-tag-magenta-bg: light-dark(#fbe7f2, rgb(178 12 111 / 0.2));
+  --color-tag-magenta-fg: light-dark(#a40d66, #ff7cbf);
+
+  /* Charts (colour-blind separated, >= 3:1 on both backgrounds) */
+  --color-chart-1: light-dark(#4123e8, #7b6bff);
+  --color-chart-2: light-dark(#e07a10, #c2820e);
+  --color-chart-3: light-dark(#c8166f, #d9468f);
+  --color-chart-4: light-dark(#1a8fc0, #1b9cc8);
+  --color-chart-5: light-dark(#e5391f, #e5502f);
+  --color-chart-6: light-dark(#0a9a6a, #12a06d);
+  --color-chart-grid: light-dark(var(--color-neutral-100), rgb(151 151 151 / 0.16));
+  --color-chart-axis: light-dark(var(--color-neutral-300), rgb(151 151 151 / 0.4));
+  --color-chart-label: light-dark(var(--color-neutral-600), var(--color-neutral-400));
+
+  /* Typography */
+  --font-sans: 'Inter Variable', 'Helvetica Neue', Arial, sans-serif;
+  --font-display: 'Roboto Condensed Variable', 'Arial Narrow', 'Inter Variable', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  --text-display: clamp(2.5rem, 1.95rem + 2.4vw, 3.75rem);
+  --text-display--line-height: 1.05;
+  --text-heading-xl: clamp(2rem, 1.65rem + 1.5vw, 2.75rem);
+  --text-heading-xl--line-height: 1.1;
+  --text-heading-lg: clamp(1.5rem, 1.32rem + 0.8vw, 1.875rem);
+  --text-heading-lg--line-height: 1.2;
+  --text-heading-md: clamp(1.25rem, 1.15rem + 0.45vw, 1.5rem);
+  --text-heading-md--line-height: 1.25;
+  --text-lead: clamp(1.125rem, 1.05rem + 0.4vw, 1.375rem);
+  --text-lead--line-height: 1.5;
+
+  /* Shape */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+}
+
+@layer base {
+  ::selection {
+    background-color: light-dark(rgb(65 35 232 / 0.16), rgb(53 124 255 / 0.36));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

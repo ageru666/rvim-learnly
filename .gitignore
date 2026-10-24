@@ -1,0 +1,25 @@
+node_modules/
+dist/
+build/
+coverage/
+*.log
+*.tsbuildinfo
+
+.env
+.env.local
+!.env.example
+
+apps/server/uploads/
+apps/server/src/generated/
+playwright-report/
+test-results/
+
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+.vscode/
+.idea/
+
+# Agent folders may contain local credentials
+.claude/settings.local.json

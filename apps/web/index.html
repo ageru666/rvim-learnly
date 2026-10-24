@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="uk" data-theme="system">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
+    <title>Learnly</title>
+    <script>
+      // Applied before the bundle loads so the first paint already uses the right theme and language.
+      (function () {
+        function cookie(name) {
+          var match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+          return match ? decodeURIComponent(match[1]) : null;
+        }
+        function stored(key) {
+          try {
+            var raw = window.localStorage.getItem('learnly:v1:' + key);
+            return raw ? JSON.parse(raw) : null;
+          } catch (e) {
+            return null;
+          }
+        }
+        var theme = cookie('theme') || stored('theme');
+        if (theme === 'light' || theme === 'dark' || theme === 'system') {
+          document.documentElement.dataset.theme = theme;
+        }
+        var locale = cookie('locale') || stored('locale');
+        if (locale === 'uk' || locale === 'en') {
+          document.documentElement.lang = locale;
+        }
+      })();
+    </script>
+  </head>
+  <body class="bg-bg text-text font-sans antialiased">
+    <div id="root"></div>
+    <script type="module" src="/src/index.tsx"></script>
+  </body>
+</html>
