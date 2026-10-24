@@ -1,0 +1,30 @@
+<% const author = profile.author; %>
+<div class="page-container flex flex-col gap-10 py-10">
+  <section class="flex flex-col gap-6 md:flex-row md:items-start">
+    <% if (author.avatarUrl) { %>
+      <img src="<%= author.avatarUrl %>" alt="" class="size-28 rounded-pill object-cover" width="112" height="112" />
+    <% } else { %>
+      <span class="grid size-28 shrink-0 place-items-center rounded-pill bg-secondary font-display text-4xl font-bold" aria-hidden="true"><%= author.name.slice(0, 1).toUpperCase() %></span>
+    <% } %>
+    <div class="flex flex-1 flex-col gap-4">
+      <h1 class="heading-xl"><%= author.name %></h1>
+      <% if (bioHtml) { %><div class="prose-content max-w-2xl"><%- bioHtml %></div><% } %>
+      <dl class="flex flex-wrap gap-8">
+        <div><dt class="text-sm text-text-muted"><%= t('site.instructor.students') %></dt><dd class="font-display text-3xl font-bold"><%= format.number(profile.studentCount) %></dd></div>
+        <% if (profile.ratingAvg !== null) { %>
+          <div><dt class="text-sm text-text-muted"><%= t('site.instructor.rating') %></dt><dd class="font-display text-3xl font-bold"><%= format.number(profile.ratingAvg) %></dd></div>
+        <% } %>
+      </dl>
+      <% const links = Object.entries(author.links); %>
+      <% if (links.length > 0) { %>
+        <ul class="flex flex-wrap gap-4 text-sm" aria-label="<%= t('site.instructor.links') %>">
+          <% for (const [, href] of links) { %><li><a class="link" href="<%= href %>" rel="noopener noreferrer"><%= new URL(href).hostname %></a></li><% } %>
+        </ul>
+      <% } %>
+    </div>
+  </section>
+  <section aria-labelledby="author-courses">
+    <h2 id="author-courses" class="heading-lg mb-6"><%= t('site.instructor.coursesTitle') %></h2>
+    <%- include('../partials/course-grid', { cards: profile.courses }) %>
+  </section>
+</div>

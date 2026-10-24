@@ -1,0 +1,157 @@
+<%
+  const lessonIcons = { text: 'book-open', video: 'monitor', quiz: 'check-circle' };
+  const viewer = course.viewer;
+  const firstLesson = course.curriculum[0] && course.curriculum[0].lessons[0];
+  const ratingValue = course.rating.avg === null ? null : format.number(course.rating.avg);
+  const reviewTotal = course.rating.count;
+%>
+<section class="border-b border-border bg-bg-subtle">
+  <div class="page-container grid gap-8 py-10 lg:grid-cols-[2fr_1fr] lg:py-14">
+    <div class="flex flex-col gap-4">
+      <div class="flex flex-wrap items-center gap-2">
+        <%- include('../partials/tag', { label: course.category.name, accent: course.category.accent, href: `/courses?category=${course.category.slug}` }) %>
+        <span class="tag tag-neutral"><%= t(`enums.courseLevel.${course.level}`) %></span>
+        <span class="tag tag-neutral" lang="<%= course.language %>"><%= t(`enums.locale.${course.language}`) %></span>
+      </div>
+      <h1 class="heading-xl" lang="<%= course.language %>"><%= course.title %></h1>
+      <p class="text-lead" lang="<%= course.language %>"><%= course.shortDescription %></p>
+      <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
+        <a class="link" href="/instructors/<%= course.author.id %>"><%= t('site.course.by', { name: course.author.name }) %></a>
+        <% if (ratingValue !== null) { %>
+          <span class="inline-flex items-center gap-2">
+            <%- include('../partials/star-rating', { value: course.rating.avg, label: t('site.course.ratingOutOf', { value: ratingValue }) }) %>
+            <span><%= ratingValue %> · <%= t('common.counts.reviews', { count: reviewTotal }) %></span>
+          </span>
+        <% } %>
+        <span><%= t('common.counts.students', { count: course.studentCount }) %></span>
+        <span class="text-text-muted"><%= t('site.course.updated', { date: format.date(course.updatedAt) }) %></span>
+      </div>
+      <% if (course.tags.length > 0) { %>
+        <ul class="flex flex-wrap gap-2">
+          <% for (const tag of course.tags) { %>
+            <li><a class="focus-ring rounded-sm text-sm text-text-muted hover:underline" href="/courses?tag=<%= encodeURIComponent(tag) %>">#<%= tag %></a></li>
+          <% } %>
+        </ul>
+      <% } %>
+    </div>
+
+    <aside class="card self-start overflow-hidden lg:sticky lg:top-6">
+      <% if (course.coverUrl) { %><img src="<%= course.coverUrl %>" alt="" class="aspect-video w-full object-cover" width="640" height="360" /><% } %>
+      <div class="card-body flex flex-col gap-4">
+        <p class="text-sm text-text-muted"><%= t('site.course.summary', { lessons: t('common.counts.lessons', { count: course.lessonCount }), duration: format.duration(course.totalMinutes) }) %></p>
+        <% if (viewer && viewer.isAuthor) { %>
+          <a class="btn btn-primary" href="/app/teach/courses/<%= course.id %>"><%= t('site.course.edit') %></a>
+        <% } else if (viewer && viewer.enrolled) { %>
+          <p class="text-sm font-medium"><%= t('site.course.progress', { value: format.percent(viewer.progress ?? 0) }) %></p>
+          <a class="btn btn-primary" href="/app/learn/<%= course.id %>"><%= t('site.course.continue') %></a>
+        <% } else { %>
+          <form method="post" action="/courses/<%= course.slug %>/enroll">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+            <button type="submit" class="btn btn-primary w-full"><%= t('site.course.enroll') %></button>
+          </form>
+        <% } %>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<div class="page-container grid gap-10 py-10 lg:grid-cols-[2fr_1fr]">
+  <div class="flex flex-col gap-10">
+    <% if (course.outcomes.length > 0) { %>
+      <section aria-labelledby="outcomes-title" class="card card-body">
+        <h2 id="outcomes-title" class="heading-md mb-4"><%= t('site.course.whatYouLearn') %></h2>
+        <ul class="grid gap-3 sm:grid-cols-2" lang="<%= course.language %>">
+          <% for (const outcome of course.outcomes) { %>
+            <li class="flex gap-2"><%- include('../partials/icon', { name: 'check-circle', size: 18, className: 'mt-0.5 text-success' }) %><span><%= outcome %></span></li>
+          <% } %>
+        </ul>
+      </section>
+    <% } %>
+
+    <section aria-labelledby="about-title">
+      <h2 id="about-title" class="heading-lg mb-4"><%= t('site.course.about') %></h2>
+      <div class="prose-content" lang="<%= course.language %>"><%- descriptionHtml %></div>
+    </section>
+
+    <% if (course.requirements.length > 0) { %>
+      <section aria-labelledby="requirements-title">
+        <h2 id="requirements-title" class="heading-md mb-3"><%= t('site.course.requirements') %></h2>
+        <ul class="list-disc pl-6" lang="<%= course.language %>">
+          <% for (const requirement of course.requirements) { %><li><%= requirement %></li><% } %>
+        </ul>
+      </section>
+    <% } %>
+
+    <section aria-labelledby="curriculum-title">
+      <h2 id="curriculum-title" class="heading-lg mb-4"><%= t('site.course.curriculum') %></h2>
+      <div class="flex flex-col gap-3">
+        <% course.curriculum.forEach((module, moduleIndex) => { %>
+          <details class="card" <%= moduleIndex === 0 ? 'open' : '' %>>
+            <summary class="focus-ring flex cursor-pointer items-center justify-between gap-3 rounded-lg px-5 py-4 font-semibold">
+              <span lang="<%= course.language %>"><%= module.title %></span>
+              <span class="text-sm font-normal text-text-muted"><%= t('common.counts.lessons', { count: module.lessons.length }) %></span>
+            </summary>
+            <ul class="divide-y divide-border border-t border-border">
+              <% for (const lesson of module.lessons) { %>
+                <li class="flex items-center gap-3 px-5 py-3 text-sm">
+                  <%- include('../partials/icon', { name: lessonIcons[lesson.type], size: 16, label: t(`enums.lessonType.${lesson.type}`) }) %>
+                  <span class="flex-1" lang="<%= course.language %>"><%= lesson.title %></span>
+                  <% if (lesson.isPreview) { %>
+                    <a class="link text-xs" href="/courses/<%= course.slug %>/preview/<%= lesson.id %>"><%= t('site.course.preview') %></a>
+                  <% } %>
+                  <span class="text-text-muted"><%= format.duration(lesson.durationMinutes) %></span>
+                </li>
+              <% } %>
+            </ul>
+          </details>
+        <% }) %>
+      </div>
+    </section>
+
+    <section id="reviews" aria-labelledby="reviews-title">
+      <h2 id="reviews-title" class="heading-lg mb-4"><%= t('site.course.reviewsTitle') %></h2>
+      <% if (reviews.items.length === 0) { %>
+        <p class="text-text-muted"><%= t('site.course.noReviews') %></p>
+      <% } else { %>
+        <ul class="flex flex-col gap-4">
+          <% for (const review of reviews.items) { %>
+            <li class="card card-body flex flex-col gap-2">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="font-semibold"><%= review.user.name %></span>
+                <%- include('../partials/star-rating', { value: review.rating, label: t('site.course.ratingOutOf', { value: review.rating }) }) %>
+              </div>
+              <p><%= review.text %></p>
+              <p class="text-xs text-text-muted"><%= format.date(review.createdAt) %></p>
+              <% if (review.authorReply) { %>
+                <div class="rounded-md border-l-4 border-border-strong bg-surface-sunken p-3 text-sm">
+                  <p class="font-semibold"><%= t('site.course.authorReply') %></p>
+                  <p><%= review.authorReply %></p>
+                </div>
+              <% } %>
+            </li>
+          <% } %>
+        </ul>
+      <% } %>
+    </section>
+  </div>
+
+  <aside aria-labelledby="distribution-title">
+    <% if (reviewTotal > 0) { %>
+      <div class="card card-body flex flex-col gap-3">
+        <h2 id="distribution-title" class="heading-md"><%= ratingValue %> · <%= t('common.counts.reviews', { count: reviewTotal }) %></h2>
+        <ul class="flex flex-col gap-2">
+          <% for (const stars of [5, 4, 3, 2, 1]) { %>
+            <% const count = course.ratingDistribution[stars]; %>
+            <li class="flex items-center gap-3 text-sm">
+              <span class="w-10"><%= t('site.course.starsLabel', { stars }) %></span>
+              <span class="h-2 flex-1 overflow-hidden rounded-pill bg-surface-sunken" aria-hidden="true">
+                <span class="block h-full bg-accent-yellow" style="width: <%= Math.round((count / reviewTotal) * 100) %>%"></span>
+              </span>
+              <span class="w-8 text-right text-text-muted"><%= count %></span>
+            </li>
+          <% } %>
+        </ul>
+      </div>
+    <% } %>
+  </aside>
+</div>

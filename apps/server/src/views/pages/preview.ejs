@@ -1,0 +1,14 @@
+<article class="page-container flex max-w-3xl flex-col gap-6 py-10">
+  <a class="link text-sm" href="/courses/<%= slug %>"><%= t('site.preview.backToCourse') %></a>
+  <span class="tag tag-green self-start"><%= t('site.preview.badge') %></span>
+  <h1 class="heading-xl"><%= lesson.title %></h1>
+  <% if (embedUrl) { %>
+    <%- include('../partials/video-embed', { embedUrl, title: t('site.preview.videoTitle', { title: lesson.title }) }) %>
+  <% } %>
+  <% if (contentHtml) { %><div class="prose-content"><%- contentHtml %></div><% } %>
+  <form method="post" action="/courses/<%= slug %>/enroll" class="card card-body flex flex-wrap items-center justify-between gap-4">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+    <p class="font-semibold"><%= t('site.preview.enrollToOpen') %></p>
+    <button type="submit" class="btn btn-primary"><%= t('site.preview.enrollCta') %></button>
+  </form>
+</article>

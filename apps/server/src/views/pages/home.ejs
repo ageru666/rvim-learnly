@@ -1,0 +1,72 @@
+<section class="border-b border-border bg-bg-subtle">
+  <div class="page-container grid gap-10 py-16 md:grid-cols-[3fr_2fr] md:items-center md:py-24">
+    <div class="flex flex-col gap-6">
+      <h1 class="heading-display"><%= t('site.home.heroTitle') %></h1>
+      <p class="text-lead max-w-xl"><%= t('site.home.heroText') %></p>
+      <div class="flex flex-wrap gap-3">
+        <a class="btn btn-primary" href="/courses"><%= t('site.home.heroCta') %></a>
+        <a class="btn btn-outline" href="/teach"><%= t('site.home.heroSecondary') %></a>
+      </div>
+    </div>
+    <dl class="grid grid-cols-3 gap-4" aria-label="<%= t('site.home.statsLabel') %>">
+      <% for (const key of ['courses', 'students', 'instructors']) { %>
+        <div class="card card-body text-center">
+          <dt class="text-sm text-text-muted"><%= t(`site.home.stats.${key}`) %></dt>
+          <dd class="font-display text-4xl font-bold"><%= format.number(stats[key]) %></dd>
+        </div>
+      <% } %>
+    </dl>
+  </div>
+</section>
+
+<section class="page-container py-14" aria-labelledby="popular-title">
+  <div class="mb-6 flex items-end justify-between gap-4">
+    <h2 id="popular-title" class="heading-lg"><%= t('site.home.popularTitle') %></h2>
+    <a class="link text-sm" href="/courses"><%= t('site.home.allCourses') %></a>
+  </div>
+  <%- include('../partials/course-grid', { cards: popular }) %>
+</section>
+
+<section class="page-container py-6" aria-labelledby="categories-title">
+  <h2 id="categories-title" class="heading-lg mb-6"><%= t('site.home.categoriesTitle') %></h2>
+  <ul class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    <% for (const category of categories) { %>
+      <li>
+        <a class="card card-body focus-ring flex items-center justify-between gap-3 hover:border-border-hover" href="/courses?category=<%= category.slug %>">
+          <%- include('../partials/tag', { label: category.name, accent: category.accent }) %>
+          <span class="text-sm text-text-muted"><%= t('common.counts.courses', { count: category.courseCount }) %></span>
+        </a>
+      </li>
+    <% } %>
+  </ul>
+</section>
+
+<section class="page-container py-14" aria-labelledby="newest-title">
+  <h2 id="newest-title" class="heading-lg mb-6"><%= t('site.home.newestTitle') %></h2>
+  <%- include('../partials/course-grid', { cards: newest }) %>
+</section>
+
+<section class="border-y border-border bg-bg-subtle" aria-labelledby="how-title">
+  <div class="page-container py-14">
+    <h2 id="how-title" class="heading-lg mb-8"><%= t('site.home.howTitle') %></h2>
+    <ol class="grid gap-6 md:grid-cols-3">
+      <% ['find', 'learn', 'certify'].forEach((step, index) => { %>
+        <li class="card card-body flex flex-col gap-2">
+          <span class="font-display text-3xl font-bold text-text-subtle" aria-hidden="true"><%= index + 1 %></span>
+          <h3 class="heading-md"><%= t(`site.home.steps.${step}.title`) %></h3>
+          <p class="text-text-muted"><%= t(`site.home.steps.${step}.text`) %></p>
+        </li>
+      <% }) %>
+    </ol>
+  </div>
+</section>
+
+<section class="page-container py-14">
+  <div class="card card-body flex flex-col items-start gap-4 bg-bg-inverse text-text-inverse md:flex-row md:items-center md:justify-between">
+    <div>
+      <h2 class="heading-lg"><%= t('site.home.teachTitle') %></h2>
+      <p class="mt-2 opacity-80"><%= t('site.home.teachText') %></p>
+    </div>
+    <a class="btn bg-bg text-text hover:opacity-90" href="/teach"><%= t('site.home.teachCta') %></a>
+  </div>
+</section>

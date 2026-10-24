@@ -15,8 +15,12 @@ import { errorHandler, notFoundHandler } from './middlewares/errorHandler.js';
 import { resolveRequestLocale } from './middlewares/locale.js';
 import { templateLocals } from './middlewares/locals.js';
 import { createRateLimiters, type RateLimits } from './middlewares/rateLimit.js';
+import { catalogApiRouter } from './modules/catalog/catalog.api.js';
+import { catalogWebRouter } from './modules/catalog/catalog.web.js';
 import { healthRouter } from './modules/pages/health.api.js';
 import { preferencesRouter } from './modules/pages/preferences.web.js';
+import { seoRouter } from './modules/pages/seo.web.js';
+import { staticPagesRouter } from './modules/pages/static.web.js';
 import { spaRouter } from './modules/spa/spa.web.js';
 import { docsRouter } from './openapi/docs.web.js';
 
@@ -61,7 +65,16 @@ function securityHeaders() {
 
 /** Routers of the domain modules, mounted in order. Each story adds its routers here. */
 function routers(): Router[] {
-  return [healthRouter, docsRouter, preferencesRouter, spaRouter];
+  return [
+    healthRouter,
+    docsRouter,
+    preferencesRouter,
+    catalogApiRouter,
+    catalogWebRouter,
+    staticPagesRouter,
+    seoRouter,
+    spaRouter,
+  ];
 }
 
 export function createApp(options: AppOptions = {}): Express {

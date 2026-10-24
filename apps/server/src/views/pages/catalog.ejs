@@ -1,0 +1,65 @@
+<%
+  const selectField = (id, name, label, current, options, emptyLabel) => ({ id, name, label, current, options, emptyLabel });
+  const filters = [
+    selectField('filter-category', 'category', t('site.catalog.category'), query.category, categories.map((category) => [category.slug, category.name]), t('site.catalog.allCategories')),
+    selectField('filter-level', 'level', t('site.catalog.level'), query.level, levels.map((level) => [level, t(`enums.courseLevel.${level}`)]), t('site.catalog.anyLevel')),
+    selectField('filter-language', 'language', t('site.catalog.language'), query.language, languages.map((language) => [language, t(`enums.locale.${language}`)]), t('site.catalog.anyLanguage')),
+    selectField('filter-rating', 'minRating', t('site.catalog.rating'), query.minRating ? String(query.minRating) : undefined, ratingOptions.map((value) => [String(value), t('site.catalog.ratingAtLeast', { value })]), t('site.catalog.anyRating')),
+  ];
+%>
+<div class="page-container py-10">
+  <h1 class="heading-xl mb-8"><%= t('site.catalog.title') %></h1>
+
+  <form method="get" action="/courses" class="card card-body mb-8 flex flex-col gap-4" aria-label="<%= t('site.catalog.filters') %>">
+    <% if (query.tag) { %><input type="hidden" name="tag" value="<%= query.tag %>" /><% } %>
+    <div class="field">
+      <label class="field-label" for="catalog-search"><%= t('site.catalog.searchLabel') %></label>
+      <input id="catalog-search" type="search" name="search" class="input" value="<%= query.search ?? '' %>" placeholder="<%= t('site.header.searchPlaceholder') %>" />
+    </div>
+    <details class="md:open" open>
+      <summary class="cursor-pointer text-sm font-semibold md:hidden"><%= t('site.catalog.filters') %></summary>
+      <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-5 md:mt-0">
+        <% for (const filter of filters) { %>
+          <div class="field">
+            <label class="field-label" for="<%= filter.id %>"><%= filter.label %></label>
+            <select id="<%= filter.id %>" name="<%= filter.name %>" class="input">
+              <option value=""><%= filter.emptyLabel %></option>
+              <% for (const [value, label] of filter.options) { %>
+                <option value="<%= value %>" <%= filter.current === value ? 'selected' : '' %>><%= label %></option>
+              <% } %>
+            </select>
+          </div>
+        <% } %>
+        <div class="field">
+          <label class="field-label" for="filter-sort"><%= t('site.catalog.sort') %></label>
+          <select id="filter-sort" name="sort" class="input">
+            <% for (const sort of sorts) { %>
+              <option value="<%= sort %>" <%= query.sort === sort ? 'selected' : '' %>><%= t(`site.catalog.sorts.${sort}`) %></option>
+            <% } %>
+          </select>
+        </div>
+      </div>
+    </details>
+    <div class="flex flex-wrap gap-2">
+      <button type="submit" class="btn btn-primary"><%= t('site.catalog.apply') %></button>
+      <a href="/courses" class="btn btn-ghost"><%= t('site.catalog.reset') %></a>
+    </div>
+  </form>
+
+  <div class="mb-6 flex flex-wrap items-center gap-3">
+    <p class="text-sm text-text-muted" role="status"><%= t('site.catalog.results', { count: page.total }) %></p>
+    <% if (query.tag) { %>
+      <a class="tag tag-neutral focus-ring" href="<%= hrefFor({ tag: undefined, page: 1 }) %>" aria-label="<%= t('site.catalog.removeTag', { tag: query.tag }) %>">
+        <%= t('site.catalog.activeTag', { tag: query.tag }) %>
+        <%- include('../partials/icon', { name: 'x', size: 12 }) %>
+      </a>
+    <% } %>
+  </div>
+
+  <% if (page.items.length === 0) { %>
+    <%- include('../partials/empty-state', { title: t('site.catalog.emptyTitle'), text: t('site.catalog.emptyText'), actionHref: '/courses', actionLabel: t('site.catalog.reset') }) %>
+  <% } else { %>
+    <%- include('../partials/course-grid', { cards: page.items }) %>
+    <%- include('../partials/pagination', { page: query.page, totalPages, hrefFor: (target) => hrefFor({ page: target }) }) %>
+  <% } %>
+</div>

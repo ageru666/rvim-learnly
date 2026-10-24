@@ -1,0 +1,39 @@
+<%# Usage: include('../partials/course-card', { card }) — a CourseCard from the catalog service. %>
+<article class="card flex h-full flex-col overflow-hidden transition-shadow hover:shadow-md">
+  <a href="/courses/<%= card.slug %>" class="focus-ring block" tabindex="-1" aria-hidden="true">
+    <% if (card.coverUrl) { %>
+      <img src="<%= card.coverUrl %>" alt="" loading="lazy" class="aspect-video w-full object-cover" width="640" height="360" />
+    <% } else { %>
+      <div class="aspect-video w-full bg-surface-sunken"></div>
+    <% } %>
+  </a>
+  <div class="card-body flex flex-1 flex-col gap-3">
+    <div class="flex flex-wrap items-center gap-2">
+      <%- include('tag', { label: card.category.name, accent: card.category.accent, href: `/courses?category=${card.category.slug}` }) %>
+      <span class="tag tag-neutral" lang="<%= card.language %>"><%= t(`site.locale.short.${card.language}`) %></span>
+    </div>
+    <h3 class="heading-md">
+      <a class="focus-ring rounded-sm hover:underline" href="/courses/<%= card.slug %>"><%= card.title %></a>
+    </h3>
+    <p class="line-clamp-2 text-sm text-text-muted"><%= card.shortDescription %></p>
+    <p class="text-sm"><%= t('site.course.by', { name: card.author.name }) %></p>
+    <% if (card.tags.length > 0) { %>
+      <ul class="flex flex-wrap gap-1.5">
+        <% for (const tag of card.tags) { %>
+          <li><a class="focus-ring rounded-sm text-xs text-text-muted hover:underline" href="/courses?tag=<%= encodeURIComponent(tag) %>">#<%= tag %></a></li>
+        <% } %>
+      </ul>
+    <% } %>
+    <div class="mt-auto flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-border pt-3 text-xs text-text-muted">
+      <span><%= t(`enums.courseLevel.${card.level}`) %></span>
+      <span><%= t('site.course.summary', { lessons: t('common.counts.lessons', { count: card.lessonCount }), duration: format.duration(card.totalMinutes) }) %></span>
+      <span><%= t('common.counts.students', { count: card.studentCount }) %></span>
+      <% if (card.rating.avg !== null) { %>
+        <span class="inline-flex items-center gap-1">
+          <%- include('star-rating', { value: card.rating.avg, label: t('site.course.ratingOutOf', { value: format.number(card.rating.avg) }) }) %>
+          <span aria-hidden="true">(<%= format.number(card.rating.count) %>)</span>
+        </span>
+      <% } %>
+    </div>
+  </div>
+</article>

@@ -5,7 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title><%= typeof pageTitle === 'string' && pageTitle ? t('site.meta.titleTemplate', { page: pageTitle }) : t('site.meta.brand') %></title>
     <meta name="description" content="<%= typeof pageDescription === 'string' && pageDescription ? pageDescription : t('site.meta.description') %>" />
-    <% if (typeof headExtra === 'string') { %><%- headExtra %><% } %>
+    <% if (typeof og !== 'undefined') { %>
+      <meta property="og:type" content="website" />
+      <meta property="og:title" content="<%= og.title %>" />
+      <meta property="og:description" content="<%= og.description %>" />
+      <% if (og.image) { %><meta property="og:image" content="<%= og.image %>" /><% } %>
+      <meta property="og:locale" content="<%= locale === 'en' ? 'en_US' : 'uk_UA' %>" />
+    <% } %>
     <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
     <link rel="stylesheet" href="/static/css/app.css" />
     <script src="/static/js/theme.js" defer></script>
