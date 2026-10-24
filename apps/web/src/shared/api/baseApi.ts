@@ -94,6 +94,6 @@ export const baseQuery: BaseQueryFn<string | FetchArgs, unknown, ApiError> = asy
 export const baseApi = createApi({
   reducerPath: 'api',
   baseQuery,
-  tagTypes: ['Me', 'Locale'],
+  tagTypes: ['Me', 'Locale', 'Dashboard', 'Enrollments', 'LearnCourse', 'Lesson'],
   endpoints: () => ({}),
 });

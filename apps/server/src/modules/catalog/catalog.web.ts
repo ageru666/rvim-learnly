@@ -10,6 +10,7 @@ import { setFlash } from '../../lib/flash.js';
 import { renderMarkdown } from '../../lib/markdown.js';
 import { renderPage } from '../../lib/render.js';
 import { parseInput } from '../../lib/validation.js';
+import { enrollFromSite } from '../learning/site-enrollment.js';
 import {
   findCourseBySlug,
   getHomeBlocks,
@@ -98,6 +99,17 @@ catalogWebRouter.get('/courses/:slug', async (req, res) => {
     },
     { title: course.title, description: course.shortDescription },
   );
+});
+
+/** Guests log in first; the enrollment intent travels with them (contracts/ssr-routes.md). */
+catalogWebRouter.post('/courses/:slug/enroll', async (req, res) => {
+  const { slug } = parseInput(slugParams, req.params, req.i18n);
+  if (!req.user) {
+    const params = new URLSearchParams({ returnTo: `/courses/${slug}`, intent: 'enroll', course: slug });
+    res.redirect(303, `/login?${params.toString()}`);
+    return;
+  }
+  res.redirect(303, await enrollFromSite(res, req.user.id, slug));
 });
 
 catalogWebRouter.get('/courses/:slug/preview/:lessonId', async (req, res) => {

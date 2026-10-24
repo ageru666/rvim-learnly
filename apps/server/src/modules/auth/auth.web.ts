@@ -20,6 +20,7 @@ import { setFlash } from '../../lib/flash.js';
 import { clientInfo, safeReturnTo } from '../../lib/http.js';
 import { renderPage } from '../../lib/render.js';
 import { validateForm } from '../../lib/validation.js';
+import { enrollFromSite } from '../learning/site-enrollment.js';
 import { currentUser, requireAuth } from '../../middlewares/requireRole.js';
 import {
   forgotPassword,
@@ -79,9 +80,16 @@ function messageOf(req: Request, error: AppError): string {
   return req.i18n.translate(error.messageKey, error.options.params);
 }
 
-/** `returnTo` if it is a local path; the enrollment intent is completed by the learning module (US3). */
 function destinationAfterSignIn(continuation: Continuation): string {
   return safeReturnTo(continuation.returnTo, AFTER_SIGN_IN);
+}
+
+/** Completes the enrollment intent in the same request, otherwise follows `returnTo`. */
+async function continueAfterSignIn(res: Response, userId: string, continuation: Continuation): Promise<string> {
+  if (continuation.intent === 'enroll' && continuation.course) {
+    return enrollFromSite(res, userId, continuation.course);
+  }
+  return destinationAfterSignIn(continuation);
 }
 
 function signIn(res: Response, signedIn: SignedIn): void {
@@ -154,7 +162,7 @@ authWebRouter.post('/login', async (req, res) => {
     return;
   }
   signIn(res, signedIn);
-  res.redirect(303, destinationAfterSignIn(continuation));
+  res.redirect(303, await continueAfterSignIn(res, signedIn.userId, continuation));
 });
 
 authWebRouter.get('/register', async (req, res) => {
@@ -189,7 +197,7 @@ authWebRouter.post('/register', async (req, res) => {
   }
   signIn(res, signedIn);
   setFlash(res, { kind: 'success', key: 'site.auth.register.welcome' });
-  res.redirect(303, destinationAfterSignIn(continuation));
+  res.redirect(303, await continueAfterSignIn(res, signedIn.userId, continuation));
 });
 
 authWebRouter.post('/logout', async (req, res) => {

@@ -226,23 +226,32 @@ progress and the last lesson are kept
 
 ### Tests for User Story 3
 
-- [ ] T092 [P] [US3] Unit tests for progress calculation (BR-L3 floor, zero lessons) in `apps/server/tests/unit/progress.test.ts`
-- [ ] T093 [P] [US3] Integration tests in `apps/server/tests/integration/learning.test.ts`: enroll only published (BR-E1), the author cannot enroll (BR-E2), duplicate → 409, content access only enrolled/author/admin else preview only (BR-E3), completion toggle for text/video (BR-L1), `last_lesson_id` updated on open, leaving deletes progress, dashboard and my-courses filters, a blocked user is denied (BR-E4), author preview mode returns `mode: 'preview'` without saving progress; SSR: a guest `POST /courses/:slug/enroll` → login with `intent=enroll`, after login or registration the user is enrolled and lands on the first lesson
-- [ ] T094 [P] [US3] SPA tests in `apps/web/src/features/player/__tests__/` (curriculum renders completion state, optimistic toggle with rollback on error, prev/next navigation, drawer on small screens) and `apps/web/src/features/enrollments/__tests__/` (dashboard states: loading, empty, error, data)
+- [X] T092 [P] [US3] Unit tests for progress calculation (BR-L3 floor, zero lessons) in `apps/server/tests/unit/progress.test.ts`
+- [X] T093 [P] [US3] Integration tests in `apps/server/tests/integration/learning.test.ts`: enroll only published (BR-E1), the author cannot enroll (BR-E2), duplicate → 409, content access only enrolled/author/admin else preview only (BR-E3), completion toggle for text/video (BR-L1), `last_lesson_id` updated on open, leaving deletes progress, dashboard and my-courses filters, a blocked user is denied (BR-E4), author preview mode returns `mode: 'preview'` without saving progress; SSR: a guest `POST /courses/:slug/enroll` → login with `intent=enroll`, after login or registration the user is enrolled and lands on the first lesson
+- [X] T094 [P] [US3] SPA tests in `apps/web/src/features/player/__tests__/` (curriculum renders completion state, optimistic toggle with rollback on error, prev/next navigation, drawer on small screens) and `apps/web/src/features/enrollments/__tests__/` (dashboard states: loading, empty, error, data)
 
 ### Implementation for User Story 3
 
-- [ ] T095 [P] [US3] Define learning schemas in `packages/contracts/src/learning.ts` (`MyCourse`, dashboard, `LearnCourse`, `LessonContent`, `ProgressResult`)
-- [ ] T096 [US3] Implement `apps/server/src/modules/learning/enrollment.service.ts` (`enroll`, `leave`, `assertLessonAccess`, `listMyCourses`, `getDashboard` incl. recommendations: up to 4 popular published courses from the student's categories not yet enrolled)
-- [ ] T097 [US3] Implement `apps/server/src/modules/learning/progress.service.ts` (`getLearnCourse`, `openLesson` updating `lastLessonId`/`lastActivityAt`, `completeLesson`, `uncompleteLesson` forbidding quiz lessons, `computeProgress`)
-- [ ] T098 [US3] Implement `apps/server/src/modules/learning/learning.api.ts` (`/courses/:id/enrollment` POST/DELETE, `/learn/courses/:courseId`, `/learn/lessons/:lessonId`, `/learn/lessons/:lessonId/completion` PUT/DELETE) and add `GET /me/dashboard`, `GET /me/enrollments` to `apps/server/src/modules/users/me.api.ts`, with OpenAPI
-- [ ] T099 [US3] Add SSR `POST /courses/:slug/enroll` to `apps/server/src/modules/catalog/catalog.web.ts` (guest → `/login?returnTo=/courses/:slug&intent=enroll&course=:slug`; success → redirect to `/app/learn/:courseId/:firstLessonId`) and the post-login/register enrollment hook in `apps/server/src/modules/auth/auth.web.ts` reusing `enrollment.service.enroll`
-- [ ] T100 [US3] Implement `apps/web/src/features/enrollments/enrollmentsApi.ts` (dashboard, my courses, enroll, leave with tags) and `apps/web/src/features/enrollments/utils.ts` (sorting/grouping helpers) with 100 % tests
-- [ ] T101 [US3] Implement `apps/web/src/features/dashboard/DashboardPage.tsx` with components in `apps/web/src/features/dashboard/components/` (`ContinueLearningCard`, `ActiveCoursesList`, `RecommendationsList`; certificate and notification blocks are added in US6/US11)
-- [ ] T102 [US3] Implement `apps/web/src/features/enrollments/MyCoursesPage.tsx` ("Active"/"Completed" tabs, search, leave-course AlertDialog)
-- [ ] T103 [US3] Implement `apps/web/src/features/player/playerApi.ts` (learn course, lesson, completion mutations with optimistic updates of the curriculum and progress) and `apps/web/src/features/player/utils.ts` (`findAdjacentLessons`, `flattenCurriculum`, `sumCourseMinutes`) with 100 % tests
-- [ ] T104 [US3] Implement `apps/web/src/features/player/PlayerPage.tsx` with components in `apps/web/src/features/player/components/`: `PlayerHeader` (course title, progress, exit), `CurriculumSidebar` (collapsible modules persisted in the `ui` storage key, type icons, completion marks), `CurriculumDrawer` (mobile), `LessonView` (`MarkdownView`, `lang` attribute = course content language), `VideoEmbed` (iframe from `buildEmbedUrl` with the UI locale, localized title attribute), `LessonFooter` (prev/next, mark complete with `aria-busy`), `PreviewBanner`
-- [ ] T105 [US3] Register routes `/app`, `/app/courses`, `/app/learn/:courseId/:lessonId` in `apps/web/src/router.tsx`
+- [X] T095 [P] [US3] Define learning schemas in `packages/contracts/src/learning.ts` (`MyCourse`, dashboard, `LearnCourse`, `LessonContent`, `ProgressResult`)
+- [X] T096 [US3] Implement `apps/server/src/modules/learning/enrollment.service.ts` (`enroll`, `leave`, `assertLessonAccess`, `listMyCourses`, `getDashboard` incl. recommendations: up to 4 popular published courses from the student's categories not yet enrolled)
+- [X] T097 [US3] Implement `apps/server/src/modules/learning/progress.service.ts` (`getLearnCourse`, `openLesson` updating `lastLessonId`/`lastActivityAt`, `completeLesson`, `uncompleteLesson` forbidding quiz lessons, `computeProgress`)
+- [X] T098 [US3] Implement `apps/server/src/modules/learning/learning.api.ts` (`/courses/:id/enrollment` POST/DELETE, `/learn/courses/:courseId`, `/learn/lessons/:lessonId`, `/learn/lessons/:lessonId/completion` PUT/DELETE) and add `GET /me/dashboard`, `GET /me/enrollments` to `apps/server/src/modules/users/me.api.ts`, with OpenAPI
+- [X] T099 [US3] Add SSR `POST /courses/:slug/enroll` to `apps/server/src/modules/catalog/catalog.web.ts` (guest → `/login?returnTo=/courses/:slug&intent=enroll&course=:slug`; success → redirect to `/app/learn/:courseId/:firstLessonId`) and the post-login/register enrollment hook in `apps/server/src/modules/auth/auth.web.ts` reusing `enrollment.service.enroll`
+- [X] T100 [US3] Implement `apps/web/src/features/enrollments/enrollmentsApi.ts` (dashboard, my courses, enroll, leave with tags) and `apps/web/src/features/enrollments/utils.ts` (sorting/grouping helpers) with 100 % tests
+- [X] T101 [US3] Implement `apps/web/src/features/dashboard/DashboardPage.tsx` with components in `apps/web/src/features/dashboard/components/` (`ContinueLearningCard`, `ActiveCoursesList`, `RecommendationsList`; certificate and notification blocks are added in US6/US11)
+- [X] T102 [US3] Implement `apps/web/src/features/enrollments/MyCoursesPage.tsx` ("Active"/"Completed" tabs, search, leave-course AlertDialog)
+- [X] T103 [US3] Implement `apps/web/src/features/player/playerApi.ts` (learn course, lesson, completion mutations with optimistic updates of the curriculum and progress) and `apps/web/src/features/player/utils.ts` (`findAdjacentLessons`, `flattenCurriculum`, `sumCourseMinutes`) with 100 % tests
+- [X] T104 [US3] Implement `apps/web/src/features/player/PlayerPage.tsx` with components in `apps/web/src/features/player/components/`: `PlayerHeader` (course title, progress, exit), `CurriculumSidebar` (collapsible modules persisted in the `ui` storage key, type icons, completion marks), `CurriculumDrawer` (mobile), `LessonView` (`MarkdownView`, `lang` attribute = course content language), `VideoEmbed` (iframe from `buildEmbedUrl` with the UI locale, localized title attribute), `LessonFooter` (prev/next, mark complete with `aria-busy`), `PreviewBanner`
+- [X] T105 [US3] Register routes `/app`, `/app/courses`, `/app/learn/:courseId/:lessonId` in `apps/web/src/router.tsx`
+
+**Implementation notes (US3)**: `computeProgress` (BR-L3) moved to `packages/contracts/src/progress.ts` so the
+SPA's optimistic update and the server use one rule; `LessonContent` carries `courseId`; the dashboard schema holds the
+learning blocks now and gains certificates/notifications in US6/US11; `ProgressResult.courseCompleted` mirrors the
+enrollment status until BR-C1 lands in US6; SSR enrollment shares `modules/learning/site-enrollment.ts` between the
+course form and the login/registration intent; the player has its own full-height route (`/app/learn/:courseId`
+resumes the last lesson); collapsed modules live in `navigationSlice` (owner of the `ui` key) and are persisted by
+`navigationListeners`; "My courses" loads one page per status and searches on the client; dashboard tests live in
+`features/dashboard/__tests__/`, shared learning fixtures in `shared/test/learningFixtures.ts`.
 
 **Checkpoint**: MVP (US1–US3) is ready: storefront, account, learning
 

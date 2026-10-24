@@ -22,7 +22,7 @@ import { forbidden, notFound } from '../../lib/errors.js';
 import { toPage, toSkipTake } from '../../lib/pagination.js';
 import { Prisma } from '../../generated/prisma/client.js';
 import type { AuthUser } from '../auth/auth.types.js';
-import { computeProgress } from '../learning/progress.rules.js';
+import { computeProgress } from '@learnly/contracts/progress';
 import { categoryName, loadCourseCards, loadCourseStats, toCourseCard, courseCardInclude } from './course-card.js';
 
 const ORDER_BY: Record<CatalogSort, Prisma.Sql> = {

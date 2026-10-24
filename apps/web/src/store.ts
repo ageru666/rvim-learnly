@@ -5,9 +5,12 @@ import { combineReducers, configureStore, createListenerMiddleware } from '@redu
 import { setupListeners } from '@reduxjs/toolkit/query';
 import { z } from 'zod';
 import { authReducer } from './features/auth/authSlice';
+import { enrollmentsReducer } from './features/enrollments/enrollmentsSlice';
 import { startLocaleListeners } from './features/locale/localeListeners';
 import { initialLocaleState, localeReducer } from './features/locale/localeSlice';
-import { navigationReducer } from './features/navigation/navigationSlice';
+import { startNavigationListeners } from './features/navigation/navigationListeners';
+import { initialNavigationState, navigationReducer, uiLayoutSchema } from './features/navigation/navigationSlice';
+import { playerReducer } from './features/player/playerSlice';
 import { settingsReducer } from './features/settings/settingsSlice';
 import { startThemeListeners } from './features/theme/themeListeners';
 import { initialThemeState, themeReducer } from './features/theme/themeSlice';
@@ -19,8 +22,10 @@ const rootReducer = combineReducers({
   [baseApi.reducerPath]: baseApi.reducer,
   [storageApi.reducerPath]: storageApi.reducer,
   auth: authReducer,
+  enrollments: enrollmentsReducer,
   locale: localeReducer,
   navigation: navigationReducer,
+  player: playerReducer,
   settings: settingsReducer,
   theme: themeReducer,
 });
@@ -47,6 +52,7 @@ export function createStore() {
   const listeners = createListenerMiddleware();
   startLocaleListeners(listeners);
   startThemeListeners(listeners);
+  startNavigationListeners(listeners);
 
   const preferences = initialPreferences();
   document.documentElement.lang = preferences.locale;
@@ -57,6 +63,7 @@ export function createStore() {
     preloadedState: {
       locale: initialLocaleState(preferences.locale),
       theme: initialThemeState(preferences.theme),
+      navigation: initialNavigationState(storedPreference('ui', uiLayoutSchema)),
     },
     middleware: (getDefault) =>
       getDefault().prepend(listeners.middleware).concat(baseApi.middleware, storageApi.middleware),

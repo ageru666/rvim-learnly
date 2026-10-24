@@ -1,7 +1,7 @@
 import type { Role } from '@learnly/contracts/enums';
 import type { ReactNode } from 'react';
 import { useSelector } from 'react-redux';
-import { useLocation } from 'react-router';
+import { Outlet, useLocation } from 'react-router';
 import { ExternalRedirect } from '../../shared/components/ExternalRedirect';
 import { PageLoader } from '../../shared/components/PageLoader';
 import { config } from '../../shared/config';
@@ -10,7 +10,8 @@ import { useGetMeQuery } from './authApi';
 import { selectSessionExpired } from './authSlice';
 
 interface RequireAuthProps {
-  children: ReactNode;
+  /** Without children it guards the nested routes (`<Outlet />`). */
+  children?: ReactNode;
   /** Restricts the route to these roles; other signed-in users see the not-found page. */
   roles?: Role[];
 }
@@ -27,5 +28,5 @@ export function RequireAuth({ children, roles }: RequireAuthProps) {
     return <ExternalRedirect to={`/login?returnTo=${encodeURIComponent(returnTo)}`} />;
   }
   if (roles && !roles.includes(me.role)) return <NotFoundPage />;
-  return children;
+  return children ?? <Outlet />;
 }

@@ -77,7 +77,7 @@ type CourseCard = {
 |---|---|---|
 | `GET /me` | — | `Me` |
 | `PATCH /me` | `{ name?, bio?, links?, locale? }` | `Me` |
-| `PUT /me/password` | `{ currentPassword, newPassword }` | 204 (other sessions revoked) |
+| `PUT /me/password` | `{ currentPassword, newPassword, refreshToken? }` | 204 (other sessions revoked) |
 | `POST /me/email` | `{ currentPassword, newEmail }` | 204 (email sent to the new address) |
 | `POST /me/avatar` | multipart `file` | `Me` |
 | `DELETE /me/avatar` | — | `Me` |
@@ -150,7 +150,7 @@ type LearnCourse = { course: { id: Id; slug: string; title: string; language: Lo
   lastLessonId: Id | null
   modules: { id: Id; title: string; lessons: { id: Id; title: string; type: LessonType
              durationMinutes: number; completed: boolean; quizId: Id | null }[] }[] }
-type LessonContent = { id: Id; title: string; type: LessonType; content: string | null
+type LessonContent = { id: Id; courseId: Id; title: string; type: LessonType; content: string | null
   videoUrl: string | null; durationMinutes: number; quizId: Id | null
   prevLessonId: Id | null; nextLessonId: Id | null; completed: boolean }
 type ProgressResult = { progress: number; completedLessonIds: Id[]; courseCompleted: boolean

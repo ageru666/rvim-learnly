@@ -15,10 +15,33 @@ export const router = createBrowserRouter(
       ),
       children: [
         {
+          index: true,
+          lazy: async () => ({ Component: (await import('./features/dashboard/DashboardPage')).DashboardPage }),
+        },
+        {
+          path: 'courses',
+          lazy: async () => ({ Component: (await import('./features/enrollments/MyCoursesPage')).MyCoursesPage }),
+        },
+        {
           path: 'settings',
           lazy: async () => ({ Component: (await import('./features/settings/SettingsPage')).SettingsPage }),
         },
         { path: '*', element: <NotFoundPage /> },
+      ],
+    },
+    {
+      /** The player has its own full-height layout with the curriculum instead of the dashboard header. */
+      path: 'learn/:courseId',
+      element: <RequireAuth />,
+      children: [
+        {
+          index: true,
+          lazy: async () => ({ Component: (await import('./features/player/ResumeCoursePage')).ResumeCoursePage }),
+        },
+        {
+          path: ':lessonId',
+          lazy: async () => ({ Component: (await import('./features/player/PlayerPage')).PlayerPage }),
+        },
       ],
     },
   ],

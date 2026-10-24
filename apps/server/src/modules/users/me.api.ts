@@ -1,4 +1,6 @@
 import { changeEmailSchema, changePasswordSchema } from '@learnly/contracts/auth';
+import { pageSchema } from '@learnly/contracts/common';
+import { dashboardSchema, myCourseSchema, myCoursesQuerySchema } from '@learnly/contracts/learning';
 import { meSchema } from '@learnly/contracts/me';
 import { Router } from 'express';
 import { COOKIES, readCookie } from '../../lib/cookies.js';
@@ -6,6 +8,7 @@ import { API_PREFIX } from '../../lib/http.js';
 import { parseInput } from '../../lib/validation.js';
 import { currentUser, requireAuth } from '../../middlewares/requireRole.js';
 import { registerRoute } from '../../openapi/registry.js';
+import { getDashboard, listMyCourses } from '../learning/enrollment.service.js';
 import { changePassword, getMe, requestEmailChange } from './users.service.js';
 
 const TAG = 'Me';
@@ -54,4 +57,30 @@ registerRoute({
 meApiRouter.post(`${ME}/email`, async (req, res) => {
   await requestEmailChange(currentUser(req).id, parseInput(changeEmailSchema, req.body, req.i18n));
   res.status(204).end();
+});
+
+registerRoute({
+  method: 'get',
+  path: `${ME}/dashboard`,
+  tag: TAG,
+  summary: 'Continue learning, active courses and recommendations',
+  access: 'user',
+  responses: { 200: { description: 'Dashboard', schema: dashboardSchema } },
+});
+meApiRouter.get(`${ME}/dashboard`, async (req, res) => {
+  res.json(await getDashboard(currentUser(req).id, req.locale));
+});
+
+registerRoute({
+  method: 'get',
+  path: `${ME}/enrollments`,
+  tag: TAG,
+  summary: 'My courses, newest activity first',
+  access: 'user',
+  query: myCoursesQuerySchema,
+  responses: { 200: { description: 'A page of my courses', schema: pageSchema(myCourseSchema) } },
+});
+meApiRouter.get(`${ME}/enrollments`, async (req, res) => {
+  const query = parseInput(myCoursesQuerySchema, req.query, req.i18n);
+  res.json(await listMyCourses(currentUser(req).id, query, req.locale));
 });
