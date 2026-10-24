@@ -155,8 +155,9 @@ type LessonContent = { id: Id; courseId: Id; title: string; type: LessonType; co
   prevLessonId: Id | null; nextLessonId: Id | null; completed: boolean }
 type ProgressResult = { progress: number; completedLessonIds: Id[]; courseCompleted: boolean
                         certificateCode: string | null }
-type QuizForStudent = { id: Id; passScore: number; maxAttempts: number | null
+type QuizForStudent = { id: Id; lessonId: Id; passScore: number; maxAttempts: number | null
   attemptsUsed: number; bestScore: number | null; passed: boolean; shuffle: boolean
+  canSubmit: boolean /* false in preview or without attempts */
   questions: { id: Id; type: QuestionType; text: string; points: number
                options: { id: Id; text: string }[] }[] }   // no isCorrect, no explanation
 type AttemptResult = { id: Id; scorePercent: number; scorePoints: number; maxPoints: number

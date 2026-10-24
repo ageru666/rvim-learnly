@@ -5,6 +5,8 @@ import type {
   CourseStatus,
   LessonType,
   Locale,
+  QuestionType,
+  RevealAnswers,
   Role,
 } from '@learnly/contracts/enums';
 import { db } from '../../src/lib/db.js';
@@ -54,11 +56,30 @@ export async function createCategory(overrides: { nameEn?: string; nameUk?: stri
   });
 }
 
+export interface QuestionSpec {
+  type: QuestionType;
+  points?: number;
+  /** One flag per option: is it correct. */
+  options: boolean[];
+  explanation?: string;
+}
+
+export interface QuizSpec {
+  passScore?: number;
+  maxAttempts?: number | null;
+  shuffle?: boolean;
+  revealAnswers?: RevealAnswers;
+  questions?: QuestionSpec[];
+}
+
 export interface LessonSpec {
   type: LessonType;
   isPreview?: boolean;
   minutes?: number;
+  quiz?: QuizSpec;
 }
+
+const DEFAULT_QUESTIONS: QuestionSpec[] = [{ type: 'single', options: [true, false] }];
 
 export interface CourseOverrides {
   authorId?: string;
@@ -121,21 +142,29 @@ export async function createCourse(overrides: CourseOverrides = {}) {
     });
     lessons.push(lesson);
     if (spec.type === 'quiz') {
+      const quiz = spec.quiz ?? {};
       await db.quiz.create({
         data: {
           lessonId: lesson.id,
+          passScore: quiz.passScore ?? 70,
+          maxAttempts: quiz.maxAttempts ?? null,
+          shuffle: quiz.shuffle ?? false,
+          revealAnswers: quiz.revealAnswers ?? 'after_pass_or_exhausted',
           questions: {
-            create: {
-              type: 'single',
-              text: 'Question',
-              position: 0,
+            create: (quiz.questions ?? DEFAULT_QUESTIONS).map((question, questionIndex) => ({
+              type: question.type,
+              text: `Question ${questionIndex + 1}`,
+              points: question.points ?? 1,
+              explanation: question.explanation ?? null,
+              position: questionIndex,
               options: {
-                create: [
-                  { text: 'Right', isCorrect: true, position: 0 },
-                  { text: 'Wrong', isCorrect: false, position: 1 },
-                ],
+                create: question.options.map((isCorrect, optionIndex) => ({
+                  text: `Option ${optionIndex + 1}`,
+                  isCorrect,
+                  position: optionIndex,
+                })),
               },
-            },
+            })),
           },
         },
       });

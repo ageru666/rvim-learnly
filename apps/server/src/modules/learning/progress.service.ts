@@ -14,7 +14,7 @@ type LearnerContext =
  * BR-E3: full content for enrolled users, the author and administrators. Everyone else sees only
  * the preview lessons on the public course page.
  */
-async function learnerContext(user: AuthUser, courseId: string): Promise<LearnerContext> {
+export async function learnerContext(user: AuthUser, courseId: string): Promise<LearnerContext> {
   const course = await db.course.findUnique({ where: { id: courseId }, select: { authorId: true } });
   if (!course) throw notFound();
   const enrollment = await db.enrollment.findUnique({

@@ -4,6 +4,7 @@ import { Alert } from '../../../shared/components/Alert';
 import { MarkdownView } from '../../../shared/components/MarkdownView';
 import { useFormat } from '../../locale/useFormat';
 import { useT } from '../../locale/useT';
+import { QuizLesson } from '../../quizzes/QuizLesson';
 import { LessonTypeIcon } from './LessonTypeIcon';
 import { VideoEmbed } from './VideoEmbed';
 
@@ -29,8 +30,13 @@ export function LessonView({ lesson, language }: LessonViewProps) {
         </h1>
       </header>
       {lesson.type === 'video' && lesson.videoUrl && <VideoEmbed url={lesson.videoUrl} title={lesson.title} />}
-      {lesson.type === 'quiz' && <Alert kind="info">{t('app.player.quizHint')}</Alert>}
       {lesson.content && <MarkdownView source={lesson.content} lang={language} />}
+      {lesson.type === 'quiz' &&
+        (lesson.quizId ? (
+          <QuizLesson quizId={lesson.quizId} courseId={lesson.courseId} language={language} />
+        ) : (
+          <Alert kind="info">{t('app.player.quizHint')}</Alert>
+        ))}
     </article>
   );
 }

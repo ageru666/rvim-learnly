@@ -300,18 +300,25 @@ marked completed
 
 ### Tests for User Story 5
 
-- [ ] T112 [P] [US5] Unit tests for `gradeAttempt` in `apps/server/tests/unit/grading.test.ts` (BR-Q1 single/multiple exact set, points weighting, rounding; BR-Q2 threshold; BR-Q4 foreign question/option rejected)
-- [ ] T113 [P] [US5] Integration tests in `apps/server/tests/integration/quizzes.test.ts`: `GET /learn/quizzes/:id` never contains `isCorrect`/`explanation`; attempt limit (BR-Q3) → 422; reveal modes; passing marks the quiz lesson complete and it cannot be uncompleted (BR-L2); editing questions does not change stored attempt results (BR-Q5); shuffle returns a permutation
-- [ ] T114 [P] [US5] SPA tests in `apps/web/src/features/quizzes/__tests__/` (answers restored from storage after remount, unanswered confirmation with a pluralized count, the result view hides correct options when not revealed, storage cleared after submit)
+- [X] T112 [P] [US5] Unit tests for `gradeAttempt` in `apps/server/tests/unit/grading.test.ts` (BR-Q1 single/multiple exact set, points weighting, rounding; BR-Q2 threshold; BR-Q4 foreign question/option rejected)
+- [X] T113 [P] [US5] Integration tests in `apps/server/tests/integration/quizzes.test.ts`: `GET /learn/quizzes/:id` never contains `isCorrect`/`explanation`; attempt limit (BR-Q3) → 422; reveal modes; passing marks the quiz lesson complete and it cannot be uncompleted (BR-L2); editing questions does not change stored attempt results (BR-Q5); shuffle returns a permutation
+- [X] T114 [P] [US5] SPA tests in `apps/web/src/features/quizzes/__tests__/` (answers restored from storage after remount, unanswered confirmation with a pluralized count, the result view hides correct options when not revealed, storage cleared after submit)
 
 ### Implementation for User Story 5
 
-- [ ] T115 [P] [US5] Define quiz schemas in `packages/contracts/src/quizzes.ts` (`QuizForStudent`, attempt submit `answers: Record<Id, Id[]>`, `AttemptResult`, `AttemptSummary`, `QuizEditor` with options 2–8, points 1–10, passScore 1–100, maxAttempts null or 1–10)
-- [ ] T116 [US5] Implement the pure `apps/server/src/modules/quizzes/grading.ts` (`gradeAttempt(quiz, answers)` → per-question result snapshot, score, passed; `shouldRevealAnswers`)
-- [ ] T117 [US5] Implement `apps/server/src/modules/quizzes/quizzes.service.ts` (`getForStudent` with shuffle and attempts info, `submitAttempt` in a transaction: validate, grade, store the snapshot, on the first pass complete the lesson via progress.service, `listAttempts`)
-- [ ] T118 [US5] Implement `apps/server/src/modules/quizzes/quizzes.api.ts` (`GET /learn/quizzes/:quizId`, `POST|GET /learn/quizzes/:quizId/attempts`) with OpenAPI
-- [ ] T119 [US5] Implement `apps/web/src/features/quizzes/quizzesApi.ts`, `apps/web/src/features/quizzes/quizSlice.ts` (current index, answers per quiz; selectors `selectAnsweredCount`, `selectUnanswered`) with a listener persisting to the `quiz:<quizId>` storage key and hydration on start, and `apps/web/src/features/quizzes/utils.ts` (answer toggling for single/multiple, order handling) with 100 % tests
-- [ ] T120 [US5] Implement components in `apps/web/src/features/quizzes/components/`: `QuizStart`, `QuizQuestion` (RadioGroup/Checkbox, Markdown text), `QuizNavigator` (answered/unanswered indicators with text), `SubmitConfirmDialog`, `QuizResult` (score, status badge, per-question review, retry), `AttemptHistory`; integrate as lesson type `quiz` in `apps/web/src/features/player/components/LessonView.tsx` via the quizzes feature's public `QuizLesson.tsx`
+- [X] T115 [P] [US5] Define quiz schemas in `packages/contracts/src/quizzes.ts` (`QuizForStudent`, attempt submit `answers: Record<Id, Id[]>`, `AttemptResult`, `AttemptSummary`, `QuizEditor` with options 2–8, points 1–10, passScore 1–100, maxAttempts null or 1–10)
+- [X] T116 [US5] Implement the pure `apps/server/src/modules/quizzes/grading.ts` (`gradeAttempt(quiz, answers)` → per-question result snapshot, score, passed; `shouldRevealAnswers`)
+- [X] T117 [US5] Implement `apps/server/src/modules/quizzes/quizzes.service.ts` (`getForStudent` with shuffle and attempts info, `submitAttempt` in a transaction: validate, grade, store the snapshot, on the first pass complete the lesson via progress.service, `listAttempts`)
+- [X] T118 [US5] Implement `apps/server/src/modules/quizzes/quizzes.api.ts` (`GET /learn/quizzes/:quizId`, `POST|GET /learn/quizzes/:quizId/attempts`) with OpenAPI
+- [X] T119 [US5] Implement `apps/web/src/features/quizzes/quizzesApi.ts`, `apps/web/src/features/quizzes/quizSlice.ts` (current index, answers per quiz; selectors `selectAnsweredCount`, `selectUnanswered`) with a listener persisting to the `quiz:<quizId>` storage key and hydration on start, and `apps/web/src/features/quizzes/utils.ts` (answer toggling for single/multiple, order handling) with 100 % tests
+- [X] T120 [US5] Implement components in `apps/web/src/features/quizzes/components/`: `QuizStart`, `QuizQuestion` (RadioGroup/Checkbox, Markdown text), `QuizNavigator` (answered/unanswered indicators with text), `SubmitConfirmDialog`, `QuizResult` (score, status badge, per-question review, retry), `AttemptHistory`; integrate as lesson type `quiz` in `apps/web/src/features/player/components/LessonView.tsx` via the quizzes feature's public `QuizLesson.tsx`
+
+**Implementation notes (US5)**: explanations are part of every graded result, correct options follow
+`revealAnswers` (`always`, or after a pass / when no attempts are left); the attempt stores the graded snapshot
+(selected and correct options, points, explanation) for BR-Q5; the attempt limit is checked inside a transaction that
+locks the enrollment row; `QuizForStudent` adds `lessonId` and `canSubmit` (false in preview or without attempts);
+an invalid answer set is a `VALIDATION_ERROR` with `errors.quizzes.invalidAnswers`; a restored attempt opens the
+questions directly; the shuffled order is kept in the `quiz:<quizId>` storage value and reused after a reload.
 
 **Checkpoint**: US5 works on top of US3
 

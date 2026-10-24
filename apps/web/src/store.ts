@@ -11,6 +11,8 @@ import { initialLocaleState, localeReducer } from './features/locale/localeSlice
 import { startNavigationListeners } from './features/navigation/navigationListeners';
 import { initialNavigationState, navigationReducer, uiLayoutSchema } from './features/navigation/navigationSlice';
 import { playerReducer } from './features/player/playerSlice';
+import { startQuizListeners } from './features/quizzes/quizListeners';
+import { quizReducer } from './features/quizzes/quizSlice';
 import { settingsReducer } from './features/settings/settingsSlice';
 import { startThemeListeners } from './features/theme/themeListeners';
 import { initialThemeState, themeReducer } from './features/theme/themeSlice';
@@ -26,6 +28,7 @@ const rootReducer = combineReducers({
   locale: localeReducer,
   navigation: navigationReducer,
   player: playerReducer,
+  quiz: quizReducer,
   settings: settingsReducer,
   theme: themeReducer,
 });
@@ -53,6 +56,7 @@ export function createStore() {
   startLocaleListeners(listeners);
   startThemeListeners(listeners);
   startNavigationListeners(listeners);
+  startQuizListeners(listeners);
 
   const preferences = initialPreferences();
   document.documentElement.lang = preferences.locale;
