@@ -1,0 +1,16 @@
+<footer class="mt-16 border-t border-border bg-bg-subtle">
+  <div class="page-container flex flex-col gap-6 py-10 md:flex-row md:items-center md:justify-between">
+    <%- include('logo') %>
+    <nav aria-label="<%= t('site.footer.about') %>">
+      <ul class="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+        <% for (const page of ['about', 'faq', 'terms', 'privacy', 'contacts']) { %>
+          <li><a class="link font-normal no-underline hover:underline" href="/<%= page %>"><%= t(`site.footer.${page}`) %></a></li>
+        <% } %>
+      </ul>
+    </nav>
+    <div class="flex items-center gap-4 text-sm text-text-muted">
+      <%- include('locale-switcher') %>
+      <span><%= t('site.footer.rights', { year: new Date().getFullYear() }) %></span>
+    </div>
+  </div>
+</footer>

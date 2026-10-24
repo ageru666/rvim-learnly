@@ -1,0 +1,61 @@
+<header class="border-b border-border bg-bg">
+  <div class="page-container flex h-16 items-center gap-4">
+    <%- include('logo') %>
+
+    <nav class="hidden md:block" aria-label="<%= t('site.header.catalog') %>">
+      <a href="/courses" class="btn btn-ghost <%= currentPath.startsWith('/courses') ? 'font-bold' : '' %>"><%= t('site.header.catalog') %></a>
+    </nav>
+
+    <form method="get" action="/courses" role="search" class="hidden flex-1 lg:flex">
+      <label class="sr-only" for="header-search"><%= t('site.header.search') %></label>
+      <input id="header-search" type="search" name="search" class="input max-w-sm" placeholder="<%= t('site.header.searchPlaceholder') %>" />
+    </form>
+
+    <div class="ml-auto flex items-center gap-1">
+      <div class="hidden sm:block"><%- include('locale-switcher') %></div>
+      <%- include('theme-switcher') %>
+
+      <% if (user) { %>
+        <details class="dropdown" data-dropdown>
+          <summary class="btn btn-ghost gap-2" aria-label="<%= t('site.header.userMenu') %>">
+            <span class="grid size-8 place-items-center rounded-pill bg-secondary text-sm font-semibold" aria-hidden="true"><%= user.name.slice(0, 1).toUpperCase() %></span>
+            <span class="hidden max-w-32 truncate text-sm md:inline"><%= user.name %></span>
+            <%- include('icon', { name: 'chevron-down', size: 16 }) %>
+          </summary>
+          <div class="dropdown-panel">
+            <a class="dropdown-item" href="/app"><%- include('icon', { name: 'layout-dashboard', size: 16 }) %><%= t('site.header.dashboard') %></a>
+            <a class="dropdown-item" href="/app/courses"><%- include('icon', { name: 'book-open', size: 16 }) %><%= t('site.header.myCourses') %></a>
+            <% if (user.role === 'instructor' || user.role === 'admin') { %>
+              <a class="dropdown-item" href="/app/teach"><%- include('icon', { name: 'graduation-cap', size: 16 }) %><%= t('site.header.teaching') %></a>
+            <% } %>
+            <% if (user.role === 'admin') { %>
+              <a class="dropdown-item" href="/admin"><%- include('icon', { name: 'shield', size: 16 }) %><%= t('site.header.admin') %></a>
+            <% } %>
+            <div class="divider my-1"></div>
+            <form method="post" action="/logout">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+              <button type="submit" class="dropdown-item"><%- include('icon', { name: 'log-out', size: 16 }) %><%= t('site.header.logout') %></button>
+            </form>
+          </div>
+        </details>
+      <% } else { %>
+        <a href="/login" class="btn btn-ghost"><%= t('site.header.login') %></a>
+        <a href="/register" class="btn btn-primary hidden sm:inline-flex"><%= t('site.header.register') %></a>
+      <% } %>
+
+      <details class="dropdown md:hidden" data-dropdown>
+        <summary class="btn btn-ghost btn-icon" aria-label="<%= t('site.header.openMenu') %>">
+          <%- include('icon', { name: 'menu' }) %>
+        </summary>
+        <div class="dropdown-panel w-64">
+          <form method="get" action="/courses" role="search" class="p-2">
+            <label class="sr-only" for="mobile-search"><%= t('site.header.search') %></label>
+            <input id="mobile-search" type="search" name="search" class="input" placeholder="<%= t('site.header.searchPlaceholder') %>" />
+          </form>
+          <a class="dropdown-item" href="/courses"><%= t('site.header.catalog') %></a>
+          <div class="p-2 sm:hidden"><%- include('locale-switcher') %></div>
+        </div>
+      </details>
+    </div>
+  </div>
+</header>

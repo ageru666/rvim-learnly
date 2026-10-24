@@ -1,0 +1,14 @@
+<%# Plain POST forms: switching works without JavaScript; the server stores the choice. %>
+<div class="flex items-center gap-1" role="group" aria-label="<%= t('site.locale.label') %>">
+  <%- include('icon', { name: 'globe', size: 16, className: 'text-text-muted' }) %>
+  <% for (const option of ['uk', 'en']) { %>
+    <form method="post" action="/locale">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+      <input type="hidden" name="locale" value="<%= option %>" />
+      <input type="hidden" name="returnTo" value="<%= currentPath %>" />
+      <button type="submit" lang="<%= option %>" class="btn btn-ghost btn-sm <%= option === locale ? 'font-bold underline underline-offset-4' : 'text-text-muted' %>" <% if (option === locale) { %>aria-current="true"<% } %> aria-label="<%= t(`enums.locale.${option}`) %>">
+        <%= t(`site.locale.short.${option}`) %>
+      </button>
+    </form>
+  <% } %>
+</div>

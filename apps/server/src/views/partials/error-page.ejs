@@ -1,0 +1,7 @@
+<%# Shared body of the 403/404/500 pages. Usage: include('../../partials/error-page', { code, title, text }) %>
+<section class="page-container flex flex-col items-center gap-4 py-24 text-center">
+  <p class="font-display text-7xl font-bold text-text-subtle" aria-hidden="true"><%= code %></p>
+  <h1 class="heading-xl"><%= title %></h1>
+  <p class="text-lead max-w-xl"><%= text %></p>
+  <a class="btn btn-primary mt-4" href="/"><%= t('common.actions.goHome') %></a>
+</section>

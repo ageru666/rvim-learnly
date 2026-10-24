@@ -1,0 +1,7 @@
+<%# Usage: include('../partials/tag', { label, accent?: 'yellow' | ... | 'neutral', href? }) %>
+<% const tagClass = `tag tag-${typeof accent === 'undefined' ? 'neutral' : accent}`; %>
+<% if (typeof href !== 'undefined' && href) { %>
+  <a class="<%= tagClass %> focus-ring hover:underline" href="<%= href %>"><%= label %></a>
+<% } else { %>
+  <span class="<%= tagClass %>"><%= label %></span>
+<% } %>

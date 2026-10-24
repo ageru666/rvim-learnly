@@ -1,0 +1,275 @@
+import type { Messages } from '../keys.js';
+
+/** English dictionary, typed against the Ukrainian one: a missing key is a type error. */
+export const en = {
+  common: {
+    actions: {
+      save: 'Save',
+      cancel: 'Cancel',
+      delete: 'Delete',
+      edit: 'Edit',
+      close: 'Close',
+      confirm: 'Confirm',
+      retry: 'Try again',
+      back: 'Back',
+      next: 'Next',
+      previous: 'Previous',
+      submit: 'Submit',
+      search: 'Search',
+      showMore: 'Show more',
+      goHome: 'Go to the home page',
+    },
+    states: {
+      loading: 'Loading…',
+      empty: 'Nothing here yet',
+      error: 'Could not load the data',
+    },
+    pagination: {
+      label: 'Pages',
+      previous: 'Previous page',
+      next: 'Next page',
+      page: 'Page {page} of {total}',
+    },
+    counts: {
+      lessons: '{count, plural, one {# lesson} other {# lessons}}',
+      students: '{count, plural, one {# student} other {# students}}',
+      reviews: '{count, plural, one {# review} other {# reviews}}',
+      courses: '{count, plural, one {# course} other {# courses}}',
+    },
+  },
+  site: {
+    meta: {
+      brand: 'Learnly',
+      titleTemplate: '{page} · Learnly',
+      description:
+        'Learnly: online courses in Ukrainian and English with quizzes, progress tracking and certificates.',
+    },
+    skipLink: 'Skip to content',
+    header: {
+      homeLink: 'Learnly, home page',
+      catalog: 'Catalog',
+      search: 'Search courses',
+      searchPlaceholder: 'Find a course',
+      login: 'Log in',
+      register: 'Sign up',
+      dashboard: 'Dashboard',
+      myCourses: 'My courses',
+      teaching: 'Teaching',
+      admin: 'Admin panel',
+      logout: 'Log out',
+      notifications: 'Notifications',
+      unread: '{count, plural, one {# unread} other {# unread}}',
+      openMenu: 'Open menu',
+      closeMenu: 'Close menu',
+      userMenu: 'User menu',
+    },
+    footer: {
+      about: 'About',
+      faq: 'FAQ',
+      terms: 'Terms of use',
+      privacy: 'Privacy policy',
+      contacts: 'Contacts',
+      rights: '© {year} Learnly',
+    },
+    locale: {
+      label: 'Interface language',
+      short: {
+        uk: 'UA',
+        en: 'EN',
+      },
+    },
+    theme: {
+      label: 'Theme',
+      light: 'Light',
+      dark: 'Dark',
+      system: 'System',
+    },
+    errors: {
+      notFoundTitle: 'Page not found',
+      notFoundText: 'It may have been moved or deleted.',
+      forbiddenTitle: 'Access denied',
+      forbiddenText: 'You do not have permission to view this page.',
+      serverTitle: 'Something went wrong',
+      serverText: 'We already know about the problem. Try reloading the page.',
+    },
+  },
+  app: {
+    layout: {
+      dashboard: 'Dashboard',
+      backToSite: 'Back to the site',
+      notFoundTitle: 'Page not found',
+      notFoundText: 'Check the address or go back to the dashboard.',
+      crashTitle: 'Something went wrong',
+      crashText: 'Reload the page to continue.',
+      reload: 'Reload the page',
+    },
+  },
+  admin: {
+    audit: {
+      course: {
+        approve: 'Approved a course',
+        reject: 'Rejected a course',
+        unpublish: 'Unpublished a course',
+      },
+      application: {
+        approve: 'Approved an instructor application',
+        reject: 'Rejected an instructor application',
+      },
+      user: {
+        role: 'Changed a user role',
+        block: 'Blocked a user',
+        unblock: 'Unblocked a user',
+      },
+      category: {
+        create: 'Created a category',
+        update: 'Updated a category',
+        delete: 'Deleted a category',
+      },
+      review: {
+        hide: 'Hid a review',
+        unhide: 'Restored a review',
+      },
+      certificate: {
+        revoke: 'Revoked a certificate',
+      },
+    },
+  },
+  notifications: {
+    course_completed: 'Congratulations! You completed “{courseTitle}” and earned a certificate.',
+    review_replied: 'The author of “{courseTitle}” replied to your review.',
+    review_hidden: 'Your review of “{courseTitle}” was hidden by a moderator: {comment}',
+    application_approved: 'Your instructor application was approved. You can now create courses.',
+    application_rejected: 'Your instructor application was rejected: {comment}',
+    course_approved: '“{courseTitle}” was approved and published.',
+    course_rejected: '“{courseTitle}” was rejected: {comment}',
+    course_unpublished: '“{courseTitle}” was unpublished: {comment}',
+    course_new_review: 'New review of “{courseTitle}”.',
+    admin_course_submitted: '“{courseTitle}” is waiting for moderation.',
+    admin_application_submitted: 'New instructor application.',
+  },
+  readiness: {
+    title: 'Course title',
+    shortDescription: 'Short description',
+    description: 'Full description',
+    category: 'Category',
+    level: 'Level',
+    language: 'Course language',
+    cover: 'Cover image',
+    outcomes: 'At least 2 “What you will learn” items',
+    modules: 'At least one module',
+    moduleLessons: 'A lesson in every module',
+    lessonCount: 'At least 3 lessons',
+    quizQuestions: 'Questions in every quiz',
+    quizCorrectOptions: 'A correct answer in every question',
+    videoUrls: 'Valid video links',
+  },
+  errors: {
+    codes: {
+      VALIDATION_ERROR: 'Please check the entered data.',
+      UNAUTHORIZED: 'Log in to continue.',
+      FORBIDDEN: 'You do not have permission for this action.',
+      NOT_FOUND: 'Not found.',
+      CONFLICT: 'This record already exists.',
+      BUSINESS_RULE_VIOLATION: 'This action is not possible right now.',
+      RATE_LIMITED: 'Too many requests. Please try again a little later.',
+      INTERNAL: 'Something went wrong. Please try again.',
+    },
+    network: 'No connection to the server. Check your internet connection.',
+    timeout: 'The server is taking too long to respond. Please try again.',
+    csrf: 'This page is out of date. Reload it and repeat the action.',
+    upload: {
+      invalidType: 'Only JPG, PNG or WebP images are supported.',
+      tooLarge: 'The file is too large.',
+    },
+    invalidJson: 'The request body is not valid.',
+    auth: {
+      emailNotVerified: 'Please verify your email first.',
+    },
+  },
+  validation: {
+    password: {
+      letterAndDigit: 'The password must contain at least one letter and one digit.',
+      mismatch: 'The passwords do not match.',
+    },
+    terms: {
+      required: 'You need to accept the terms of use.',
+    },
+    slug: {
+      format: 'Only lowercase Latin letters, digits and hyphens.',
+    },
+    video: {
+      url: 'Enter a YouTube or Vimeo link.',
+    },
+    quiz: {
+      singleNeedsOneCorrect: 'A single-answer question needs exactly one correct option.',
+      multipleNeedsCorrect: 'Mark at least one correct option.',
+    },
+  },
+  enums: {
+    role: {
+      student: 'Student',
+      instructor: 'Instructor',
+      admin: 'Administrator',
+    },
+    userStatus: {
+      active: 'Active',
+      blocked: 'Blocked',
+    },
+    applicationStatus: {
+      pending: 'Pending',
+      approved: 'Approved',
+      rejected: 'Rejected',
+    },
+    courseLevel: {
+      beginner: 'Beginner',
+      intermediate: 'Intermediate',
+      advanced: 'Advanced',
+    },
+    courseStatus: {
+      draft: 'Draft',
+      pending_review: 'In review',
+      published: 'Published',
+      archived: 'Archived',
+    },
+    lessonType: {
+      text: 'Text',
+      video: 'Video',
+      quiz: 'Quiz',
+    },
+    questionType: {
+      single: 'Single correct answer',
+      multiple: 'Multiple correct answers',
+    },
+    revealAnswers: {
+      always: 'Always after an attempt',
+      after_pass_or_exhausted: 'After passing or running out of attempts',
+    },
+    enrollmentStatus: {
+      active: 'In progress',
+      completed: 'Completed',
+    },
+    reviewStatus: {
+      visible: 'Published',
+      hidden: 'Hidden',
+    },
+    accent: {
+      yellow: 'Yellow',
+      green: 'Green',
+      cyan: 'Cyan',
+      blue: 'Blue',
+      indigo: 'Indigo',
+      red: 'Red',
+      pink: 'Pink',
+      magenta: 'Magenta',
+    },
+    locale: {
+      uk: 'Українська',
+      en: 'English',
+    },
+    theme: {
+      light: 'Light',
+      dark: 'Dark',
+      system: 'System',
+    },
+  },
+} as const satisfies Messages;

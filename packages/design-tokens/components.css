@@ -1,0 +1,210 @@
+/*
+ * Shared component classes for SSR templates and React primitives, so both render the same
+ * buttons, fields, cards and tags. Import after `tailwindcss` and `theme.css`.
+ */
+
+/* Utilities so they can be composed with @apply and used with variants. */
+@utility focus-ring {
+  @apply outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-bg;
+}
+
+@utility link {
+  @apply focus-ring rounded-sm font-medium text-link underline underline-offset-4 hover:text-link-hover;
+}
+
+@layer components {
+  .page-container {
+    @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Buttons */
+  .btn {
+    @apply focus-ring inline-flex min-h-10 items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply bg-primary text-on-primary hover:bg-primary-hover;
+  }
+  .btn-secondary {
+    @apply bg-secondary text-on-secondary hover:bg-secondary-hover;
+  }
+  .btn-outline {
+    @apply border border-border-strong bg-transparent text-text hover:border-border-hover;
+  }
+  .btn-ghost {
+    @apply bg-transparent text-text hover:bg-surface-hover;
+  }
+  .btn-danger {
+    @apply bg-danger text-text-inverse hover:opacity-90;
+  }
+  .btn-sm {
+    @apply min-h-8 px-3 py-1 text-xs;
+  }
+  .btn-icon {
+    @apply min-h-10 min-w-10 px-2;
+  }
+
+  /* Form fields */
+  .field {
+    @apply flex flex-col gap-1.5;
+  }
+  .field-label {
+    @apply text-sm font-medium text-text;
+  }
+  .field-hint {
+    @apply text-xs text-text-muted;
+  }
+  .field-error {
+    @apply text-xs font-medium text-danger;
+  }
+  .input {
+    @apply focus-ring w-full rounded-md border border-border-input bg-surface px-3 py-2 text-sm text-text placeholder:text-text-subtle hover:border-border-hover aria-[invalid=true]:border-danger disabled:opacity-60;
+  }
+  .checkbox {
+    @apply focus-ring size-4 rounded-sm border border-border-input accent-primary;
+  }
+
+  /* Surfaces */
+  .card {
+    @apply rounded-lg border border-border bg-surface;
+  }
+  .card-body {
+    @apply p-5;
+  }
+  .divider {
+    @apply border-t border-border;
+  }
+
+  /* Text */
+  .heading-display {
+    @apply font-display text-display font-bold tracking-tight;
+  }
+  .heading-xl {
+    @apply font-display text-heading-xl font-bold tracking-tight;
+  }
+  .heading-lg {
+    @apply font-display text-heading-lg font-semibold;
+  }
+  .heading-md {
+    @apply font-display text-heading-md font-semibold;
+  }
+  .text-lead {
+    @apply text-lead text-text-muted;
+  }
+
+  /* Tags and badges: accent colours, always with readable text */
+  .tag {
+    @apply inline-flex items-center gap-1 rounded-pill px-2.5 py-0.5 text-xs font-semibold;
+  }
+  .tag-neutral {
+    @apply bg-tag-neutral-bg text-tag-neutral-fg;
+  }
+  .tag-yellow {
+    @apply bg-tag-yellow-bg text-tag-yellow-fg;
+  }
+  .tag-green {
+    @apply bg-tag-green-bg text-tag-green-fg;
+  }
+  .tag-cyan {
+    @apply bg-tag-cyan-bg text-tag-cyan-fg;
+  }
+  .tag-blue {
+    @apply bg-tag-blue-bg text-tag-blue-fg;
+  }
+  .tag-indigo {
+    @apply bg-tag-indigo-bg text-tag-indigo-fg;
+  }
+  .tag-red {
+    @apply bg-tag-red-bg text-tag-red-fg;
+  }
+  .tag-pink {
+    @apply bg-tag-pink-bg text-tag-pink-fg;
+  }
+  .tag-magenta {
+    @apply bg-tag-magenta-bg text-tag-magenta-fg;
+  }
+
+  /* Alerts (paired with an icon or title, never colour alone) */
+  .alert {
+    @apply flex items-start gap-3 rounded-md border px-4 py-3 text-sm;
+  }
+  .alert-info {
+    @apply border-info/30 bg-info-soft text-text;
+  }
+  .alert-success {
+    @apply border-success/30 bg-success-soft text-text;
+  }
+  .alert-warning {
+    @apply border-warning/30 bg-warning-soft text-text;
+  }
+  .alert-error {
+    @apply border-danger/30 bg-danger-soft text-text;
+  }
+
+  /* Dropdowns built on <details>, so they work without JavaScript */
+  .dropdown {
+    @apply relative;
+  }
+  .dropdown > summary {
+    @apply cursor-pointer list-none;
+  }
+  .dropdown > summary::-webkit-details-marker {
+    display: none;
+  }
+  .dropdown-panel {
+    @apply absolute right-0 z-30 mt-2 min-w-48 rounded-md border border-border bg-surface-raised p-1 shadow-lg;
+  }
+  .dropdown-item {
+    @apply focus-ring flex w-full items-center gap-2 rounded-sm px-3 py-2 text-left text-sm text-text hover:bg-surface-hover;
+  }
+
+  .skeleton {
+    @apply animate-pulse rounded-md bg-surface-sunken;
+  }
+
+  /* Rendered Markdown (lessons, course descriptions) */
+  .prose-content {
+    @apply max-w-none leading-relaxed text-text;
+  }
+  .prose-content :where(h1, h2, h3, h4) {
+    @apply mt-8 mb-3 font-display font-semibold;
+  }
+  .prose-content :where(h1) {
+    @apply text-heading-lg;
+  }
+  .prose-content :where(h2) {
+    @apply text-heading-md;
+  }
+  .prose-content :where(p, ul, ol, pre, blockquote, table) {
+    @apply my-4;
+  }
+  .prose-content :where(ul) {
+    @apply list-disc pl-6;
+  }
+  .prose-content :where(ol) {
+    @apply list-decimal pl-6;
+  }
+  .prose-content :where(a) {
+    @apply link;
+  }
+  .prose-content :where(blockquote) {
+    @apply border-l-4 border-border-strong pl-4 text-text-muted;
+  }
+  .prose-content :where(code) {
+    @apply rounded-sm bg-surface-sunken px-1 py-0.5 font-mono text-[0.9em];
+  }
+  .prose-content :where(pre) {
+    @apply overflow-x-auto rounded-md bg-surface-sunken p-4 text-sm;
+  }
+  .prose-content :where(pre code) {
+    @apply bg-transparent p-0;
+  }
+  .prose-content :where(table) {
+    @apply w-full border-collapse text-sm;
+  }
+  .prose-content :where(th, td) {
+    @apply border border-border px-3 py-2 text-left;
+  }
+  .prose-content :where(img) {
+    @apply h-auto max-w-full rounded-md;
+  }
+}

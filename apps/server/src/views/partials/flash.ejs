@@ -1,0 +1,5 @@
+<% if (flash) { %>
+  <div class="page-container mt-6">
+    <%- include('alert', { kind: flash.kind, message: t(flash.key, flash.params) }) %>
+  </div>
+<% } %>

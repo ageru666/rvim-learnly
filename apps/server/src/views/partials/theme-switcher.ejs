@@ -1,0 +1,19 @@
+<% const themeIcons = { light: 'sun', dark: 'moon', system: 'monitor' }; %>
+<details class="dropdown" data-dropdown>
+  <summary class="btn btn-ghost btn-icon" aria-label="<%= t('site.theme.label') %>">
+    <%- include('icon', { name: themeIcons[theme] }) %>
+  </summary>
+  <div class="dropdown-panel">
+    <% for (const option of ['light', 'dark', 'system']) { %>
+      <form method="post" action="/theme" data-theme-form>
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+        <input type="hidden" name="theme" value="<%= option %>" />
+        <input type="hidden" name="returnTo" value="<%= currentPath %>" />
+        <button type="submit" class="dropdown-item" <% if (option === theme) { %>aria-current="true"<% } %>>
+          <%- include('icon', { name: themeIcons[option], size: 16 }) %>
+          <%= t(`site.theme.${option}`) %>
+        </button>
+      </form>
+    <% } %>
+  </div>
+</details>

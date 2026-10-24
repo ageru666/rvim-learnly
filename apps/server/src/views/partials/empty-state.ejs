@@ -1,0 +1,9 @@
+<%# Usage: include('../partials/empty-state', { title, text?, actionHref?, actionLabel? }) %>
+<div class="card card-body flex flex-col items-center gap-3 py-12 text-center">
+  <%- include('icon', { name: 'search', size: 32, className: 'text-text-subtle' }) %>
+  <p class="heading-md"><%= title %></p>
+  <% if (typeof text !== 'undefined' && text) { %><p class="max-w-md text-text-muted"><%= text %></p><% } %>
+  <% if (typeof actionHref !== 'undefined' && actionHref) { %>
+    <a class="btn btn-primary" href="<%= actionHref %>"><%= actionLabel %></a>
+  <% } %>
+</div>

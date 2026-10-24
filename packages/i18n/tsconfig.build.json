@@ -3,7 +3,8 @@
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "dist",
-    "customConditions": []
+    "customConditions": [],
+    "types": ["node"]
   },
   "include": ["src"],
   "exclude": ["src/**/__tests__"]

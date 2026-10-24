@@ -1,0 +1,12 @@
+<%#
+  Usage: include('../partials/alert', { kind: 'success' | 'error' | 'info' | 'warning', message, title? }).
+  The icon and the optional title carry the state, not the colour alone.
+%>
+<% const alertIcons = { success: 'check-circle', error: 'x-circle', info: 'info', warning: 'alert-triangle' }; %>
+<div class="alert alert-<%= kind %>" role="<%= kind === 'error' ? 'alert' : 'status' %>">
+  <%- include('icon', { name: alertIcons[kind], size: 18 }) %>
+  <div>
+    <% if (typeof title !== 'undefined' && title) { %><p class="font-semibold"><%= title %></p><% } %>
+    <p><%= message %></p>
+  </div>
+</div>

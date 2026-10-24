@@ -52,8 +52,22 @@ export default tseslint.config(
     languageOptions: { globals: globals.node },
   },
   {
-    files: ['scripts/**'],
+    files: ['scripts/**', 'apps/server/prisma/seed/**'],
     rules: { 'no-console': 'off' },
+  },
+  {
+    files: ['apps/server/src/public/js/**'],
+    languageOptions: { globals: globals.browser, sourceType: 'script' },
+  },
+  {
+    // Test responses (supertest, MSW) are untyped JSON; assertions check their shape.
+    files: ['**/tests/**', '**/__tests__/**'],
+    rules: {
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+    },
   },
   {
     files: [`${WEB_SRC}/**/*.{ts,tsx}`],

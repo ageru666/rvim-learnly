@@ -1,0 +1,9 @@
+<%#
+  Read-only rating. Usage: include('../partials/star-rating', { value: 4.3, label }).
+  `label` is the accessible text (e.g. "4.3 out of 5"); the stars are decorative.
+%>
+<span class="inline-flex items-center gap-0.5" role="img" aria-label="<%= label %>">
+  <% for (let index = 1; index <= 5; index += 1) { %>
+    <%- include('icon', { name: 'star', size: 16, className: index <= Math.round(value) ? 'fill-accent-yellow text-accent-yellow' : 'text-border-strong' }) %>
+  <% } %>
+</span>

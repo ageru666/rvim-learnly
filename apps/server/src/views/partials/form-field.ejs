@@ -1,0 +1,27 @@
+<%#
+  Usage: include('../partials/form-field', { id, name, label, type?, value?, error?, hint?, autocomplete?, required? }).
+  The error and hint are linked to the input with aria-describedby.
+%>
+<%
+  const fieldType = typeof type === 'undefined' ? 'text' : type;
+  const fieldValue = typeof value === 'undefined' || fieldType === 'password' ? '' : value;
+  const fieldError = typeof error === 'undefined' ? null : error;
+  const fieldHint = typeof hint === 'undefined' ? null : hint;
+  const describedBy = [fieldHint ? `${id}-hint` : null, fieldError ? `${id}-error` : null].filter(Boolean).join(' ');
+%>
+<div class="field">
+  <label class="field-label" for="<%= id %>"><%= label %></label>
+  <input
+    id="<%= id %>"
+    name="<%= name %>"
+    type="<%= fieldType %>"
+    value="<%= fieldValue %>"
+    class="input"
+    <% if (typeof autocomplete !== 'undefined') { %>autocomplete="<%= autocomplete %>"<% } %>
+    <% if (typeof required !== 'undefined' && required) { %>required<% } %>
+    <% if (fieldError) { %>aria-invalid="true"<% } %>
+    <% if (describedBy) { %>aria-describedby="<%= describedBy %>"<% } %>
+  />
+  <% if (fieldHint) { %><p id="<%= id %>-hint" class="field-hint"><%= fieldHint %></p><% } %>
+  <% if (fieldError) { %><p id="<%= id %>-error" class="field-error"><%= fieldError %></p><% } %>
+</div>

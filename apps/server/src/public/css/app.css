@@ -1,0 +1,7 @@
+@import 'tailwindcss';
+@import '@learnly/design-tokens/fonts.css';
+@import '@learnly/design-tokens/theme.css';
+@import '@learnly/design-tokens/components.css';
+
+@source '../../views';
+@source '../js';

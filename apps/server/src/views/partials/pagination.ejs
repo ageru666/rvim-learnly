@@ -1,0 +1,15 @@
+<%#
+  Usage: include('../partials/pagination', { page, totalPages, hrefFor: (page) => string }).
+  Server-side pagination for SSR lists; links keep the other query parameters.
+%>
+<% if (totalPages > 1) { %>
+  <nav class="mt-8 flex items-center justify-center gap-2" aria-label="<%= t('common.pagination.label') %>">
+    <% if (page > 1) { %>
+      <a class="btn btn-outline btn-sm" href="<%= hrefFor(page - 1) %>" rel="prev"><%= t('common.pagination.previous') %></a>
+    <% } %>
+    <span class="text-sm text-text-muted" aria-current="page"><%= t('common.pagination.page', { page, total: totalPages }) %></span>
+    <% if (page < totalPages) { %>
+      <a class="btn btn-outline btn-sm" href="<%= hrefFor(page + 1) %>" rel="next"><%= t('common.pagination.next') %></a>
+    <% } %>
+  </nav>
+<% } %>
