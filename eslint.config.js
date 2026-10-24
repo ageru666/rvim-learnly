@@ -61,12 +61,14 @@ export default tseslint.config(
   },
   {
     // Test responses (supertest, MSW) are untyped JSON; assertions check their shape.
-    files: ['**/tests/**', '**/__tests__/**'],
+    files: ['**/tests/**', '**/__tests__/**', 'apps/web/src/shared/test/**'],
     rules: {
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/no-unsafe-call': 'off',
       '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+      'no-console': 'off',
     },
   },
   {
@@ -80,6 +82,8 @@ export default tseslint.config(
     settings: {
       'import/resolver': { typescript: { project: 'apps/web/tsconfig.json' } },
       'boundaries/include': [`${WEB_SRC}/**/*`],
+      // Test infrastructure renders with the real store, so it sits outside the layer rules.
+      'boundaries/ignore': [`${WEB_SRC}/shared/test/**`],
       'boundaries/elements': [
         {
           type: 'feature',

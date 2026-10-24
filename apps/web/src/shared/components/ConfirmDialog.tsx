@@ -1,5 +1,5 @@
 import { AlertDialog as AlertDialogPrimitive } from 'radix-ui';
-import { buttonClass } from './Button';
+import { buttonClass } from './buttonClass';
 import { OVERLAY_CLASS } from './overlayClass';
 
 interface ConfirmDialogProps {

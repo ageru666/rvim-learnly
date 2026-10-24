@@ -1,6 +1,6 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 import { cx } from '../utils/cx';
-import type { ButtonVariant } from './Button';
+import type { ButtonVariant } from './buttonClass';
 
 interface IconButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'aria-label'> {
   /** Required: icon-only controls must have an accessible name (guideline §4.3). */

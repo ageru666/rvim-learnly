@@ -1,13 +1,7 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 import { cx } from '../utils/cx';
+import { buttonClass, type ButtonSize, type ButtonVariant } from './buttonClass';
 import { Spinner } from './Spinner';
-
-export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
-export type ButtonSize = 'md' | 'sm';
-
-export function buttonClass(variant: ButtonVariant = 'primary', size: ButtonSize = 'md'): string {
-  return cx('btn', `btn-${variant}`, size === 'sm' && 'btn-sm');
-}
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;

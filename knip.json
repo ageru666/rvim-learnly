@@ -1,8 +1,9 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
+  "ignoreDependencies": ["newman"],
   "workspaces": {
     ".": {
-      "entry": ["scripts/*.mjs", "eslint.config.js", "prettier.config.js"]
+      "entry": ["scripts/*.mjs"]
     },
     "packages/contracts": {
       "entry": ["src/*.ts"],
@@ -13,15 +14,30 @@
       "project": ["src/**/*.ts"]
     },
     "packages/design-tokens": {
-      "entry": []
+      "entry": [],
+      "ignoreDependencies": [
+        "@fontsource-variable/inter",
+        "@fontsource-variable/roboto-condensed",
+        "@fontsource/jetbrains-mono"
+      ]
     },
     "apps/server": {
-      "entry": ["src/main.ts", "prisma/seed/index.ts", "prisma.config.ts"],
-      "project": ["src/**/*.ts", "prisma/**/*.ts", "tests/**/*.ts"]
+      "entry": ["prisma.config.ts"],
+      "project": ["src/**/*.ts", "prisma/**/*.ts", "tests/**/*.ts"],
+      "ignore": ["src/generated/**"],
+      "ignoreDependencies": [
+        "@prisma/client",
+        "ejs",
+        "@types/ejs",
+        "pino-pretty",
+        "@learnly/design-tokens",
+        "tailwindcss"
+      ]
     },
     "apps/web": {
       "entry": ["src/index.tsx"],
-      "project": ["src/**/*.{ts,tsx}", "e2e/**/*.ts"]
+      "project": ["src/**/*.{ts,tsx}"],
+      "ignoreDependencies": ["@learnly/design-tokens", "tailwindcss"]
     }
   }
 }

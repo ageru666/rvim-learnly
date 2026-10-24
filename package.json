@@ -25,8 +25,8 @@
     "check:strings": "node scripts/check-ejs-strings.mjs",
     "check:deps": "license-checker-rseidelsohn --production --excludePrivatePackages --onlyAllow \"MIT;ISC;Apache-2.0;BSD-2-Clause;BSD-3-Clause;0BSD;BlueOak-1.0.0;CC0-1.0;CC-BY-4.0;Unlicense;Python-2.0;OFL-1.1\" --summary && npm audit --omit=dev --audit-level=high",
     "knip": "knip",
-    "check": "npm run lint && npm run typecheck && npm run test && npm run check:strings && npm run knip && npm run check:deps",
-    "check:full": "npm run check && npm run e2e && npm run test:postman",
+    "check": "npm run lint && npm run typecheck && npm run test && npm run check:strings && npm run check:deps",
+    "check:full": "npm run check && npm run knip && npm run e2e && npm run test:postman",
     "db:migrate": "npm run db:migrate -w @learnly/server",
     "db:seed": "npm run db:seed -w @learnly/server",
     "db:reset": "npm run db:reset -w @learnly/server"

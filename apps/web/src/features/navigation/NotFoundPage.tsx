@@ -1,5 +1,5 @@
 import { Link } from 'react-router';
-import { buttonClass } from '../../shared/components/Button';
+import { buttonClass } from '../../shared/components/buttonClass';
 import { useT } from '../locale/useT';
 
 export function NotFoundPage() {
