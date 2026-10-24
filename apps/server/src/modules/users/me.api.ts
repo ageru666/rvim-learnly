@@ -1,15 +1,15 @@
 import { changeEmailSchema, changePasswordSchema } from '@learnly/contracts/auth';
 import { pageSchema } from '@learnly/contracts/common';
 import { dashboardSchema, myCourseSchema, myCoursesQuerySchema } from '@learnly/contracts/learning';
-import { meSchema } from '@learnly/contracts/me';
+import { meSchema, updateMeSchema } from '@learnly/contracts/me';
 import { Router } from 'express';
-import { COOKIES, readCookie } from '../../lib/cookies.js';
+import { COOKIES, readCookie, setPreferenceCookie } from '../../lib/cookies.js';
 import { API_PREFIX } from '../../lib/http.js';
 import { parseInput } from '../../lib/validation.js';
 import { currentUser, requireAuth } from '../../middlewares/requireRole.js';
 import { registerRoute } from '../../openapi/registry.js';
 import { getDashboard, listMyCourses } from '../learning/enrollment.service.js';
-import { changePassword, getMe, requestEmailChange } from './users.service.js';
+import { changePassword, getMe, requestEmailChange, updateLocale } from './users.service.js';
 
 const TAG = 'Me';
 const ME = `${API_PREFIX}/me`;
@@ -27,6 +27,25 @@ registerRoute({
 });
 meApiRouter.get(ME, async (req, res) => {
   res.json(await getMe(currentUser(req).id));
+});
+
+registerRoute({
+  method: 'patch',
+  path: ME,
+  tag: TAG,
+  summary: 'Update the account; `locale` also becomes the language of this device',
+  access: 'user',
+  body: updateMeSchema,
+  responses: { 200: { description: 'Me', schema: meSchema } },
+});
+meApiRouter.patch(ME, async (req, res) => {
+  const input = parseInput(updateMeSchema, req.body, req.i18n);
+  const userId = currentUser(req).id;
+  if (input.locale) {
+    await updateLocale(userId, input.locale);
+    setPreferenceCookie(res, COOKIES.locale, input.locale);
+  }
+  res.json(await getMe(userId));
 });
 
 registerRoute({

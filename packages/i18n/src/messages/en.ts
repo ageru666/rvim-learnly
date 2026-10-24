@@ -83,6 +83,11 @@ export const en = {
         uk: 'UA',
         en: 'EN',
       },
+      /** Each language in its own language: the switcher buttons carry a matching `lang`. */
+      native: {
+        uk: 'Українська',
+        en: 'English',
+      },
     },
     theme: {
       label: 'Theme',
@@ -338,6 +343,10 @@ export const en = {
     settings: {
       title: 'Settings',
       securityTab: 'Security',
+      language: {
+        heading: 'Interface language',
+        text: 'Emails come in this language, and other devices open in it after you log in.',
+      },
       password: {
         heading: 'Change password',
         current: 'Current password',
@@ -568,7 +577,7 @@ export const en = {
       magenta: 'Magenta',
     },
     locale: {
-      uk: 'Українська',
+      uk: 'Ukrainian',
       en: 'English',
     },
     theme: {

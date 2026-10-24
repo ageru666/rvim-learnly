@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 import { describe, expect, it } from 'vitest';
@@ -142,5 +142,24 @@ describe('log out everywhere', () => {
     expect(screen.getByRole('alertdialog')).toHaveTextContent('Доведеться знову увійти на кожному пристрої.');
     await userEvent.click(screen.getByRole('button', { name: 'Скасувати' }));
     expect(calls).toBe(0);
+  });
+});
+
+describe('interface language', () => {
+  it('switches the whole page and saves the account language', async () => {
+    let saved: unknown = null;
+    server.use(
+      http.patch(`${config.apiBaseUrl}/me`, async ({ request }) => {
+        saved = await request.json();
+        return HttpResponse.json({ ...ME, locale: 'en' });
+      }),
+    );
+    renderSettings();
+
+    await userEvent.click(await screen.findByRole('radio', { name: 'English' }));
+
+    expect(await screen.findByRole('heading', { level: 1, name: 'Settings' })).toBeInTheDocument();
+    expect(screen.getByRole('radio', { name: 'English' })).toBeChecked();
+    await waitFor(() => expect(saved).toEqual({ locale: 'en' }));
   });
 });

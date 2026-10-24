@@ -11,7 +11,7 @@
       <div class="flex flex-wrap items-center gap-2">
         <%- include('../partials/tag', { label: course.category.name, accent: course.category.accent, href: `/courses?category=${course.category.slug}` }) %>
         <span class="tag tag-neutral"><%= t(`enums.courseLevel.${course.level}`) %></span>
-        <span class="tag tag-neutral" lang="<%= course.language %>"><%= t(`enums.locale.${course.language}`) %></span>
+        <span class="tag tag-neutral"><%= t(`enums.locale.${course.language}`) %></span>
       </div>
       <h1 class="heading-xl" lang="<%= course.language %>"><%= course.title %></h1>
       <p class="text-lead" lang="<%= course.language %>"><%= course.shortDescription %></p>

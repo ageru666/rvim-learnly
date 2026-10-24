@@ -268,15 +268,23 @@ to Ukrainian in the dashboard and everything changes without a reload
 
 ### Tests for User Story 4
 
-- [ ] T106 [P] [US4] Integration tests in `apps/server/tests/integration/i18n.test.ts`: first visit with `Accept-Language: en` renders English, `de` renders Ukrainian; `?lang=en` sets the cookie and wins over the user locale; `POST /locale` updates the cookie and `users.locale` for a signed-in user and requires CSRF; a user with `locale = en` gets English emails even when the action is triggered by a Ukrainian-speaking admin; API `message` follows `Accept-Language` while `code` is unchanged; `<html lang>` and `Content-Language` match
-- [ ] T107 [P] [US4] SPA tests in `apps/web/src/features/locale/__tests__/LocaleSwitcher.test.tsx`: switching re-renders texts, dates and plurals without remounting the route, keeps unsaved form input, calls `PATCH /me { locale }` when signed in, refetches `Locale`-tagged queries, and the inactive dictionary is loaded lazily
+- [X] T106 [P] [US4] Integration tests in `apps/server/tests/integration/i18n.test.ts`: first visit with `Accept-Language: en` renders English, `de` renders Ukrainian; `?lang=en` sets the cookie and wins over the user locale; `POST /locale` updates the cookie and `users.locale` for a signed-in user and requires CSRF; a user with `locale = en` gets English emails even when the action is triggered by a Ukrainian-speaking admin; API `message` follows `Accept-Language` while `code` is unchanged; `<html lang>` and `Content-Language` match
+- [X] T107 [P] [US4] SPA tests in `apps/web/src/features/locale/__tests__/LocaleSwitcher.test.tsx`: switching re-renders texts, dates and plurals without remounting the route, keeps unsaved form input, calls `PATCH /me { locale }` when signed in, refetches `Locale`-tagged queries, and the inactive dictionary is loaded lazily
 
 ### Implementation for User Story 4
 
-- [ ] T108 [US4] Add `locale` to `PATCH /me` in `apps/server/src/modules/users/me.api.ts` and `users.service.updateLocale`; on every successful login (API and SSR, `apps/server/src/modules/auth/auth.web.ts`, `auth.api.ts`) set the `locale` cookie to `users.locale`, so any device opens in the account language after login (US4 AS3); otherwise the cookie is written only on an explicit choice (`?lang`, `POST /locale`, the SPA switcher)
-- [ ] T109 [US4] Add `LanguageSettings.tsx` (radio group UA / EN, uses `setLocale`) to `apps/web/src/features/settings/SettingsPage.tsx`, and re-run `resolveLocale` in `apps/web/src/features/locale/localeSlice.ts` once `Me` is loaded
-- [ ] T110 [US4] Verify the content-language path end to end and close gaps: catalog filter and badge (API, SSR catalog, course page from T074, T077, T078), `language` in course creation and editing (T136, T143, T144), the `lang` attribute on lesson content (T104); add the missing assertions to `apps/server/tests/integration/i18n.test.ts`
-- [ ] T111 [US4] Review every SSR template, email and SPA screen created so far for completeness in English (the T055/T066 setups already fail any test that hits a missing key; here run the whole server and SPA suites once with `en` as the default request locale) and fix gaps in the dictionaries
+- [X] T108 [US4] Add `locale` to `PATCH /me` in `apps/server/src/modules/users/me.api.ts` and `users.service.updateLocale`; on every successful login (API and SSR, `apps/server/src/modules/auth/auth.web.ts`, `auth.api.ts`) set the `locale` cookie to `users.locale`, so any device opens in the account language after login (US4 AS3); otherwise the cookie is written only on an explicit choice (`?lang`, `POST /locale`, the SPA switcher)
+- [X] T109 [US4] Add `LanguageSettings.tsx` (radio group UA / EN, uses `setLocale`) to `apps/web/src/features/settings/SettingsPage.tsx`, and re-run `resolveLocale` in `apps/web/src/features/locale/localeSlice.ts` once `Me` is loaded
+- [X] T110 [US4] Verify the content-language path end to end and close gaps: catalog filter and badge (API, SSR catalog, course page from T074, T077, T078), `language` in course creation and editing (T136, T143, T144), the `lang` attribute on lesson content (T104); add the missing assertions to `apps/server/tests/integration/i18n.test.ts`
+- [X] T111 [US4] Review every SSR template, email and SPA screen created so far for completeness in English (the T055/T066 setups already fail any test that hits a missing key; here run the whole server and SPA suites once with `en` as the default request locale) and fix gaps in the dictionaries
+
+**Implementation notes (US4)**: both dictionaries stay bundled eagerly (Phase 2 decision; they are small), so the
+"lazy inactive dictionary" part of T107 is intentionally not implemented; `setLocale` is an explicit choice (cookie,
+storage, `PATCH /me`), `localeResolved` applies the account locale after `Me` loads without writing the cookie;
+`site.locale.native` names each language in itself for the switchers, `enums.locale` is the translated course
+language; the English completeness check (T111) is automated in `i18n.test.ts`: every public SSR page rendered with
+`?lang=en` must contain no Cyrillic outside elements marked `lang="uk"`; course creation and editing (T136, T143,
+T144) do not exist yet, so their content-language checks move to those tasks.
 
 **Checkpoint**: the whole product so far works in both languages; later stories keep adding keys to
 both dictionaries per the definition of done

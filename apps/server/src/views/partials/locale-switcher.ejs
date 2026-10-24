@@ -6,7 +6,7 @@
       <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
       <input type="hidden" name="locale" value="<%= option %>" />
       <input type="hidden" name="returnTo" value="<%= currentPath %>" />
-      <button type="submit" lang="<%= option %>" class="btn btn-ghost btn-sm <%= option === locale ? 'font-bold underline underline-offset-4' : 'text-text-muted' %>" <% if (option === locale) { %>aria-current="true"<% } %> aria-label="<%= t(`enums.locale.${option}`) %>">
+      <button type="submit" lang="<%= option %>" class="btn btn-ghost btn-sm <%= option === locale ? 'font-bold underline underline-offset-4' : 'text-text-muted' %>" <% if (option === locale) { %>aria-current="true"<% } %> aria-label="<%= t(`site.locale.native.${option}`) %>">
         <%= t(`site.locale.short.${option}`) %>
       </button>
     </form>

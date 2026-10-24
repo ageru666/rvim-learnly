@@ -20,7 +20,7 @@ export function LocaleSwitcher() {
           type="button"
           lang={locale}
           aria-pressed={locale === active}
-          aria-label={t(`enums.locale.${locale}`)}
+          aria-label={t(`site.locale.native.${locale}`)}
           className={cx(
             'btn btn-ghost btn-sm',
             locale === active ? 'font-bold underline underline-offset-4' : 'text-text-muted',

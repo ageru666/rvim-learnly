@@ -13,9 +13,9 @@
       <span class="tag tag-neutral" lang="<%= card.language %>"><%= t(`site.locale.short.${card.language}`) %></span>
     </div>
     <h3 class="heading-md">
-      <a class="focus-ring rounded-sm hover:underline" href="/courses/<%= card.slug %>"><%= card.title %></a>
+      <a class="focus-ring rounded-sm hover:underline" href="/courses/<%= card.slug %>" lang="<%= card.language %>"><%= card.title %></a>
     </h3>
-    <p class="line-clamp-2 text-sm text-text-muted"><%= card.shortDescription %></p>
+    <p class="line-clamp-2 text-sm text-text-muted" lang="<%= card.language %>"><%= card.shortDescription %></p>
     <p class="text-sm"><%= t('site.course.by', { name: card.author.name }) %></p>
     <% if (card.tags.length > 0) { %>
       <ul class="flex flex-wrap gap-1.5">

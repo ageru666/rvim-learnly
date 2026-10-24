@@ -80,6 +80,11 @@ export const uk = {
         uk: 'UA',
         en: 'EN',
       },
+      /** Each language in its own language: the switcher buttons carry a matching `lang`. */
+      native: {
+        uk: 'Українська',
+        en: 'English',
+      },
     },
     theme: {
       label: 'Тема оформлення',
@@ -335,6 +340,10 @@ export const uk = {
     settings: {
       title: 'Налаштування',
       securityTab: 'Безпека',
+      language: {
+        heading: 'Мова інтерфейсу',
+        text: 'Цією мовою вам надходитимуть листи, і вона відкриється на інших пристроях після входу.',
+      },
       password: {
         heading: 'Зміна пароля',
         current: 'Поточний пароль',
@@ -566,7 +575,7 @@ export const uk = {
     },
     locale: {
       uk: 'Українська',
-      en: 'English',
+      en: 'Англійська',
     },
     theme: {
       light: 'Світла',

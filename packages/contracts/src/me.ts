@@ -26,3 +26,7 @@ export const meSchema = userSummarySchema.extend({
   links: userLinksSchema,
 });
 export type Me = z.infer<typeof meSchema>;
+
+/** `PATCH /me`. The profile fields (name, bio, links) join with the profile story. */
+export const updateMeSchema = z.object({ locale: localeSchema.optional() });
+export type UpdateMeInput = z.infer<typeof updateMeSchema>;
