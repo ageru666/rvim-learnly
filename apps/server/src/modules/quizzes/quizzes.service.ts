@@ -1,10 +1,12 @@
 import { randomInt } from 'node:crypto';
-import type { AttemptResult, AttemptSummary, Answers, QuizForStudent } from '@learnly/contracts/quizzes';
+import type { AttemptResult, AttemptSummary, Answers, QuizEditor, QuizForStudent } from '@learnly/contracts/quizzes';
 import { db } from '../../lib/db.js';
 import { AppError, notFound, ruleViolation } from '../../lib/errors.js';
 import type { AuthUser } from '../auth/auth.types.js';
 import { checkCompletion, learnerContext, lockEnrollment, progressOf } from '../learning/progress.service.js';
+import { editableQuizLesson } from '../curriculum/curriculum.service.js';
 import { gradeAttempt, shouldRevealAnswers } from './grading.js';
+import { quizEditorInclude, toQuizEditor } from './quiz-editor.js';
 
 /** Fisher–Yates with a cryptographic generator, so the order cannot be predicted. */
 function shuffled<T>(items: readonly T[]): T[] {
@@ -141,4 +143,36 @@ export async function listAttempts(user: AuthUser, quizId: string): Promise<Atte
     select: { id: true, scorePercent: true, passed: true, submittedAt: true },
   });
   return attempts.map((attempt) => ({ ...attempt, submittedAt: attempt.submittedAt.toISOString() }));
+}
+
+/**
+ * Saves the whole quiz from the editor: questions and options with an id are updated, new ones are
+ * created, missing ones are deleted. Stored attempts keep their own snapshot (BR-Q5).
+ */
+export async function saveQuiz(user: AuthUser, lessonId: string, input: QuizEditor): Promise<QuizEditor> {
+  const { quizId } = await editableQuizLesson(user, lessonId);
+  await db.$transaction(async (tx) => {
+    const { questions, ...settings } = input;
+    await tx.quiz.update({ where: { id: quizId }, data: settings });
+    const keptQuestions = questions.flatMap((question) => (question.id ? [question.id] : []));
+    await tx.question.deleteMany({ where: { quizId, id: { notIn: keptQuestions } } });
+
+    for (const [position, { id, options, ...fields }] of questions.entries()) {
+      const owned = id ? await tx.question.count({ where: { id, quizId } }) : 0;
+      const question = owned
+        ? await tx.question.update({ where: { id }, data: { ...fields, position }, select: { id: true } })
+        : await tx.question.create({ data: { ...fields, position, quizId }, select: { id: true } });
+      const keptOptions = options.flatMap((option) => (option.id ? [option.id] : []));
+      await tx.answerOption.deleteMany({ where: { questionId: question.id, id: { notIn: keptOptions } } });
+      for (const [optionPosition, { id: optionId, ...option }] of options.entries()) {
+        const ownedOption = optionId ? await tx.answerOption.count({ where: { id: optionId, questionId: question.id } }) : 0;
+        if (ownedOption) {
+          await tx.answerOption.update({ where: { id: optionId }, data: { ...option, position: optionPosition } });
+        } else {
+          await tx.answerOption.create({ data: { ...option, position: optionPosition, questionId: question.id } });
+        }
+      }
+    }
+  });
+  return toQuizEditor(await db.quiz.findUniqueOrThrow({ where: { id: quizId }, include: quizEditorInclude }));
 }

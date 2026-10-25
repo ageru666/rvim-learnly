@@ -1,0 +1,54 @@
+<section class="page-container grid gap-10 py-12 lg:grid-cols-[3fr_2fr]">
+  <div class="flex flex-col gap-6">
+    <h1 class="heading-xl"><%= t('site.teach.heading') %></h1>
+    <p class="text-lead"><%= t('site.teach.lead') %></p>
+    <ul class="grid gap-4 sm:grid-cols-2">
+      <% for (const benefit of ['audience', 'tools', 'analytics', 'free']) { %>
+        <li class="card card-body flex flex-col gap-1">
+          <p class="font-semibold"><%= t(`site.teach.benefits.${benefit}.title`) %></p>
+          <p class="text-sm text-text-muted"><%= t(`site.teach.benefits.${benefit}.text`) %></p>
+        </li>
+      <% } %>
+    </ul>
+  </div>
+
+  <aside class="card card-body flex flex-col gap-4 self-start">
+    <% if (!user) { %>
+      <p><%= t('site.teach.loginFirst') %></p>
+      <a class="btn btn-primary" href="/login?returnTo=%2Fteach"><%= t('site.header.login') %></a>
+    <% } else if (user.role !== 'student') { %>
+      <p><%= t('site.teach.alreadyInstructor') %></p>
+      <a class="btn btn-primary" href="/app/teach"><%= t('site.teach.toDashboard') %></a>
+    <% } else { %>
+      <% const application = mine && mine.application; %>
+      <% if (application) { %>
+        <div class="flex flex-col gap-1">
+          <p class="text-sm text-text-muted"><%= t('site.teach.statusLabel') %></p>
+          <p class="font-semibold"><%= t(`enums.applicationStatus.${application.status}`) %></p>
+          <% if (application.reviewComment) { %><p class="text-sm"><%= application.reviewComment %></p><% } %>
+          <% if (mine.canApplyAt) { %><p class="text-sm text-text-muted"><%= t('site.teach.retryAt', { date: format.date(mine.canApplyAt, 'long') }) %></p><% } %>
+        </div>
+      <% } %>
+      <% if (!user.emailVerified) { %>
+        <%- include('../partials/alert', { kind: 'warning', message: t('errors.auth.emailNotVerified') }) %>
+      <% } else if (mine && mine.canApply) { %>
+        <h2 class="heading-md"><%= t('site.teach.formHeading') %></h2>
+        <form method="post" action="/teach/apply" class="flex flex-col gap-4" novalidate>
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+          <div class="field">
+            <label class="field-label" for="teach-motivation"><%= t('site.teach.motivation') %></label>
+            <textarea id="teach-motivation" name="motivation" rows="6" class="input" aria-describedby="teach-motivation-hint<%= form.errors.motivation ? ' teach-motivation-error' : '' %>" <% if (form.errors.motivation) { %>aria-invalid="true"<% } %> required><%= form.values.motivation || '' %></textarea>
+            <p id="teach-motivation-hint" class="field-hint"><%= t('site.teach.motivationHint') %></p>
+            <% if (form.errors.motivation) { %><p id="teach-motivation-error" class="field-error"><%= form.errors.motivation %></p><% } %>
+          </div>
+          <div class="field">
+            <label class="field-label" for="teach-experience"><%= t('site.teach.experience') %></label>
+            <textarea id="teach-experience" name="experience" rows="3" class="input" <% if (form.errors.experience) { %>aria-invalid="true" aria-describedby="teach-experience-error"<% } %>><%= form.values.experience || '' %></textarea>
+            <% if (form.errors.experience) { %><p id="teach-experience-error" class="field-error"><%= form.errors.experience %></p><% } %>
+          </div>
+          <button type="submit" class="btn btn-primary self-start"><%= t('site.teach.submit') %></button>
+        </form>
+      <% } %>
+    <% } %>
+  </aside>
+</section>

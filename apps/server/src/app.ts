@@ -16,6 +16,7 @@ import { resolveRequestLocale } from './middlewares/locale.js';
 import { templateLocals } from './middlewares/locals.js';
 import { createRateLimiters, type RateLimits } from './middlewares/rateLimit.js';
 import { authApiRouter } from './modules/auth/auth.api.js';
+import { applicationsWebRouter } from './modules/applications/applications.web.js';
 import { authWebRouter } from './modules/auth/auth.web.js';
 import { certificatesApiRouter } from './modules/certificates/certificates.api.js';
 import { certificatesWebRouter } from './modules/certificates/certificates.web.js';
@@ -23,6 +24,8 @@ import { catalogApiRouter } from './modules/catalog/catalog.api.js';
 import { catalogWebRouter } from './modules/catalog/catalog.web.js';
 import { learningApiRouter } from './modules/learning/learning.api.js';
 import { quizzesApiRouter } from './modules/quizzes/quizzes.api.js';
+import { instructorCoursesApiRouter } from './modules/courses/instructor-courses.api.js';
+import { curriculumApiRouter } from './modules/curriculum/curriculum.api.js';
 import { reviewsApiRouter } from './modules/reviews/reviews.api.js';
 import { healthRouter } from './modules/pages/health.api.js';
 import { preferencesRouter } from './modules/pages/preferences.web.js';
@@ -83,9 +86,12 @@ function routers(): Router[] {
     learningApiRouter,
     quizzesApiRouter,
     reviewsApiRouter,
+    instructorCoursesApiRouter,
+    curriculumApiRouter,
     certificatesApiRouter,
     authWebRouter,
     certificatesWebRouter,
+    applicationsWebRouter,
     catalogWebRouter,
     staticPagesRouter,
     seoRouter,

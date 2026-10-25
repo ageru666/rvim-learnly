@@ -1,4 +1,5 @@
 import { changeEmailSchema, changePasswordSchema } from '@learnly/contracts/auth';
+import { applicationSchema, applySchema, myApplicationSchema } from '@learnly/contracts/applications';
 import { certificateSchema } from '@learnly/contracts/certificates';
 import { pageSchema } from '@learnly/contracts/common';
 import { dashboardSchema, myCourseSchema, myCoursesQuerySchema } from '@learnly/contracts/learning';
@@ -10,6 +11,7 @@ import { API_PREFIX } from '../../lib/http.js';
 import { parseInput } from '../../lib/validation.js';
 import { currentUser, requireAuth } from '../../middlewares/requireRole.js';
 import { registerRoute } from '../../openapi/registry.js';
+import { applyForInstructor, getMyApplication } from '../applications/applications.service.js';
 import { listMine } from '../certificates/certificates.service.js';
 import { getDashboard, listMyCourses } from '../learning/enrollment.service.js';
 import { changePassword, getMe, requestEmailChange, updateLocale } from './users.service.js';
@@ -117,4 +119,29 @@ registerRoute({
 });
 meApiRouter.get(`${ME}/certificates`, async (req, res) => {
   res.json(await listMine(currentUser(req).id));
+});
+
+registerRoute({
+  method: 'get',
+  path: `${ME}/instructor-application`,
+  tag: TAG,
+  summary: 'My latest instructor application and whether a new one may be sent (BR-U1)',
+  access: 'user',
+  responses: { 200: { description: 'Application state', schema: myApplicationSchema } },
+});
+meApiRouter.get(`${ME}/instructor-application`, async (req, res) => {
+  res.json(await getMyApplication(currentUser(req)));
+});
+
+registerRoute({
+  method: 'post',
+  path: `${ME}/instructor-application`,
+  tag: TAG,
+  summary: 'Apply for the instructor role (BR-U1, BR-U4)',
+  access: 'user',
+  body: applySchema,
+  responses: { 201: { description: 'Application', schema: applicationSchema } },
+});
+meApiRouter.post(`${ME}/instructor-application`, async (req, res) => {
+  res.status(201).json(await applyForInstructor(currentUser(req), parseInput(applySchema, req.body, req.i18n)));
 });
