@@ -1,10 +1,13 @@
-import { idSchema } from '@learnly/contracts/common';
+import { idSchema, pageSchema } from '@learnly/contracts/common';
 import {
   courseEditorSchema,
   createCourseSchema,
   instructorCourseRowSchema,
   instructorCoursesQuerySchema,
+  courseStatsSchema,
   instructorOverviewSchema,
+  studentRowSchema,
+  studentsQuerySchema,
   readinessSchema,
   updateCourseSchema,
 } from '@learnly/contracts/instructor';
@@ -17,6 +20,8 @@ import { currentUser, requireRole } from '../../middlewares/requireRole.js';
 import { coverUpload } from '../../middlewares/upload.js';
 import { registerRoute } from '../../openapi/registry.js';
 import type { AuthUser } from '../auth/auth.types.js';
+import { resetAttempts } from '../quizzes/quizzes.service.js';
+import { exportStudentsCsv, getCourseStats, listStudents } from '../stats/instructor-stats.service.js';
 import {
   archiveCourse,
   createCourse,
@@ -173,3 +178,65 @@ for (const [action, { summary, run }] of Object.entries(LIFECYCLE)) {
     res.json(await run(currentUser(req), courseId(req)));
   });
 }
+
+registerRoute({
+  method: 'get',
+  path: `${COURSES}/:id/students`,
+  tag: TAG,
+  summary: 'Students of my course with progress and quiz results (FR-TEACH-5)',
+  access: 'user',
+  params: idParams,
+  query: studentsQuerySchema,
+  responses: { 200: { description: 'Students', schema: pageSchema(studentRowSchema) } },
+});
+instructorCoursesApiRouter.get(`${COURSES}/:id/students`, async (req, res) => {
+  res.json(await listStudents(currentUser(req), courseId(req), parseInput(studentsQuerySchema, req.query, req.i18n)));
+});
+
+registerRoute({
+  method: 'get',
+  path: `${COURSES}/:id/students.csv`,
+  tag: TAG,
+  summary: 'Students as CSV (UTF-8 with BOM, headers in the request locale)',
+  access: 'user',
+  params: idParams,
+  query: studentsQuerySchema,
+  responses: { 200: { description: 'CSV file', contentType: 'text/csv' } },
+});
+instructorCoursesApiRouter.get(`${COURSES}/:id/students.csv`, async (req, res) => {
+  const query = parseInput(studentsQuerySchema, req.query, req.i18n);
+  const csv = await exportStudentsCsv(currentUser(req), courseId(req), query, req.i18n);
+  res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+  res.setHeader('Content-Disposition', `attachment; filename="students-${courseId(req)}.csv"`);
+  res.send(csv);
+});
+
+const attemptParams = z.object({ id: idSchema, userId: idSchema, quizId: idSchema });
+
+registerRoute({
+  method: 'delete',
+  path: `${COURSES}/:id/students/:userId/attempts/:quizId`,
+  tag: TAG,
+  summary: 'Reset a student’s quiz attempts (BR-Q3)',
+  access: 'user',
+  params: attemptParams,
+  responses: { 204: { description: 'Reset' } },
+});
+instructorCoursesApiRouter.delete(`${COURSES}/:id/students/:userId/attempts/:quizId`, async (req, res) => {
+  const { id, userId, quizId } = parseInput(attemptParams, req.params, req.i18n);
+  await resetAttempts(currentUser(req), id, userId, quizId);
+  res.status(204).end();
+});
+
+registerRoute({
+  method: 'get',
+  path: `${COURSES}/:id/stats`,
+  tag: TAG,
+  summary: 'Course statistics for the charts (FR-TEACH-6)',
+  access: 'user',
+  params: idParams,
+  responses: { 200: { description: 'Statistics', schema: courseStatsSchema } },
+});
+instructorCoursesApiRouter.get(`${COURSES}/:id/stats`, async (req, res) => {
+  res.json(await getCourseStats(currentUser(req), courseId(req)));
+});

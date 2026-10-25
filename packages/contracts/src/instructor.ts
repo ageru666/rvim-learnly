@@ -1,6 +1,13 @@
 import { z } from 'zod';
-import { dateTimeSchema, idSchema } from './common.js';
-import { courseLevelSchema, courseStatusSchema, lessonTypeSchema, localeSchema, readinessItemSchema } from './enums.js';
+import { dateTimeSchema, idSchema, pageQuerySchema } from './common.js';
+import {
+  courseLevelSchema,
+  courseStatusSchema,
+  enrollmentStatusSchema,
+  lessonTypeSchema,
+  localeSchema,
+  readinessItemSchema,
+} from './enums.js';
 import { LIMITS } from './limits.js';
 import { quizEditorSchema } from './quizzes.js';
 import { VALIDATION_MESSAGES } from './validation.js';
@@ -157,3 +164,45 @@ export const lessonEditorSchema = z.object({
   editable: z.boolean(),
 });
 export type LessonEditor = z.infer<typeof lessonEditorSchema>;
+
+export const STUDENT_SORTS = ['name', 'enrolledAt', 'progress', 'lastActivity'] as const;
+export const studentSortSchema = z.enum(STUDENT_SORTS);
+export type StudentSort = z.infer<typeof studentSortSchema>;
+
+export const studentsQuerySchema = pageQuerySchema.extend({
+  search: z.preprocess((value) => (value === '' ? undefined : value), z.string().trim().max(100).optional()),
+  sort: studentSortSchema.default('lastActivity'),
+});
+export type StudentsQuery = z.infer<typeof studentsQuerySchema>;
+
+export const studentRowSchema = z.object({
+  userId: idSchema,
+  name: z.string(),
+  avatarUrl: z.string().nullable(),
+  enrolledAt: dateTimeSchema,
+  progress: z.number().int(),
+  lastActivityAt: dateTimeSchema,
+  status: enrollmentStatusSchema,
+  quizzes: z.array(
+    z.object({ quizId: idSchema, title: z.string(), bestScore: z.number().int().nullable(), attempts: z.number().int(), passed: z.boolean() }),
+  ),
+});
+export type StudentRow = z.infer<typeof studentRowSchema>;
+
+export const courseStatsSchema = z.object({
+  totals: z.object({
+    students: z.number().int(),
+    completed: z.number().int(),
+    avgProgress: z.number().int(),
+    ratingAvg: z.number().nullable(),
+  }),
+  /** 12 weeks, oldest first; `weekStart` is the Monday (UTC) of the week. */
+  enrollmentsByWeek: z.array(z.object({ weekStart: z.iso.date(), count: z.number().int() })),
+  /** Share (0..1) of students who completed each lesson, in curriculum order. */
+  funnel: z.array(z.object({ lessonId: idSchema, title: z.string(), completedShare: z.number() })),
+  quizzes: z.array(
+    z.object({ quizId: idSchema, title: z.string(), avgScore: z.number().nullable(), firstTryPassShare: z.number().nullable() }),
+  ),
+  ratingDistribution: z.record(z.enum(['1', '2', '3', '4', '5']), z.number().int()),
+});
+export type CourseStats = z.infer<typeof courseStatsSchema>;

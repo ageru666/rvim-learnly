@@ -1,4 +1,4 @@
-import { ArrowLeft, ExternalLink } from 'lucide-react';
+import { ArrowLeft, BarChart3, ExternalLink, Users } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useParams } from 'react-router';
 import { isApiError } from '../../shared/api/apiError';
@@ -58,12 +58,22 @@ export function CourseEditorPage() {
           <ArrowLeft aria-hidden size={16} />
           {t('app.teach.editor.backToCourses')}
         </Link>
-        {course.status === 'published' && (
-          <a href={`${config.siteUrl}courses/${course.slug}`} className={buttonClass('outline', 'sm')}>
-            <ExternalLink aria-hidden size={14} />
-            {t('app.teach.editor.viewOnSite')}
-          </a>
-        )}
+        <div className="flex flex-wrap gap-2">
+          <Link to={`/teach/courses/${course.id}/students`} className={buttonClass('outline', 'sm')}>
+            <Users aria-hidden size={14} />
+            {t('app.teach.editor.students')}
+          </Link>
+          <Link to={`/teach/courses/${course.id}/stats`} className={buttonClass('outline', 'sm')}>
+            <BarChart3 aria-hidden size={14} />
+            {t('app.teach.editor.stats')}
+          </Link>
+          {course.status === 'published' && (
+            <a href={`${config.siteUrl}courses/${course.slug}`} className={buttonClass('outline', 'sm')}>
+              <ExternalLink aria-hidden size={14} />
+              {t('app.teach.editor.viewOnSite')}
+            </a>
+          )}
+        </div>
       </div>
       <h1 className="heading-xl" lang={course.language}>
         {course.title}

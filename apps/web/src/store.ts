@@ -19,6 +19,7 @@ import { settingsReducer } from './features/settings/settingsSlice';
 import { teachCoursesReducer } from './features/teachCourses/teachCoursesSlice';
 import { curriculumReducer } from './features/teachCurriculum/curriculumSlice';
 import { teachLessonsReducer } from './features/teachLessons/teachLessonsSlice';
+import { teachStudentsReducer } from './features/teachStudents/teachStudentsSlice';
 import { startThemeListeners } from './features/theme/themeListeners';
 import { initialThemeState, themeReducer } from './features/theme/themeSlice';
 import { baseApi } from './shared/api/baseApi';
@@ -40,6 +41,7 @@ const rootReducer = combineReducers({
   settings: settingsReducer,
   teachCourses: teachCoursesReducer,
   teachLessons: teachLessonsReducer,
+  teachStudents: teachStudentsReducer,
   theme: themeReducer,
 });
 

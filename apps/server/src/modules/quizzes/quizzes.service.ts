@@ -4,6 +4,7 @@ import { db } from '../../lib/db.js';
 import { AppError, notFound, ruleViolation } from '../../lib/errors.js';
 import type { AuthUser } from '../auth/auth.types.js';
 import { checkCompletion, learnerContext, lockEnrollment, progressOf } from '../learning/progress.service.js';
+import { ownCourse } from '../courses/courses.service.js';
 import { editableQuizLesson } from '../curriculum/curriculum.service.js';
 import { gradeAttempt, shouldRevealAnswers } from './grading.js';
 import { quizEditorInclude, toQuizEditor } from './quiz-editor.js';
@@ -175,4 +176,21 @@ export async function saveQuiz(user: AuthUser, lessonId: string, input: QuizEdit
     }
   });
   return toQuizEditor(await db.quiz.findUniqueOrThrow({ where: { id: quizId }, include: quizEditorInclude }));
+}
+
+/**
+ * BR-Q3: the course author gives a student new attempts. The attempts are deleted and the quiz
+ * lesson is no longer completed; a completed course keeps its status and certificate (BR-C2).
+ */
+export async function resetAttempts(user: AuthUser, courseId: string, studentId: string, quizId: string): Promise<void> {
+  await ownCourse(user, courseId);
+  const [enrollment, quiz] = await Promise.all([
+    db.enrollment.findUnique({ where: { userId_courseId: { userId: studentId, courseId } }, select: { id: true } }),
+    db.quiz.findFirst({ where: { id: quizId, lesson: { module: { courseId } } }, select: { lessonId: true } }),
+  ]);
+  if (!enrollment || !quiz) throw notFound();
+  await db.$transaction([
+    db.quizAttempt.deleteMany({ where: { enrollmentId: enrollment.id, quizId } }),
+    db.lessonCompletion.deleteMany({ where: { enrollmentId: enrollment.id, lessonId: quiz.lessonId } }),
+  ]);
 }

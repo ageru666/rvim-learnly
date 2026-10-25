@@ -473,16 +473,22 @@ export the CSV
 
 ### Tests for User Story 10
 
-- [ ] T158 [P] [US10] Integration tests in `apps/server/tests/integration/instructor-stats.test.ts`: student list search/sort/pagination; CSV has a UTF-8 BOM and headers in the request locale (`uk` Cyrillic, `en` English); attempt reset removes attempts and uncompletes the quiz lesson (BR-Q3); funnel shares in curriculum order, 12 weekly buckets, quiz average and first-try pass share; access to another author's course → 403
-- [ ] T159 [P] [US10] SPA tests in `apps/web/src/features/teachStats/__tests__/` (chart components are pure functions of data: snapshot tests in both locales; `utils` 100 % for bucket/percent preparation)
+- [X] T158 [P] [US10] Integration tests in `apps/server/tests/integration/instructor-stats.test.ts`: student list search/sort/pagination; CSV has a UTF-8 BOM and headers in the request locale (`uk` Cyrillic, `en` English); attempt reset removes attempts and uncompletes the quiz lesson (BR-Q3); funnel shares in curriculum order, 12 weekly buckets, quiz average and first-try pass share; access to another author's course → 403
+- [X] T159 [P] [US10] SPA tests in `apps/web/src/features/teachStats/__tests__/` (chart components are pure functions of data: snapshot tests in both locales; `utils` 100 % for bucket/percent preparation)
 
 ### Implementation for User Story 10
 
-- [ ] T160 [P] [US10] Add `StudentRow`, `CourseStats` and the students query to `packages/contracts/src/instructor.ts`
-- [ ] T161 [US10] Implement `apps/server/src/modules/stats/instructor-stats.service.ts` (`listStudents`, `exportStudentsCsv(courseId, query, t)` with column headers given as `MessageKey`s, `getCourseStats`) and add `resetAttempts` to `apps/server/src/modules/quizzes/quizzes.service.ts`
-- [ ] T162 [US10] Add `/instructor/courses/:id/students`, `/students.csv`, `/students/:userId/attempts/:quizId` DELETE and `/stats` to `apps/server/src/modules/courses/instructor-courses.api.ts` with OpenAPI
-- [ ] T163 [US10] Implement `apps/web/src/features/teachStudents/teachStudentsApi.ts` (`infiniteQuery` over the page-based API) and `StudentsPage.tsx` at `/app/teach/courses/:id/students` (`VirtualTable`, search, sort, progress bars, quiz results, CSV download link with the active locale, reset attempts AlertDialog)
-- [ ] T164 [US10] Implement `apps/web/src/features/teachStats/teachStatsApi.ts`, `utils.ts`, and `StatsPage.tsx` at `/app/teach/courses/:id/stats` with pure chart components in `apps/web/src/features/teachStats/components/` (`StatCards`, `EnrollmentsChart`, `FunnelChart` highlighting the largest drop with a text label, `QuizStatsTable`, `RatingDistribution`) using Recharts, chart tokens and locale-aware axis formatting
+- [X] T160 [P] [US10] Add `StudentRow`, `CourseStats` and the students query to `packages/contracts/src/instructor.ts`
+- [X] T161 [US10] Implement `apps/server/src/modules/stats/instructor-stats.service.ts` (`listStudents`, `exportStudentsCsv(courseId, query, t)` with column headers given as `MessageKey`s, `getCourseStats`) and add `resetAttempts` to `apps/server/src/modules/quizzes/quizzes.service.ts`
+- [X] T162 [US10] Add `/instructor/courses/:id/students`, `/students.csv`, `/students/:userId/attempts/:quizId` DELETE and `/stats` to `apps/server/src/modules/courses/instructor-courses.api.ts` with OpenAPI
+- [X] T163 [US10] Implement `apps/web/src/features/teachStudents/teachStudentsApi.ts` (`infiniteQuery` over the page-based API) and `StudentsPage.tsx` at `/app/teach/courses/:id/students` (`VirtualTable`, search, sort, progress bars, quiz results, CSV download link with the active locale, reset attempts AlertDialog)
+- [X] T164 [US10] Implement `apps/web/src/features/teachStats/teachStatsApi.ts`, `utils.ts`, and `StatsPage.tsx` at `/app/teach/courses/:id/stats` with pure chart components in `apps/web/src/features/teachStats/components/` (`StatCards`, `EnrollmentsChart`, `FunnelChart` highlighting the largest drop with a text label, `QuizStatsTable`, `RatingDistribution`) using Recharts, chart tokens and locale-aware axis formatting
+
+**Implementation notes (US10)**: course students are ranked in memory (a course has at most a few hundred), so
+search and every sort work the same for the table and the CSV; `StudentRow.quizzes` carries the quiz title; the CSV
+language follows the normal resolution (`?lang` from the SPA link wins over the account language); chart components
+are pure functions of the data with a data table under every chart, and the SPA tests check the rendered text in both
+locales instead of snapshots; the course editor links to the students and statistics pages.
 
 **Checkpoint**: the instructor dashboard is complete
 
