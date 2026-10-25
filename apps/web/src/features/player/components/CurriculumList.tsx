@@ -6,7 +6,7 @@ import { cx } from '../../../shared/utils/cx';
 import { useFormat } from '../../locale/useFormat';
 import { useT } from '../../locale/useT';
 import { moduleToggled, selectCollapsedModules } from '../../navigation/navigationSlice';
-import { LessonTypeIcon } from './LessonTypeIcon';
+import { LessonTypeIcon } from '../../../shared/components/LessonTypeIcon';
 
 interface CurriculumListProps {
   course: LearnCourse;

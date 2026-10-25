@@ -20,6 +20,13 @@ Element.prototype.hasPointerCapture = () => false;
 Element.prototype.releasePointerCapture = () => undefined;
 Element.prototype.scrollIntoView = () => undefined;
 
+/** Radix measures some controls (Switch, Checkbox) with ResizeObserver, which jsdom lacks. */
+globalThis.ResizeObserver ??= class {
+  observe(): void {}
+  unobserve(): void {}
+  disconnect(): void {}
+};
+
 beforeAll(() => server.listen({ onUnhandledFrame: 'error' }));
 
 beforeEach(() => {

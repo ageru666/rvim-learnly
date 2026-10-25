@@ -3,12 +3,13 @@ import type { Locale } from '@learnly/contracts/enums';
 /** One display time zone for SSR and the SPA, so the same timestamp renders identically everywhere. */
 export const DISPLAY_TIME_ZONE = 'Europe/Kyiv';
 
-export type DateStyle = 'date' | 'long' | 'dateTime';
+export type DateStyle = 'date' | 'long' | 'dateTime' | 'time';
 
 const DATE_OPTIONS: Record<DateStyle, Intl.DateTimeFormatOptions> = {
   date: { dateStyle: 'medium' },
   long: { dateStyle: 'long' },
   dateTime: { dateStyle: 'medium', timeStyle: 'short' },
+  time: { timeStyle: 'short' },
 };
 
 export function formatDate(locale: Locale, value: Date | string | number, style: DateStyle = 'date') {

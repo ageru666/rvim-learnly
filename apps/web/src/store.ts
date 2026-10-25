@@ -5,6 +5,7 @@ import { combineReducers, configureStore, createListenerMiddleware } from '@redu
 import { setupListeners } from '@reduxjs/toolkit/query';
 import { z } from 'zod';
 import { authReducer } from './features/auth/authSlice';
+import { draftsReducer } from './features/drafts/draftsSlice';
 import { enrollmentsReducer } from './features/enrollments/enrollmentsSlice';
 import { startLocaleListeners } from './features/locale/localeListeners';
 import { initialLocaleState, localeReducer } from './features/locale/localeSlice';
@@ -15,6 +16,9 @@ import { startQuizListeners } from './features/quizzes/quizListeners';
 import { quizReducer } from './features/quizzes/quizSlice';
 import { reviewsReducer } from './features/reviews/reviewsSlice';
 import { settingsReducer } from './features/settings/settingsSlice';
+import { teachCoursesReducer } from './features/teachCourses/teachCoursesSlice';
+import { curriculumReducer } from './features/teachCurriculum/curriculumSlice';
+import { teachLessonsReducer } from './features/teachLessons/teachLessonsSlice';
 import { startThemeListeners } from './features/theme/themeListeners';
 import { initialThemeState, themeReducer } from './features/theme/themeSlice';
 import { baseApi } from './shared/api/baseApi';
@@ -25,6 +29,8 @@ const rootReducer = combineReducers({
   [baseApi.reducerPath]: baseApi.reducer,
   [storageApi.reducerPath]: storageApi.reducer,
   auth: authReducer,
+  curriculum: curriculumReducer,
+  drafts: draftsReducer,
   enrollments: enrollmentsReducer,
   locale: localeReducer,
   navigation: navigationReducer,
@@ -32,6 +38,8 @@ const rootReducer = combineReducers({
   quiz: quizReducer,
   reviews: reviewsReducer,
   settings: settingsReducer,
+  teachCourses: teachCoursesReducer,
+  teachLessons: teachLessonsReducer,
   theme: themeReducer,
 });
 

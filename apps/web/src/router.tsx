@@ -27,17 +27,27 @@ export const router = createBrowserRouter(
           lazy: async () => ({ Component: (await import('./features/certificates/CertificatesPage')).CertificatesPage }),
         },
         {
-          path: 'teach/reviews',
-          lazy: async () => {
-            const { TeachReviewsPage } = await import('./features/reviews/TeachReviewsPage');
-            return {
-              Component: () => (
-                <RequireAuth roles={['instructor', 'admin']}>
-                  <TeachReviewsPage />
-                </RequireAuth>
-              ),
-            };
-          },
+          /** Teaching screens: instructors and administrators only. */
+          path: 'teach',
+          element: <RequireAuth roles={['instructor', 'admin']} />,
+          children: [
+            {
+              index: true,
+              lazy: async () => ({ Component: (await import('./features/teachCourses/TeachDashboardPage')).TeachDashboardPage }),
+            },
+            {
+              path: 'courses/:id',
+              lazy: async () => ({ Component: (await import('./features/teachCourses/CourseEditorPage')).CourseEditorPage }),
+            },
+            {
+              path: 'lessons/:id',
+              lazy: async () => ({ Component: (await import('./features/teachLessons/LessonEditorPage')).LessonEditorPage }),
+            },
+            {
+              path: 'reviews',
+              lazy: async () => ({ Component: (await import('./features/reviews/TeachReviewsPage')).TeachReviewsPage }),
+            },
+          ],
         },
         {
           path: 'settings',

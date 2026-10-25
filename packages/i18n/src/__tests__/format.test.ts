@@ -14,6 +14,8 @@ describe('formatDate', () => {
     expect(formatDate('en', DATE)).toBe('Oct 24, 2026');
     expect(formatDate('en', DATE, 'long')).toBe('October 24, 2026');
     expect(formatDate('en', DATE, 'dateTime')).toBe('Oct 24, 2026, 12:30 PM');
+    expect(formatDate('en', DATE, 'time')).toBe('12:30 PM');
+    expect(formatDate('uk', DATE, 'time')).toBe('12:30');
     expect(formatDate('uk', new Date(DATE), 'long')).toBe('24 жовтня 2026 р.');
   });
 });

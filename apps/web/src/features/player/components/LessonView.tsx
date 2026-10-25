@@ -5,7 +5,7 @@ import { MarkdownView } from '../../../shared/components/MarkdownView';
 import { useFormat } from '../../locale/useFormat';
 import { useT } from '../../locale/useT';
 import { QuizLesson } from '../../quizzes/QuizLesson';
-import { LessonTypeIcon } from './LessonTypeIcon';
+import { LessonTypeIcon } from '../../../shared/components/LessonTypeIcon';
 import { VideoEmbed } from './VideoEmbed';
 
 interface LessonViewProps {
