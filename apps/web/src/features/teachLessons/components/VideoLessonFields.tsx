@@ -4,6 +4,7 @@ import { FormField } from '../../../shared/components/FormField';
 import { Input } from '../../../shared/components/Input';
 import { selectLocale } from '../../locale/localeSlice';
 import { useT } from '../../locale/useT';
+import { VideoMetaCard } from '../../videoEmbed/VideoMetaCard';
 
 interface VideoLessonFieldsProps {
   value: string;
@@ -23,6 +24,7 @@ export function VideoLessonFields({ value, onChange, error, disabled }: VideoLes
       <FormField label={t('app.lessonEditor.videoUrl')} hint={t('app.lessonEditor.videoHint')} error={error}>
         {(field) => <Input {...field} type="url" value={value} disabled={disabled} onChange={(event) => onChange(event.target.value)} />}
       </FormField>
+      {video && <VideoMetaCard url={value.trim()} />}
       {video && (
         <div className="aspect-video w-full max-w-xl overflow-hidden rounded-lg bg-surface-sunken">
           <iframe

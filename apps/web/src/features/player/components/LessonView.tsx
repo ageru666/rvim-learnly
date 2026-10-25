@@ -1,10 +1,13 @@
 import type { Locale } from '@learnly/contracts/enums';
 import type { LessonContent } from '@learnly/contracts/learning';
+import { useRef } from 'react';
 import { Alert } from '../../../shared/components/Alert';
 import { MarkdownView } from '../../../shared/components/MarkdownView';
 import { useFormat } from '../../locale/useFormat';
 import { useT } from '../../locale/useT';
 import { QuizLesson } from '../../quizzes/QuizLesson';
+import { useTextSelection } from '../../wiki/useTextSelection';
+import { WikiLookup } from '../../wiki/WikiLookup';
 import { LessonTypeIcon } from '../../../shared/components/LessonTypeIcon';
 import { VideoEmbed } from './VideoEmbed';
 
@@ -19,9 +22,12 @@ interface LessonViewProps {
 export function LessonView({ lesson, language, onCourseCompleted }: LessonViewProps) {
   const { translate, t } = useT();
   const format = useFormat();
+  const content = useRef<HTMLDivElement>(null);
+  useTextSelection(content);
 
   return (
     <article className="flex flex-col gap-6">
+      <WikiLookup />
       <header className="flex flex-col gap-2">
         <p className="flex items-center gap-2 text-sm text-text-muted">
           <LessonTypeIcon type={lesson.type} />
@@ -32,7 +38,11 @@ export function LessonView({ lesson, language, onCourseCompleted }: LessonViewPr
         </h1>
       </header>
       {lesson.type === 'video' && lesson.videoUrl && <VideoEmbed url={lesson.videoUrl} title={lesson.title} />}
-      {lesson.content && <MarkdownView source={lesson.content} lang={language} />}
+      {lesson.content && (
+        <div ref={content}>
+          <MarkdownView source={lesson.content} lang={language} />
+        </div>
+      )}
       {lesson.type === 'quiz' &&
         (lesson.quizId ? (
           <QuizLesson

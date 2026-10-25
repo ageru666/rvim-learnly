@@ -530,16 +530,25 @@ the dashboard response includes the five latest notifications.
 
 ### Tests for User Story 12
 
-- [ ] T171 [P] [US12] Tests in `apps/web/src/features/wiki/__tests__/` (MSW: uk UI → uk hit; uk 404 → en fallback; en UI → en first then uk; both 404 → not_found; timeout → unavailable; disambiguation; `normalizeSelection` 2–80 chars ≤ 5 words, `wikiLanguageOrder(locale)` and `lruInsert` ≤ 20 utils 100 %)
-- [ ] T172 [P] [US12] Tests in `apps/web/src/features/notes/__tests__/` (save/restore per lesson, `exportNotesMarkdown` util 100 % with localized headings, storage unavailable warning) and `apps/web/src/features/videoEmbed/__tests__/` (noembed normalization, error field → not_found)
-- [ ] T173 [P] [US12] Test in `apps/web/src/features/auth/__tests__/logoutCleanup.test.ts`: logout or a different user's login clears `notes:*`, `quiz:*`, `draft:*`, `wiki-cache` and keeps `theme`, `locale`, `ui`
+- [X] T171 [P] [US12] Tests in `apps/web/src/features/wiki/__tests__/` (MSW: uk UI → uk hit; uk 404 → en fallback; en UI → en first then uk; both 404 → not_found; timeout → unavailable; disambiguation; `normalizeSelection` 2–80 chars ≤ 5 words, `wikiLanguageOrder(locale)` and `lruInsert` ≤ 20 utils 100 %)
+- [X] T172 [P] [US12] Tests in `apps/web/src/features/notes/__tests__/` (save/restore per lesson, `exportNotesMarkdown` util 100 % with localized headings, storage unavailable warning) and `apps/web/src/features/videoEmbed/__tests__/` (noembed normalization, error field → not_found)
+- [X] T173 [P] [US12] Test in `apps/web/src/features/auth/__tests__/logoutCleanup.test.ts`: logout or a different user's login clears `notes:*`, `quiz:*`, `draft:*`, `wiki-cache` and keeps `theme`, `locale`, `ui`
 
 ### Implementation for User Story 12
 
-- [ ] T174 [US12] Implement `apps/web/src/features/wiki/wikiApi.ts` (own `createApi` with `fetchBaseQuery` to Wikipedia REST, 5 s timeout, language order from the active locale in `queryFn`, cache read/write via storageApi `wiki-cache`), `utils.ts` (`normalizeSelection`, `wikiLanguageOrder`, `toWikiSummary`, `lruInsert`), `useTextSelection.ts`, `WikiLookup.tsx` (floating "What is this?" button + Popover with title, extract, thumbnail, link, error states) and mount it in `apps/web/src/features/player/components/LessonView.tsx`
-- [ ] T175 [US12] Implement `apps/web/src/features/notes/notesApi.ts` (storage-backed queries/mutations per course), `utils.ts` (`exportNotesMarkdown`, size limit 20 000), `NotesPanel.tsx` (debounced autosave, list of course notes, `.md` export via a Blob download, warning when storage is unavailable) and integrate it into `PlayerPage` (resizable panel width saved to `ui`)
-- [ ] T176 [US12] Implement `apps/web/src/features/videoEmbed/videoEmbedApi.ts` (noembed with a 5 s timeout), `utils.ts` (`toVideoMeta`), `VideoMetaCard.tsx`; use it in `apps/web/src/features/teachLessons/components/VideoLessonFields.tsx` and for video lesson thumbnails in the curriculum sidebar
-- [ ] T177 [US12] Implement the logout cleanup listener in `apps/web/src/features/auth/authSlice.ts` / store listener (on logout, `sessionExpired`, or a `last-user` mismatch → `storageApi.clearPersonal`)
+- [X] T174 [US12] Implement `apps/web/src/features/wiki/wikiApi.ts` (own `createApi` with `fetchBaseQuery` to Wikipedia REST, 5 s timeout, language order from the active locale in `queryFn`, cache read/write via storageApi `wiki-cache`), `utils.ts` (`normalizeSelection`, `wikiLanguageOrder`, `toWikiSummary`, `lruInsert`), `useTextSelection.ts`, `WikiLookup.tsx` (floating "What is this?" button + Popover with title, extract, thumbnail, link, error states) and mount it in `apps/web/src/features/player/components/LessonView.tsx`
+- [X] T175 [US12] Implement `apps/web/src/features/notes/notesApi.ts` (storage-backed queries/mutations per course), `utils.ts` (`exportNotesMarkdown`, size limit 20 000), `NotesPanel.tsx` (debounced autosave, list of course notes, `.md` export via a Blob download, warning when storage is unavailable) and integrate it into `PlayerPage` (resizable panel width saved to `ui`)
+- [X] T176 [US12] Implement `apps/web/src/features/videoEmbed/videoEmbedApi.ts` (noembed with a 5 s timeout), `utils.ts` (`toVideoMeta`), `VideoMetaCard.tsx`; use it in `apps/web/src/features/teachLessons/components/VideoLessonFields.tsx` and for video lesson thumbnails in the curriculum sidebar
+- [X] T177 [US12] Implement the logout cleanup listener in `apps/web/src/features/auth/authSlice.ts` / store listener (on logout, `sessionExpired`, or a `last-user` mismatch → `storageApi.clearPersonal`)
+
+**Implementation notes (US12)**: `wikiApi` and `videoEmbedApi` are separate `createApi` instances over
+`fakeBaseQuery` (typed `WikiError`/`VideoMetaError`) that call a `fetchBaseQuery` with a 5 s timeout inside `queryFn`;
+any error other than 404 (network, timeout, 5xx) maps to `unavailable`, so the network-error test covers the timeout
+branch. The wiki cache is read and written in the same `queryFn` (an unavailable storage only means a request). The
+note being typed lives in `notesSlice`; `saveNote` writes it 0.8 s after typing stops. Video thumbnails in the
+curriculum sidebar are not shown: `LearnLesson` carries no video URL, and fetching noembed for every lesson of a
+course on each player load is not worth it; the card is used in the lesson editor. Personal storage is cleared by
+`authListeners` (`sessionExpired`, `last-user` mismatch on `getMe`) and by `useLogout`.
 
 **Checkpoint**: the lab 2 requirements for external APIs and local storage are covered
 

@@ -29,6 +29,9 @@ const navigationSlice = createSlice({
     setMobileMenuOpen(state, action: PayloadAction<boolean>) {
       state.mobileMenuOpen = action.payload;
     },
+    notesPanelResized(state, action: PayloadAction<number>) {
+      state.layout.notesPanelWidth = Math.round(action.payload);
+    },
     moduleToggled(state, action: PayloadAction<{ courseId: string; moduleId: string }>) {
       const { courseId, moduleId } = action.payload;
       const collapsed = state.layout.collapsedModules[courseId] ?? [];
@@ -39,7 +42,7 @@ const navigationSlice = createSlice({
   },
 });
 
-export const { setMobileMenuOpen, moduleToggled } = navigationSlice.actions;
+export const { setMobileMenuOpen, moduleToggled, notesPanelResized } = navigationSlice.actions;
 export const navigationReducer = navigationSlice.reducer;
 
 export const selectMobileMenuOpen = (state: { navigation: NavigationState }): boolean =>
