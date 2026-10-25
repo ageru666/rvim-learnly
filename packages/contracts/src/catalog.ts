@@ -8,8 +8,8 @@ export const CATALOG_SORTS = ['popular', 'newest', 'rating', 'title'] as const;
 export const catalogSortSchema = z.enum(CATALOG_SORTS);
 export type CatalogSort = z.infer<typeof catalogSortSchema>;
 
-const MIN_RATING = 1;
-const MAX_RATING = 5;
+export const MIN_RATING = 1;
+export const MAX_RATING = 5;
 
 /** Empty strings from a plain GET form are treated as "no filter". */
 const optionalText = z

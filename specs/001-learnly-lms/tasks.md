@@ -363,14 +363,22 @@ is updated
 
 ### Tests for User Story 7
 
-- [ ] T127 [P] [US7] Integration tests in `apps/server/tests/integration/reviews.test.ts`: BR-R1 (progress < 30 % and not completed → 422), BR-R2 (second review → 409, course author → 422), BR-U4 unverified → 422, edit/delete own only, reply only by the course author (once, editable), hidden reviews excluded from the rating average and count, notifications `course_new_review` and `review_replied`
+- [X] T127 [P] [US7] Integration tests in `apps/server/tests/integration/reviews.test.ts`: BR-R1 (progress < 30 % and not completed → 422), BR-R2 (second review → 409, course author → 422), BR-U4 unverified → 422, edit/delete own only, reply only by the course author (once, editable), hidden reviews excluded from the rating average and count, notifications `course_new_review` and `review_replied`
 
 ### Implementation for User Story 7
 
-- [ ] T128 [P] [US7] Define `packages/contracts/src/reviews.ts` (create `rating 1–5`, `text 10–2000`; update; reply `≤ 1000`)
-- [ ] T129 [US7] Implement `apps/server/src/modules/reviews/reviews.service.ts` (`canReview` returning a reason key used by `CourseDetail.viewer`, `create` notifying the course author with `course_new_review`, `update`, `remove`, `reply` notifying the reviewer with `review_replied`) and `apps/server/src/modules/reviews/reviews.api.ts` (`POST /courses/:id/reviews`, `PATCH|DELETE /reviews/:id`, `PUT /reviews/:id/reply`, `GET /instructor/reviews`) with OpenAPI
-- [ ] T130 [US7] Add SSR review forms to `apps/server/src/views/pages/course.ejs` and handlers `POST /courses/:slug/reviews` and `/reviews/delete` in `apps/server/src/modules/catalog/catalog.web.ts`; implement `apps/server/src/public/js/star-input.js` (accessible radio-based star input working without JS, labels rendered by the server)
-- [ ] T131 [US7] Implement `apps/web/src/features/reviews/reviewsApi.ts` (`GET /instructor/reviews` as an `infiniteQuery`, reply mutation) and `apps/web/src/features/reviews/TeachReviewsPage.tsx` at `/app/teach/reviews` (filter by course, `VirtualList`, reply/edit reply dialog), with tests in `apps/web/src/features/reviews/__tests__/`
+- [X] T128 [P] [US7] Define `packages/contracts/src/reviews.ts` (create `rating 1–5`, `text 10–2000`; update; reply `≤ 1000`)
+- [X] T129 [US7] Implement `apps/server/src/modules/reviews/reviews.service.ts` (`canReview` returning a reason key used by `CourseDetail.viewer`, `create` notifying the course author with `course_new_review`, `update`, `remove`, `reply` notifying the reviewer with `review_replied`) and `apps/server/src/modules/reviews/reviews.api.ts` (`POST /courses/:id/reviews`, `PATCH|DELETE /reviews/:id`, `PUT /reviews/:id/reply`, `GET /instructor/reviews`) with OpenAPI
+- [X] T130 [US7] Add SSR review forms to `apps/server/src/views/pages/course.ejs` and handlers `POST /courses/:slug/reviews` and `/reviews/delete` in `apps/server/src/modules/catalog/catalog.web.ts`; implement `apps/server/src/public/js/star-input.js` (accessible radio-based star input working without JS, labels rendered by the server)
+- [X] T131 [US7] Implement `apps/web/src/features/reviews/reviewsApi.ts` (`GET /instructor/reviews` as an `infiniteQuery`, reply mutation) and `apps/web/src/features/reviews/TeachReviewsPage.tsx` at `/app/teach/reviews` (filter by course, `VirtualList`, reply/edit reply dialog), with tests in `apps/web/src/features/reviews/__tests__/`
+
+**Implementation notes (US7)**: eligibility (BR-R1, BR-R2, BR-U4) lives once in `reviewEligibility` and feeds
+both the API errors and `CourseDetail.viewer` (`canReview`, `reviewBlockReason`, `myReview`); a review DTO mapper is
+shared in `modules/reviews/review-dto.ts`; one SSR form creates or edits the review, invalid input re-renders the
+course page (422) with field errors, delete is `POST /courses/:slug/reviews/delete`; `review_replied` is sent on the
+first reply only; the SPA course filter lists the courses found among the author's reviews until the teaching course
+list exists (US8); the SPA test setup stubs element sizes, pointer capture and `scrollIntoView` for virtual lists and
+Radix Select in jsdom.
 
 **Checkpoint**: US7 works; catalog ratings reflect reviews
 

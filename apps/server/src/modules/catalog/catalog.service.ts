@@ -23,6 +23,8 @@ import { toPage, toSkipTake } from '../../lib/pagination.js';
 import { Prisma } from '../../generated/prisma/client.js';
 import type { AuthUser } from '../auth/auth.types.js';
 import { computeProgress } from '@learnly/contracts/progress';
+import { reviewInclude, toReviewDto } from '../reviews/review-dto.js';
+import { reviewEligibility } from '../reviews/reviews.service.js';
 import { categoryName, loadCourseCards, loadCourseStats, toCourseCard, courseCardInclude } from './course-card.js';
 
 const ORDER_BY: Record<CatalogSort, Prisma.Sql> = {
@@ -148,13 +150,14 @@ async function viewerState(course: PublishedCourse, user: AuthUser | undefined):
     include: { _count: { select: { completions: true } } },
   });
   const totalLessons = course.modules.reduce((sum, module) => sum + module.lessons.length, 0);
+  const { block, myReview } = await reviewEligibility(user, course.id);
   return {
     enrolled: enrollment !== null,
     progress: enrollment ? computeProgress(enrollment._count.completions, totalLessons) : null,
     isAuthor: course.authorId === user.id,
-    canReview: false,
-    reviewBlockReason: null,
-    myReview: null,
+    canReview: block === null && myReview === null,
+    reviewBlockReason: block?.reason ?? null,
+    myReview,
   };
 }
 
@@ -211,26 +214,11 @@ export async function listReviews(slug: string, query: ReviewsQuery): Promise<Pa
   const courseId = await publishedCourseId(slug);
   const where: Prisma.ReviewWhereInput = { courseId, status: 'visible', ...(query.rating ? { rating: query.rating } : {}) };
   const [reviews, total] = await Promise.all([
-    db.review.findMany({
-      where,
-      orderBy: { createdAt: 'desc' },
-      include: { user: { select: { id: true, name: true, avatarUrl: true } } },
-      ...toSkipTake(query),
-    }),
+    db.review.findMany({ where, orderBy: { createdAt: 'desc' }, include: reviewInclude, ...toSkipTake(query) }),
     db.review.count({ where }),
   ]);
   return toPage(
-    reviews.map((review) => ({
-      id: review.id,
-      user: review.user,
-      rating: review.rating,
-      text: review.text,
-      hidden: review.status === 'hidden',
-      authorReply: review.authorReply,
-      authorRepliedAt: review.authorRepliedAt?.toISOString() ?? null,
-      createdAt: review.createdAt.toISOString(),
-      updatedAt: review.updatedAt.toISOString(),
-    })),
+    reviews.map(toReviewDto),
     total,
     query,
   );

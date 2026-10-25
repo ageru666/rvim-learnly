@@ -110,6 +110,7 @@
 
     <section id="reviews" aria-labelledby="reviews-title">
       <h2 id="reviews-title" class="heading-lg mb-4"><%= t('site.course.reviewsTitle') %></h2>
+      <% if (viewer) { %><%- include('../partials/review-form', { course, viewer, reviewForm }) %><% } %>
       <% if (reviews.items.length === 0) { %>
         <p class="text-text-muted"><%= t('site.course.noReviews') %></p>
       <% } else { %>

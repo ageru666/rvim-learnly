@@ -23,6 +23,7 @@ import { catalogApiRouter } from './modules/catalog/catalog.api.js';
 import { catalogWebRouter } from './modules/catalog/catalog.web.js';
 import { learningApiRouter } from './modules/learning/learning.api.js';
 import { quizzesApiRouter } from './modules/quizzes/quizzes.api.js';
+import { reviewsApiRouter } from './modules/reviews/reviews.api.js';
 import { healthRouter } from './modules/pages/health.api.js';
 import { preferencesRouter } from './modules/pages/preferences.web.js';
 import { seoRouter } from './modules/pages/seo.web.js';
@@ -81,6 +82,7 @@ function routers(): Router[] {
     catalogApiRouter,
     learningApiRouter,
     quizzesApiRouter,
+    reviewsApiRouter,
     certificatesApiRouter,
     authWebRouter,
     certificatesWebRouter,

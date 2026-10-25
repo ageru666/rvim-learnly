@@ -27,6 +27,19 @@ export const router = createBrowserRouter(
           lazy: async () => ({ Component: (await import('./features/certificates/CertificatesPage')).CertificatesPage }),
         },
         {
+          path: 'teach/reviews',
+          lazy: async () => {
+            const { TeachReviewsPage } = await import('./features/reviews/TeachReviewsPage');
+            return {
+              Component: () => (
+                <RequireAuth roles={['instructor', 'admin']}>
+                  <TeachReviewsPage />
+                </RequireAuth>
+              ),
+            };
+          },
+        },
+        {
           path: 'settings',
           lazy: async () => ({ Component: (await import('./features/settings/SettingsPage')).SettingsPage }),
         },

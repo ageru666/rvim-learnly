@@ -3,6 +3,23 @@ import { cleanup } from '@testing-library/react';
 import { afterAll, afterEach, beforeAll, beforeEach, expect, vi } from 'vitest';
 import { server } from './server';
 
+/** jsdom has no layout: give elements a viewport-sized box so virtualized lists render their rows. */
+const LAYOUT_SIZE = 800;
+Object.defineProperties(HTMLElement.prototype, {
+  offsetHeight: { configurable: true, get: () => LAYOUT_SIZE },
+  offsetWidth: { configurable: true, get: () => LAYOUT_SIZE },
+  clientHeight: { configurable: true, get: () => LAYOUT_SIZE },
+  clientWidth: { configurable: true, get: () => LAYOUT_SIZE },
+});
+HTMLElement.prototype.getBoundingClientRect = function getBoundingClientRect() {
+  return DOMRect.fromRect({ width: LAYOUT_SIZE, height: LAYOUT_SIZE });
+};
+
+/** Pointer capture and scrolling are missing in jsdom; Radix Select needs them to open. */
+Element.prototype.hasPointerCapture = () => false;
+Element.prototype.releasePointerCapture = () => undefined;
+Element.prototype.scrollIntoView = () => undefined;
+
 beforeAll(() => server.listen({ onUnhandledFrame: 'error' }));
 
 beforeEach(() => {

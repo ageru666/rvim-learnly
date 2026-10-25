@@ -13,6 +13,7 @@ import { initialNavigationState, navigationReducer, uiLayoutSchema } from './fea
 import { playerReducer } from './features/player/playerSlice';
 import { startQuizListeners } from './features/quizzes/quizListeners';
 import { quizReducer } from './features/quizzes/quizSlice';
+import { reviewsReducer } from './features/reviews/reviewsSlice';
 import { settingsReducer } from './features/settings/settingsSlice';
 import { startThemeListeners } from './features/theme/themeListeners';
 import { initialThemeState, themeReducer } from './features/theme/themeSlice';
@@ -29,6 +30,7 @@ const rootReducer = combineReducers({
   navigation: navigationReducer,
   player: playerReducer,
   quiz: quizReducer,
+  reviews: reviewsReducer,
   settings: settingsReducer,
   theme: themeReducer,
 });

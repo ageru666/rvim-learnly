@@ -3,13 +3,18 @@ import { idSchema } from '@learnly/contracts/common';
 import { CATALOG_SORTS } from '@learnly/contracts/catalog';
 import { COURSE_LEVELS, LOCALES } from '@learnly/contracts/enums';
 import { buildEmbedUrl, parseVideoUrl } from '@learnly/contracts/video';
-import { Router } from 'express';
+import type { CourseDetail } from '@learnly/contracts/catalog';
+import { REVIEW_MIN_PROGRESS } from '@learnly/contracts/limits';
+import { createReviewSchema } from '@learnly/contracts/reviews';
+import { Router, type Request, type Response } from 'express';
 import { z } from 'zod';
 import { AppError, notFound } from '../../lib/errors.js';
 import { setFlash } from '../../lib/flash.js';
 import { renderMarkdown } from '../../lib/markdown.js';
 import { renderPage } from '../../lib/render.js';
-import { parseInput } from '../../lib/validation.js';
+import { parseInput, validateForm } from '../../lib/validation.js';
+import { currentUser, requireAuth } from '../../middlewares/requireRole.js';
+import { createReview, deleteReview, updateReview } from '../reviews/reviews.service.js';
 import { enrollFromSite } from '../learning/site-enrollment.js';
 import {
   findCourseBySlug,
@@ -78,16 +83,15 @@ catalogWebRouter.get('/courses', async (req, res) => {
   );
 });
 
-catalogWebRouter.get('/courses/:slug', async (req, res) => {
-  const { slug } = parseInput(slugParams, req.params, req.i18n);
-  const lookup = await findCourseBySlug(slug, req.locale, req.user);
-  if (lookup.kind === 'moved') {
-    res.redirect(301, `/courses/${lookup.slug}`);
-    return;
-  }
-  if (lookup.kind === 'missing') throw notFound();
-  const course = lookup.course;
-  const reviews = await listReviews(slug, { page: 1, limit: 10 });
+/** Values and field errors of the review form when it is shown again after a failed submit. */
+interface ReviewFormState {
+  values: { rating?: unknown; text?: unknown };
+  errors: Record<string, string>;
+}
+
+async function renderCourse(req: Request, res: Response, course: CourseDetail, reviewForm: ReviewFormState | null) {
+  const reviews = await listReviews(course.slug, { page: 1, limit: 10 });
+  const myReview = course.viewer?.myReview ?? null;
   await renderPage(
     res,
     'pages/course',
@@ -96,9 +100,61 @@ catalogWebRouter.get('/courses/:slug', async (req, res) => {
       reviews,
       descriptionHtml: renderMarkdown(course.description),
       og: { title: course.title, description: course.shortDescription, image: course.coverUrl },
+      reviewMinProgress: REVIEW_MIN_PROGRESS,
+      reviewForm: reviewForm ?? { values: myReview ? { rating: myReview.rating, text: myReview.text } : {}, errors: {} },
     },
-    { title: course.title, description: course.shortDescription },
+    { title: course.title, description: course.shortDescription, status: reviewForm ? 422 : 200 },
   );
+}
+
+async function publishedCourse(req: Request, slug: string): Promise<CourseDetail> {
+  const lookup = await findCourseBySlug(slug, req.locale, req.user);
+  if (lookup.kind !== 'found') throw notFound();
+  return lookup.course;
+}
+
+catalogWebRouter.get('/courses/:slug', async (req, res) => {
+  const { slug } = parseInput(slugParams, req.params, req.i18n);
+  const lookup = await findCourseBySlug(slug, req.locale, req.user);
+  if (lookup.kind === 'moved') {
+    res.redirect(301, `/courses/${lookup.slug}`);
+    return;
+  }
+  if (lookup.kind === 'missing') throw notFound();
+  await renderCourse(req, res, lookup.course, null);
+});
+
+/** One form creates or edits the user's review (FR-SITE-3); errors are shown next to the fields. */
+catalogWebRouter.post('/courses/:slug/reviews', requireAuth, async (req, res) => {
+  const { slug } = parseInput(slugParams, req.params, req.i18n);
+  const course = await publishedCourse(req, slug);
+  const form = validateForm(createReviewSchema, req.body, req.i18n);
+  if (!form.ok) {
+    const body = req.body as Record<string, unknown>;
+    await renderCourse(req, res, course, { values: { rating: body.rating, text: body.text }, errors: form.errors });
+    return;
+  }
+  const user = currentUser(req);
+  const myReview = course.viewer?.myReview;
+  try {
+    if (myReview) await updateReview(user, myReview.id, form.data);
+    else await createReview(user, course.id, form.data);
+    setFlash(res, { kind: 'success', key: 'site.course.reviewForm.saved' });
+  } catch (error) {
+    if (!(error instanceof AppError) || error.code === 'INTERNAL') throw error;
+    setFlash(res, { kind: 'error', key: error.messageKey, params: error.options.params });
+  }
+  res.redirect(303, `/courses/${slug}#reviews`);
+});
+
+catalogWebRouter.post('/courses/:slug/reviews/delete', requireAuth, async (req, res) => {
+  const { slug } = parseInput(slugParams, req.params, req.i18n);
+  const myReview = (await publishedCourse(req, slug)).viewer?.myReview;
+  if (myReview) {
+    await deleteReview(currentUser(req), myReview.id);
+    setFlash(res, { kind: 'info', key: 'site.course.reviewForm.deleted' });
+  }
+  res.redirect(303, `/courses/${slug}#reviews`);
 });
 
 /** Guests log in first; the enrollment intent travels with them (contracts/ssr-routes.md). */
