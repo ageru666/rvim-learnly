@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { courseCardSchema } from './catalog.js';
+import { certificateSchema } from './certificates.js';
 import { dateTimeSchema, idSchema, pageQuerySchema } from './common.js';
 import { enrollmentStatusSchema, lessonTypeSchema, localeSchema } from './enums.js';
 
@@ -29,13 +30,11 @@ export const continueLearningSchema = z.object({
 });
 export type ContinueLearning = z.infer<typeof continueLearningSchema>;
 
-/**
- * Certificates (US6) and notifications (US11) are added to this shape by their stories; until then
- * the dashboard has the learning blocks only.
- */
+/** Notifications (US11) are added to this shape by their story. */
 export const dashboardSchema = z.object({
   continue: continueLearningSchema.nullable(),
   active: z.array(myCourseSchema),
+  certificates: z.array(certificateSchema),
   recommendations: z.array(courseCardSchema),
 });
 export type Dashboard = z.infer<typeof dashboardSchema>;

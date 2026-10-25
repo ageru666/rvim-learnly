@@ -40,7 +40,7 @@ describe('DashboardPage', () => {
   });
 
   it('invites a new student to the catalog', async () => {
-    renderDashboard(() => HttpResponse.json({ continue: null, active: [], recommendations: [] }));
+    renderDashboard(() => HttpResponse.json({ continue: null, active: [], certificates: [], recommendations: [] }));
     expect(await screen.findByText('Ви ще не записані на жоден курс.')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Перейти до каталогу' })).toHaveAttribute('href', '/courses');
   });
@@ -51,7 +51,7 @@ describe('DashboardPage', () => {
       calls += 1;
       return calls === 1
         ? HttpResponse.json({ error: { code: 'INTERNAL', message: 'Щось пішло не так. Спробуйте ще раз.' } }, { status: 500 })
-        : HttpResponse.json({ continue: null, active: [], recommendations: [] });
+        : HttpResponse.json({ continue: null, active: [], certificates: [], recommendations: [] });
     });
     expect(await screen.findByRole('alert')).toHaveTextContent('Щось пішло не так. Спробуйте ще раз.');
     await userEvent.click(screen.getByRole('button', { name: 'Спробувати ще раз' }));
@@ -71,6 +71,7 @@ describe('DashboardPage', () => {
           progress: 40,
         },
         active: [active],
+        certificates: [],
         recommendations: [recommended],
       }),
     );

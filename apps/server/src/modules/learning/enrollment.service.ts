@@ -9,6 +9,7 @@ import { toPage, toSkipTake } from '../../lib/pagination.js';
 import { Prisma } from '../../generated/prisma/client.js';
 import { courseCardInclude, loadCourseCards, loadCourseStats, toCourseCard } from '../catalog/course-card.js';
 import { computeProgress } from '@learnly/contracts/progress';
+import { listMine } from '../certificates/certificates.service.js';
 
 /** First lesson in curriculum order: modules by position, then lessons by position. */
 function firstLesson(courseId: string): Promise<{ id: string; title: string } | null> {
@@ -134,6 +135,7 @@ export async function getDashboard(userId: string, locale: Locale): Promise<Dash
           }
         : null,
     active,
+    certificates: await listMine(userId),
     recommendations: await recommendations(userId, categoryIds, locale),
   };
 }

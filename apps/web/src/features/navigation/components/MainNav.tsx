@@ -1,5 +1,5 @@
 import type { Role } from '@learnly/contracts/enums';
-import { BookOpen, GraduationCap, LayoutDashboard, Search, type LucideIcon } from 'lucide-react';
+import { Award, BookOpen, GraduationCap, LayoutDashboard, Search, type LucideIcon } from 'lucide-react';
 import { NavLink } from 'react-router';
 import type { MessageKey } from '@learnly/i18n/keys';
 import { cx } from '../../../shared/utils/cx';
@@ -17,6 +17,7 @@ interface NavItem {
 const ITEMS: NavItem[] = [
   { to: '/', label: 'site.header.dashboard', icon: LayoutDashboard },
   { to: '/courses', label: 'site.header.myCourses', icon: BookOpen },
+  { to: '/certificates', label: 'app.certificates.title', icon: Award },
   { to: '/teach', label: 'site.header.teaching', icon: GraduationCap, roles: ['instructor', 'admin'] },
   { to: '/courses', label: 'site.header.catalog', icon: Search, external: true },
 ];

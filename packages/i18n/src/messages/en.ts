@@ -250,6 +250,19 @@ export const en = {
       },
       loggedOut: 'You have logged out.',
     },
+    certificate: {
+      title: 'Certificate: {name}',
+      heading: 'Certificate of completion',
+      completed: 'has successfully completed the course',
+      author: 'Course author',
+      issuedAt: 'Issued on',
+      code: 'Verification code',
+      valid: 'The certificate is valid',
+      revoked: 'The certificate has been revoked',
+      print: 'Print or save as PDF',
+      notFoundTitle: 'Certificate not found',
+      notFoundText: 'Check the code: it has 10 Latin letters and digits.',
+    },
     pages: {
       about: {
         title: 'About',
@@ -375,6 +388,24 @@ export const en = {
       history: 'Attempt history',
       historyEmpty: 'No attempts yet.',
       attemptRow: '{date}: {percent}',
+    },
+    certificates: {
+      title: 'Certificates',
+      empty: 'Your certificate appears here once you complete a course.',
+      issuedAt: 'Issued on {date}',
+      revoked: 'Revoked',
+      view: 'View',
+      copy: 'Copy link',
+      copied: 'Link copied',
+      print: 'Print / PDF',
+      allCertificates: 'All certificates',
+    },
+    completed: {
+      title: 'Course completed!',
+      text: 'Congratulations: you have finished every lesson of “{title}”. Your certificate is ready.',
+      certificate: 'View the certificate',
+      review: 'Write a review',
+      dashboard: 'To the dashboard',
     },
     settings: {
       title: 'Settings',
@@ -511,6 +542,7 @@ export const en = {
       invalidType: 'Only JPG, PNG or WebP images are supported.',
       tooLarge: 'The file is too large.',
     },
+    clipboard: 'Could not copy. Select the link and copy it manually.',
     invalidJson: 'The request body is not valid.',
     quizzes: {
       noAttemptsLeft: 'There are no attempts left for this quiz.',

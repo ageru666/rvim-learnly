@@ -1,0 +1,40 @@
+<% if (!certificate) { %>
+  <%- include('../partials/error-page', { code: 404, title: t('site.certificate.notFoundTitle'), text: t('site.certificate.notFoundText') }) %>
+<% } else { %>
+<section class="page-container flex flex-col items-center gap-6 py-12 print:py-0">
+    <article class="card w-full max-w-3xl border-2 p-8 text-center sm:p-12 print:max-w-none print:border-4">
+      <div class="mb-6 flex justify-center"><%- include('../partials/logo') %></div>
+      <p class="text-sm tracking-widest text-text-muted uppercase"><%= t('site.certificate.heading') %></p>
+      <h1 class="heading-display mt-6"><%= certificate.studentName %></h1>
+      <p class="text-lead mt-4"><%= t('site.certificate.completed') %></p>
+      <p class="heading-lg mt-2"><%= certificate.courseTitle %></p>
+
+      <dl class="mt-10 grid gap-4 text-sm sm:grid-cols-3">
+        <div>
+          <dt class="text-text-muted"><%= t('site.certificate.author') %></dt>
+          <dd class="font-semibold"><%= certificate.authorName %></dd>
+        </div>
+        <div>
+          <dt class="text-text-muted"><%= t('site.certificate.issuedAt') %></dt>
+          <dd class="font-semibold"><%= format.date(certificate.issuedAt, 'long') %></dd>
+        </div>
+        <div>
+          <dt class="text-text-muted"><%= t('site.certificate.code') %></dt>
+          <dd class="font-mono font-semibold"><%= certificate.code %></dd>
+        </div>
+      </dl>
+
+      <div class="mt-8 flex justify-center">
+        <% if (certificate.revoked) { %>
+          <span class="tag tag-red"><%- include('../partials/icon', { name: 'x-circle', size: 14 }) %><%= t('site.certificate.revoked') %></span>
+        <% } else { %>
+          <span class="tag tag-green"><%- include('../partials/icon', { name: 'check-circle', size: 14 }) %><%= t('site.certificate.valid') %></span>
+        <% } %>
+      </div>
+    </article>
+
+    <button type="button" class="btn btn-outline print:hidden" data-print>
+      <%- include('../partials/icon', { name: 'printer', size: 16 }) %><%= t('site.certificate.print') %>
+    </button>
+</section>
+<% } %>

@@ -333,15 +333,22 @@ without logging in
 
 ### Tests for User Story 6
 
-- [ ] T121 [P] [US6] Integration tests in `apps/server/tests/integration/completion.test.ts`: completing the last lesson sets `completed`, issues exactly one certificate even with 5 concurrent completion requests (BR-C1), creates a `course_completed` notification; adding lessons later keeps the status and certificate (BR-C2); leaving a course with a certificate → 422; `GET /certificates/:code` valid, unknown → 404, revoked shows revoked; the code alphabet excludes `0 O 1 I L`; the SSR certificate page renders in `uk` and with `?lang=en`
+- [X] T121 [P] [US6] Integration tests in `apps/server/tests/integration/completion.test.ts`: completing the last lesson sets `completed`, issues exactly one certificate even with 5 concurrent completion requests (BR-C1), creates a `course_completed` notification; adding lessons later keeps the status and certificate (BR-C2); leaving a course with a certificate → 422; `GET /certificates/:code` valid, unknown → 404, revoked shows revoked; the code alphabet excludes `0 O 1 I L`; the SSR certificate page renders in `uk` and with `?lang=en`
 
 ### Implementation for User Story 6
 
-- [ ] T122 [P] [US6] Define `packages/contracts/src/certificates.ts` (`CertificateDto`, code format regex)
-- [ ] T123 [US6] Implement `apps/server/src/modules/certificates/certificates.service.ts` (`generateCode`, `issueForEnrollment(tx)` idempotent via the unique `enrollment_id`, snapshot `studentName`/`courseTitle`/`authorName`, `getByCode`, `listMine`)
-- [ ] T124 [US6] Extend `apps/server/src/modules/learning/progress.service.ts` with `checkCompletion(tx, enrollmentId)` (all lessons completed → status `completed`, `completedAt`, certificate, notification) called from `completeLesson` and the quiz pass; return `courseCompleted` and `certificateCode` in `ProgressResult`
-- [ ] T125 [US6] Add `GET /certificates/:code` to `apps/server/src/modules/catalog/catalog.api.ts`, `GET /me/certificates` to `apps/server/src/modules/users/me.api.ts`; implement `apps/server/src/modules/certificates/certificates.web.ts` and `apps/server/src/views/pages/certificate.ejs` (valid/revoked/not-found states, localized date, print stylesheet with a single `@media print` page)
-- [ ] T126 [US6] Implement `apps/web/src/features/certificates/certificatesApi.ts`, `apps/web/src/features/certificates/CertificatesPage.tsx` (view, copy link, print), `apps/web/src/features/certificates/CertificatesBlock.tsx` for the dashboard, and `apps/web/src/features/player/CourseCompletedPage.tsx` at `/app/learn/:courseId/completed` (redirect after `courseCompleted`, links to the certificate and to the review form on the course page)
+- [X] T122 [P] [US6] Define `packages/contracts/src/certificates.ts` (`CertificateDto`, code format regex)
+- [X] T123 [US6] Implement `apps/server/src/modules/certificates/certificates.service.ts` (`generateCode`, `issueForEnrollment(tx)` idempotent via the unique `enrollment_id`, snapshot `studentName`/`courseTitle`/`authorName`, `getByCode`, `listMine`)
+- [X] T124 [US6] Extend `apps/server/src/modules/learning/progress.service.ts` with `checkCompletion(tx, enrollmentId)` (all lessons completed → status `completed`, `completedAt`, certificate, notification) called from `completeLesson` and the quiz pass; return `courseCompleted` and `certificateCode` in `ProgressResult`
+- [X] T125 [US6] Add `GET /certificates/:code` to `apps/server/src/modules/catalog/catalog.api.ts`, `GET /me/certificates` to `apps/server/src/modules/users/me.api.ts`; implement `apps/server/src/modules/certificates/certificates.web.ts` and `apps/server/src/views/pages/certificate.ejs` (valid/revoked/not-found states, localized date, print stylesheet with a single `@media print` page)
+- [X] T126 [US6] Implement `apps/web/src/features/certificates/certificatesApi.ts`, `apps/web/src/features/certificates/CertificatesPage.tsx` (view, copy link, print), `apps/web/src/features/certificates/CertificatesBlock.tsx` for the dashboard, and `apps/web/src/features/player/CourseCompletedPage.tsx` at `/app/learn/:courseId/completed` (redirect after `courseCompleted`, links to the certificate and to the review form on the course page)
+
+**Implementation notes (US6)**: completion checks lock the enrollment row (`lockEnrollment`), so concurrent
+requests issue one certificate and one notification; the public endpoint lives in `modules/certificates/`
+(`certificates.api.ts`, `certificates.web.ts`) instead of `catalog.api.ts`; codes are matched case-insensitively;
+`CertificateDto` adds `courseId` and `courseSlug` for the SPA; "Print / PDF" opens the public page with `?print=1`
+(`public/js/print.js` prints it; the site chrome is `print:hidden`); copying the link is a `queryFn` mutation with
+a `CLIPBOARD` error code; the dashboard response now includes `certificates`.
 
 **Checkpoint**: the full learning loop up to the certificate
 

@@ -12,9 +12,11 @@ interface LessonViewProps {
   lesson: LessonContent;
   /** The course content language: set as `lang` so screen readers pronounce it correctly. */
   language: Locale;
+  /** Called when a passed quiz completes the course. */
+  onCourseCompleted?: () => void;
 }
 
-export function LessonView({ lesson, language }: LessonViewProps) {
+export function LessonView({ lesson, language, onCourseCompleted }: LessonViewProps) {
   const { translate, t } = useT();
   const format = useFormat();
 
@@ -33,7 +35,12 @@ export function LessonView({ lesson, language }: LessonViewProps) {
       {lesson.content && <MarkdownView source={lesson.content} lang={language} />}
       {lesson.type === 'quiz' &&
         (lesson.quizId ? (
-          <QuizLesson quizId={lesson.quizId} courseId={lesson.courseId} language={language} />
+          <QuizLesson
+            quizId={lesson.quizId}
+            courseId={lesson.courseId}
+            language={language}
+            onCourseCompleted={onCourseCompleted}
+          />
         ) : (
           <Alert kind="info">{t('app.player.quizHint')}</Alert>
         ))}

@@ -1,6 +1,8 @@
 import type { EnrollmentStatus } from '@learnly/contracts/enums';
 import type { LearnCourse, LessonContent, ProgressResult } from '@learnly/contracts/learning';
-import { db } from '../../lib/db.js';
+import { db, type Tx } from '../../lib/db.js';
+import { issueForEnrollment } from '../certificates/certificates.service.js';
+import { notify } from '../notifications/notifications.service.js';
 import { forbidden, notFound, ruleViolation } from '../../lib/errors.js';
 import type { AuthUser } from '../auth/auth.types.js';
 import { computeProgress } from '@learnly/contracts/progress';
@@ -108,7 +110,7 @@ export async function openLesson(user: AuthUser, lessonId: string): Promise<Less
   };
 }
 
-/** Progress of one enrollment after a change (BR-L3). Course completion (BR-C1) is added in US6. */
+/** Progress of one enrollment after a change (BR-L3), with the completion state (BR-C1). */
 export async function progressOf(enrollmentId: string, courseId: string): Promise<ProgressResult> {
   const [completed, totalLessons, enrollment] = await Promise.all([
     completedLessonIds(enrollmentId),
@@ -126,6 +128,38 @@ export async function progressOf(enrollmentId: string, courseId: string): Promis
   };
 }
 
+/** Serializes completion checks of one enrollment (concurrent requests wait for each other). */
+export async function lockEnrollment(tx: Tx, enrollmentId: string): Promise<void> {
+  await tx.$queryRaw`SELECT id FROM enrollments WHERE id = ${enrollmentId}::uuid FOR UPDATE`;
+}
+
+/**
+ * BR-C1: when every lesson is completed, the enrollment becomes `completed`, the certificate is issued
+ * and the student is notified, exactly once. BR-C2: a completed enrollment stays completed when
+ * lessons are added later. The caller holds the enrollment lock (`lockEnrollment`).
+ */
+export async function checkCompletion(tx: Tx, enrollmentId: string): Promise<void> {
+  const enrollment = await tx.enrollment.findUniqueOrThrow({
+    where: { id: enrollmentId },
+    select: { userId: true, status: true, courseId: true, course: { select: { title: true, slug: true } } },
+  });
+  if (enrollment.status === 'completed') return;
+  const [totalLessons, completed] = await Promise.all([
+    tx.lesson.count({ where: { module: { courseId: enrollment.courseId } } }),
+    tx.lessonCompletion.count({ where: { enrollmentId } }),
+  ]);
+  if (totalLessons === 0 || completed < totalLessons) return;
+
+  await tx.enrollment.update({ where: { id: enrollmentId }, data: { status: 'completed', completedAt: new Date() } });
+  const certificateCode = await issueForEnrollment(tx, enrollmentId);
+  await notify(tx, enrollment.userId, 'course_completed', {
+    courseId: enrollment.courseId,
+    courseTitle: enrollment.course.title,
+    courseSlug: enrollment.course.slug,
+    certificateCode,
+  });
+}
+
 /** Text and video lessons are marked by hand (BR-L1); quiz lessons only by passing the quiz (BR-L2). */
 async function manualCompletionTarget(user: AuthUser, lessonId: string) {
   const lesson = await findLesson(lessonId);
@@ -138,13 +172,15 @@ async function manualCompletionTarget(user: AuthUser, lessonId: string) {
 
 export async function completeLesson(user: AuthUser, lessonId: string): Promise<ProgressResult> {
   const target = await manualCompletionTarget(user, lessonId);
-  await db.$transaction([
-    db.lessonCompletion.createMany({
+  await db.$transaction(async (tx) => {
+    await lockEnrollment(tx, target.enrollmentId);
+    await tx.lessonCompletion.createMany({
       data: { enrollmentId: target.enrollmentId, lessonId: target.lessonId },
       skipDuplicates: true,
-    }),
-    db.enrollment.update({ where: { id: target.enrollmentId }, data: { lastActivityAt: new Date() } }),
-  ]);
+    });
+    await tx.enrollment.update({ where: { id: target.enrollmentId }, data: { lastActivityAt: new Date() } });
+    await checkCompletion(tx, target.enrollmentId);
+  });
   return progressOf(target.enrollmentId, target.courseId);
 }
 

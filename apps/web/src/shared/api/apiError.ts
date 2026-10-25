@@ -1,7 +1,7 @@
 import { apiErrorSchema, type ErrorCode, type ErrorDetail } from '@learnly/contracts/errors';
 
 /** Client-side failures that never reached the API's error format. */
-export type TransportErrorCode = 'NETWORK' | 'TIMEOUT' | 'PARSE';
+export type TransportErrorCode = 'NETWORK' | 'TIMEOUT' | 'PARSE' | 'CLIPBOARD';
 
 /**
  * The single normalized error shape for every RTK Query endpoint. `retryable` separates transient

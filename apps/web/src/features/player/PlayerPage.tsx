@@ -1,4 +1,4 @@
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { isApiError } from '../../shared/api/apiError';
 import { EmptyState } from '../../shared/components/EmptyState';
 import { ErrorState } from '../../shared/components/ErrorState';
@@ -17,6 +17,7 @@ import { useGetLearnCourseQuery, useGetLessonQuery } from './playerApi';
 export function PlayerPage() {
   const i18n = useT();
   const { courseId = '', lessonId = '' } = useParams();
+  const navigate = useNavigate();
   const courseQuery = useGetLearnCourseQuery(courseId);
   const lessonQuery = useGetLessonQuery(lessonId);
   const course = courseQuery.data;
@@ -48,7 +49,13 @@ export function PlayerPage() {
             {course.mode === 'preview' && <PreviewBanner />}
             {lesson.courseId === course.course.id ? (
               <>
-                <LessonView lesson={lesson} language={course.course.language} />
+                <LessonView
+                  lesson={lesson}
+                  language={course.course.language}
+                  onCourseCompleted={
+                    course.status === 'completed' ? undefined : () => void navigate(`/learn/${courseId}/completed`)
+                  }
+                />
                 <LessonFooter course={course} lesson={lesson} />
               </>
             ) : (

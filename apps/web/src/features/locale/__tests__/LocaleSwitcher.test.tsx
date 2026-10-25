@@ -50,7 +50,7 @@ function SignedInSwitcher() {
   return <LocaleSwitcher />;
 }
 
-const EMPTY_DASHBOARD = { continue: null, active: [], recommendations: [] };
+const EMPTY_DASHBOARD = { continue: null, active: [], certificates: [], recommendations: [] };
 
 describe('switching the language while signed in', () => {
   it('re-renders in place, keeps typed input, saves the account locale and refetches localized data', async () => {

@@ -1,6 +1,6 @@
 import type { LearnCourse, LessonContent } from '@learnly/contracts/learning';
 import { ArrowLeft, ArrowRight, CircleCheck } from 'lucide-react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { Alert } from '../../../shared/components/Alert';
 import { Button } from '../../../shared/components/Button';
 import { buttonClass } from '../../../shared/components/buttonClass';
@@ -18,6 +18,7 @@ interface LessonFooterProps {
 export function LessonFooter({ course, lesson }: LessonFooterProps) {
   const i18n = useT();
   const { t } = i18n;
+  const navigate = useNavigate();
   const [setCompletion, { isLoading, error }] = useSetLessonCompletionMutation();
   const { previous, next } = findAdjacentLessons(course.modules, lesson.id);
   const canMark = course.mode === 'student' && lesson.type !== 'quiz';
@@ -40,7 +41,14 @@ export function LessonFooter({ course, lesson }: LessonFooterProps) {
             variant={lesson.completed ? 'outline' : 'primary'}
             loading={isLoading}
             onClick={() =>
-              void setCompletion({ courseId: course.course.id, lessonId: lesson.id, completed: !lesson.completed })
+              void setCompletion({ courseId: course.course.id, lessonId: lesson.id, completed: !lesson.completed }).then(
+                (result) => {
+                  // FR-LEARN-5: the congratulations screen, only for the completion that just happened.
+                  if (result.data?.courseCompleted && course.status !== 'completed') {
+                    void navigate(`/learn/${course.course.id}/completed`);
+                  }
+                },
+              )
             }
           >
             {lesson.completed && <CircleCheck aria-hidden size={16} />}

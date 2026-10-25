@@ -32,7 +32,7 @@ export const playerApi = baseApi.injectEndpoints({
         method: completed ? 'PUT' : 'DELETE',
       }),
       transformResponse: (response: unknown) => progressResultSchema.parse(response),
-      invalidatesTags: ['Dashboard', 'Enrollments'],
+      invalidatesTags: ['Dashboard', 'Enrollments', 'Certificates'],
       /** The mark and the progress change at once; a failed request puts them back. */
       async onQueryStarted({ courseId, lessonId, completed }, { dispatch, queryFulfilled }) {
         const coursePatch = dispatch(
@@ -48,6 +48,7 @@ export const playerApi = baseApi.injectEndpoints({
           dispatch(
             playerApi.util.updateQueryData('getLearnCourse', courseId, (draft) => withServerProgress(draft, data)),
           );
+          if (data.courseCompleted) dispatch(playerApi.util.invalidateTags([{ type: 'LearnCourse', id: courseId }]));
         } catch {
           coursePatch.undo();
           lessonPatch.undo();

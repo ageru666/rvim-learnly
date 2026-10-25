@@ -1,13 +1,16 @@
 import { changeEmailSchema, changePasswordSchema } from '@learnly/contracts/auth';
+import { certificateSchema } from '@learnly/contracts/certificates';
 import { pageSchema } from '@learnly/contracts/common';
 import { dashboardSchema, myCourseSchema, myCoursesQuerySchema } from '@learnly/contracts/learning';
 import { meSchema, updateMeSchema } from '@learnly/contracts/me';
 import { Router } from 'express';
+import { z } from 'zod';
 import { COOKIES, readCookie, setPreferenceCookie } from '../../lib/cookies.js';
 import { API_PREFIX } from '../../lib/http.js';
 import { parseInput } from '../../lib/validation.js';
 import { currentUser, requireAuth } from '../../middlewares/requireRole.js';
 import { registerRoute } from '../../openapi/registry.js';
+import { listMine } from '../certificates/certificates.service.js';
 import { getDashboard, listMyCourses } from '../learning/enrollment.service.js';
 import { changePassword, getMe, requestEmailChange, updateLocale } from './users.service.js';
 
@@ -102,4 +105,16 @@ registerRoute({
 meApiRouter.get(`${ME}/enrollments`, async (req, res) => {
   const query = parseInput(myCoursesQuerySchema, req.query, req.i18n);
   res.json(await listMyCourses(currentUser(req).id, query, req.locale));
+});
+
+registerRoute({
+  method: 'get',
+  path: `${ME}/certificates`,
+  tag: TAG,
+  summary: 'My certificates, newest first',
+  access: 'user',
+  responses: { 200: { description: 'Certificates', schema: z.array(certificateSchema) } },
+});
+meApiRouter.get(`${ME}/certificates`, async (req, res) => {
+  res.json(await listMine(currentUser(req).id));
 });

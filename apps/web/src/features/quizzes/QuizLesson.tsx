@@ -29,10 +29,11 @@ interface QuizLessonProps {
   courseId: string;
   /** The course content language for the question texts. */
   language: Locale;
+  onCourseCompleted?: () => void;
 }
 
 /** A quiz lesson in the player: start screen, questions one by one, confirmation and the result. */
-export function QuizLesson({ quizId, courseId, language }: QuizLessonProps) {
+export function QuizLesson({ quizId, courseId, language, onCourseCompleted }: QuizLessonProps) {
   const i18n = useT();
   const { t } = i18n;
   const dispatch = useDispatch();
@@ -77,7 +78,10 @@ export function QuizLesson({ quizId, courseId, language }: QuizLessonProps) {
   const questions = applyOrder(quiz.questions, session.order);
   const current = questions[session.currentIndex];
   const goTo = (index: number) => dispatch(questionChanged({ quizId, index }));
-  const send = () => void submit({ quizId, courseId, answers: session.answers });
+  const send = () =>
+    void submit({ quizId, courseId, answers: session.answers }).then((outcome) => {
+      if (outcome.data?.progress.courseCompleted) onCourseCompleted?.();
+    });
   const isLast = session.currentIndex === questions.length - 1;
 
   return (

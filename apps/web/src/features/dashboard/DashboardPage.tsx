@@ -3,13 +3,14 @@ import { ErrorState } from '../../shared/components/ErrorState';
 import { Skeleton } from '../../shared/components/Skeleton';
 import { describeError } from '../../shared/utils/describeError';
 import { useGetMeQuery } from '../auth/authApi';
+import { CertificatesBlock } from '../certificates/CertificatesBlock';
 import { useGetDashboardQuery } from '../enrollments/enrollmentsApi';
 import { useT } from '../locale/useT';
 import { ActiveCoursesList } from './components/ActiveCoursesList';
 import { ContinueLearningCard } from './components/ContinueLearningCard';
 import { RecommendationsList } from './components/RecommendationsList';
 
-/** FR-LEARN-2. Certificates (US6) and notifications (US11) join this page with their stories. */
+/** FR-LEARN-2. Notifications (US11) join this page with their story. */
 export function DashboardPage() {
   const i18n = useT();
   const { data: me } = useGetMeQuery();
@@ -36,6 +37,7 @@ export function DashboardPage() {
         <>
           {data.continue && <ContinueLearningCard item={data.continue} />}
           <ActiveCoursesList courses={data.active} />
+          <CertificatesBlock certificates={data.certificates} />
           <RecommendationsList courses={data.recommendations} />
         </>
       )}

@@ -7,6 +7,7 @@ const TRANSPORT_MESSAGES: Record<TransportErrorCode, MessageKey> = {
   NETWORK: 'errors.network',
   TIMEOUT: 'errors.timeout',
   PARSE: 'errors.codes.INTERNAL',
+  CLIPBOARD: 'errors.clipboard',
 };
 
 function isTransportCode(code: string): code is TransportErrorCode {

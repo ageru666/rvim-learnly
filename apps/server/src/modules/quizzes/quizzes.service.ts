@@ -3,7 +3,7 @@ import type { AttemptResult, AttemptSummary, Answers, QuizForStudent } from '@le
 import { db } from '../../lib/db.js';
 import { AppError, notFound, ruleViolation } from '../../lib/errors.js';
 import type { AuthUser } from '../auth/auth.types.js';
-import { learnerContext, progressOf } from '../learning/progress.service.js';
+import { checkCompletion, learnerContext, lockEnrollment, progressOf } from '../learning/progress.service.js';
 import { gradeAttempt, shouldRevealAnswers } from './grading.js';
 
 /** Fisher–Yates with a cryptographic generator, so the order cannot be predicted. */
@@ -83,7 +83,7 @@ export async function submitAttempt(user: AuthUser, quizId: string, answers: Ans
   const { grade } = outcome;
 
   const { attemptId, used, everPassed } = await db.$transaction(async (tx) => {
-    await tx.$queryRaw`SELECT id FROM enrollments WHERE id = ${enrollmentId}::uuid FOR UPDATE`;
+    await lockEnrollment(tx, enrollmentId);
     const before = await tx.quizAttempt.count({ where: { enrollmentId, quizId } });
     if (quiz.maxAttempts !== null && before >= quiz.maxAttempts) {
       throw ruleViolation('BR-Q3', 'errors.quizzes.noAttemptsLeft');
@@ -103,6 +103,7 @@ export async function submitAttempt(user: AuthUser, quizId: string, answers: Ans
     });
     if (grade.passed) {
       await tx.lessonCompletion.createMany({ data: { enrollmentId, lessonId: quiz.lessonId }, skipDuplicates: true });
+      await checkCompletion(tx, enrollmentId);
     }
     await tx.enrollment.update({ where: { id: enrollmentId }, data: { lastActivityAt: new Date() } });
     const passedBefore = await tx.quizAttempt.count({ where: { enrollmentId, quizId, passed: true } });

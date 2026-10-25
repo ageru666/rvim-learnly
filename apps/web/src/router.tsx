@@ -23,6 +23,10 @@ export const router = createBrowserRouter(
           lazy: async () => ({ Component: (await import('./features/enrollments/MyCoursesPage')).MyCoursesPage }),
         },
         {
+          path: 'certificates',
+          lazy: async () => ({ Component: (await import('./features/certificates/CertificatesPage')).CertificatesPage }),
+        },
+        {
           path: 'settings',
           lazy: async () => ({ Component: (await import('./features/settings/SettingsPage')).SettingsPage }),
         },
@@ -37,6 +41,10 @@ export const router = createBrowserRouter(
         {
           index: true,
           lazy: async () => ({ Component: (await import('./features/player/ResumeCoursePage')).ResumeCoursePage }),
+        },
+        {
+          path: 'completed',
+          lazy: async () => ({ Component: (await import('./features/player/CourseCompletedPage')).CourseCompletedPage }),
         },
         {
           path: ':lessonId',

@@ -5,3 +5,17 @@
 
 @source '../../views';
 @source '../js';
+
+/* The certificate prints as a single landscape page without the site chrome (FR-SITE-8). */
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 12mm;
+  }
+  html {
+    color-scheme: light;
+  }
+  body {
+    background: white;
+  }
+}

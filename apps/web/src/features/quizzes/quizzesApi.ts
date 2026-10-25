@@ -40,6 +40,7 @@ export const quizzesApi = baseApi.injectEndpoints({
         { type: 'LearnCourse', id: courseId },
         'Dashboard',
         'Enrollments',
+        'Certificates',
       ],
     }),
   }),

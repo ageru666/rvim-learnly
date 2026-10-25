@@ -17,14 +17,15 @@
     <script src="/static/js/theme.js" defer></script>
     <script src="/static/js/menu.js" defer></script>
     <script src="/static/js/confirm.js" defer></script>
+    <script src="/static/js/print.js" defer></script>
   </head>
   <body class="flex min-h-screen flex-col bg-bg font-sans text-text antialiased">
     <a href="#main" class="btn btn-primary sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50"><%= t('site.skipLink') %></a>
-    <%- include('../partials/header') %>
+    <div class="print:hidden"><%- include('../partials/header') %></div>
     <main id="main" class="flex-1" tabindex="-1">
-      <%- include('../partials/flash') %>
+      <div class="print:hidden"><%- include('../partials/flash') %></div>
       <%- body %>
     </main>
-    <%- include('../partials/footer') %>
+    <div class="print:hidden"><%- include('../partials/footer') %></div>
   </body>
 </html>

@@ -95,7 +95,8 @@ type CourseCard = {
 type MyCourse = { enrollmentId: Id; course: CourseCard; status: EnrollmentStatus; progress: number
                   lastLessonId: Id | null; lastActivityAt: DateTime; completedAt: DateTime | null }
 type CertificateDto = { code: string; courseTitle: string; studentName: string; authorName: string
-                        issuedAt: DateTime; revoked: boolean; url: string }
+                        issuedAt: DateTime; revoked: boolean; url: string
+                        courseId: Id; courseSlug: string }
 type NotificationDto = { id: Id; type: NotificationType; payload: Record<string, unknown>
                          read: boolean; createdAt: DateTime; link: string }
 // The client renders the text from its dictionary: t(`notifications.${type}`, payload).

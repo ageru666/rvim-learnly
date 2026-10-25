@@ -6,6 +6,7 @@ import { describe, expect, it } from 'vitest';
 import { config } from '../../../shared/config';
 import { server } from '../../../shared/test/server';
 import { renderWithStore } from '../../../shared/test/renderWithStore';
+import { CourseCompletedPage } from '../CourseCompletedPage';
 import { PlayerPage } from '../PlayerPage';
 import { COURSE_ID, LESSON_1, LESSON_2, LESSON_3, learnCourse, lessonContent } from './fixtures';
 
@@ -123,5 +124,33 @@ describe('PlayerPage', () => {
     renderPlayer(LESSON_2, learnCourse({ mode: 'preview', status: null, progress: 0 }));
     expect(await screen.findByText('Режим перегляду: так курс бачать студенти, прогрес не зберігається.')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Позначити як пройдений' })).not.toBeInTheDocument();
+  });
+});
+
+describe('course completion', () => {
+  it('opens the congratulations screen when the last lesson completes the course', async () => {
+    server.use(
+      http.put(`${config.apiBaseUrl}/learn/lessons/${LESSON_2}/completion`, () =>
+        HttpResponse.json({ progress: 100, completedLessonIds: [LESSON_1, LESSON_2, LESSON_3], courseCompleted: true, certificateCode: 'K7QW2M9XTR' }),
+      ),
+      http.get(`${config.apiBaseUrl}/me/certificates`, () => HttpResponse.json([])),
+      http.get(`${config.apiBaseUrl}/me/dashboard`, () => HttpResponse.json({})),
+      http.get(`${config.apiBaseUrl}/me/enrollments`, () => HttpResponse.json({})),
+    );
+    document.cookie = 'locale=uk; path=/';
+    server.use(
+      http.get(`${config.apiBaseUrl}/learn/courses/${COURSE_ID}`, () => HttpResponse.json(learnCourse())),
+      http.get(`${config.apiBaseUrl}/learn/lessons/:lessonId`, () => HttpResponse.json(lessonContent())),
+    );
+    renderWithStore(
+      <Routes>
+        <Route path="/learn/:courseId/:lessonId" element={<PlayerPage />} />
+        <Route path="/learn/:courseId/completed" element={<CourseCompletedPage />} />
+      </Routes>,
+      { route: `/learn/${COURSE_ID}/${LESSON_2}` },
+    );
+    await userEvent.click(await screen.findByRole('button', { name: 'Позначити як пройдений' }));
+    expect(await screen.findByRole('heading', { name: 'Курс завершено!' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Залишити відгук' })).toHaveAttribute('href', '/courses/js-basics#reviews');
   });
 });

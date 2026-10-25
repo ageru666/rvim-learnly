@@ -17,6 +17,8 @@ import { templateLocals } from './middlewares/locals.js';
 import { createRateLimiters, type RateLimits } from './middlewares/rateLimit.js';
 import { authApiRouter } from './modules/auth/auth.api.js';
 import { authWebRouter } from './modules/auth/auth.web.js';
+import { certificatesApiRouter } from './modules/certificates/certificates.api.js';
+import { certificatesWebRouter } from './modules/certificates/certificates.web.js';
 import { catalogApiRouter } from './modules/catalog/catalog.api.js';
 import { catalogWebRouter } from './modules/catalog/catalog.web.js';
 import { learningApiRouter } from './modules/learning/learning.api.js';
@@ -79,7 +81,9 @@ function routers(): Router[] {
     catalogApiRouter,
     learningApiRouter,
     quizzesApiRouter,
+    certificatesApiRouter,
     authWebRouter,
+    certificatesWebRouter,
     catalogWebRouter,
     staticPagesRouter,
     seoRouter,
