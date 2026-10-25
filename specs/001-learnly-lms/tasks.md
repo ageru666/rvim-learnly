@@ -622,9 +622,9 @@ path open and delays the deletion the test checks.
 
 **Purpose**: quality, end-to-end checks, documentation
 
-- [ ] T188 [P] E2E setup in `apps/web/e2e/playwright.config.ts` (build + start the server on a seeded database, Chromium, projects for `uk` and `en` browser locales) and `apps/web/e2e/helpers/mailpit.ts` (read the latest email through the Mailpit API)
-- [ ] T189 [P] E2E `apps/web/e2e/enroll.spec.ts`: guest → catalog filter → course → enroll → register → verify email via Mailpit → first lesson opened
-- [ ] T190 [P] E2E `apps/web/e2e/complete-course.spec.ts`: a student completes lessons, reloads mid-quiz (answers kept), fails then passes the quiz, completes the course, opens the certificate in a fresh context, leaves a review
+- [X] T188 [P] E2E setup in `apps/web/e2e/playwright.config.ts` (build + start the server on a seeded database, Chromium, projects for `uk` and `en` browser locales) and `apps/web/e2e/helpers/mailpit.ts` (read the latest email through the Mailpit API)
+- [X] T189 [P] E2E `apps/web/e2e/enroll.spec.ts`: guest → catalog filter → course → enroll → register → verify email via Mailpit → first lesson opened
+- [X] T190 [P] E2E `apps/web/e2e/complete-course.spec.ts`: a student completes lessons, reloads mid-quiz (answers kept), fails then passes the quiz, completes the course, opens the certificate in a fresh context, leaves a review
 - [ ] T191 [P] E2E `apps/web/e2e/publish-course.spec.ts`: a user applies, the admin approves, the instructor builds a course with drag and drop, closes the tab mid-edit and restores the draft, submits, the admin rejects then approves, the course is in the catalog, audit log entries exist
 - [ ] T192 [P] E2E `apps/web/e2e/locale.spec.ts`: an English-preferring browser gets English; switching on the site, in the admin panel and in the dashboard; the choice persists across pages and after re-login on a new context; English email in Mailpit for an English user; filtering the catalog by English-language courses (US4 independent test)
 - [ ] T193 [P] Accessibility checks with `@axe-core/playwright` in `apps/web/e2e/a11y.spec.ts` for home, catalog, course, login, admin dashboard, dashboard, player, quiz, course editor (no serious/critical violations, both themes, both languages)

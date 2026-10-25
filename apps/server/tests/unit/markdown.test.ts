@@ -4,7 +4,8 @@ import { renderMarkdown } from '../../src/lib/markdown.js';
 describe('renderMarkdown', () => {
   it('renders GitHub-flavoured Markdown with highlighted code', () => {
     const html = renderMarkdown('# Title\n\n| a | b |\n| - | - |\n| 1 | 2 |\n\n```js\nconst x = 1;\n```');
-    expect(html).toContain('<h1>Title</h1>');
+    // Content sits under the page's own h1, so its headings start one level lower.
+    expect(html).toContain('<h2>Title</h2>');
     expect(html).toContain('<table>');
     expect(html).toContain('hljs');
   });

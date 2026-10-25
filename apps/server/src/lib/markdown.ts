@@ -1,4 +1,4 @@
-import { markdownSanitizeSchema } from '@learnly/contracts/markdown';
+import { markdownSanitizeSchema, rehypeDemoteHeadings } from '@learnly/contracts/markdown';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeSanitize from 'rehype-sanitize';
 import rehypeStringify from 'rehype-stringify';
@@ -12,6 +12,7 @@ const processor = unified()
   .use(remarkGfm)
   .use(remarkRehype)
   .use(rehypeSanitize, markdownSanitizeSchema)
+  .use(rehypeDemoteHeadings)
   .use(rehypeHighlight)
   .use(rehypeStringify);
 

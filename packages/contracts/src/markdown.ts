@@ -13,3 +13,23 @@ export const markdownSanitizeSchema: SanitizeSchema = {
     src: ['http', 'https'],
   },
 };
+
+interface HastNode {
+  type: string;
+  tagName?: string;
+  children?: HastNode[];
+}
+
+const HEADING = /^h([1-6])$/;
+const LOWEST_HEADING = 6;
+
+function demote(node: HastNode): void {
+  const level = node.tagName ? HEADING.exec(node.tagName)?.[1] : undefined;
+  if (level) node.tagName = `h${Math.min(Number(level) + 1, LOWEST_HEADING)}`;
+  node.children?.forEach(demote);
+}
+
+/** Rehype plugin: user content sits under the page's own `<h1>`, so its headings start at `<h2>`. */
+export function rehypeDemoteHeadings() {
+  return (tree: HastNode): void => demote(tree);
+}
