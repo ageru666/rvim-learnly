@@ -1,9 +1,14 @@
-// Generates docs/api/learnly.postman_collection.json and the environment file.
+// Generates docs/api/learnly.postman_collection.json and the environment file: `node scripts/build-postman.mjs`.
+// Edit this script, not the JSON, and run `npm run test:postman` afterwards.
 import { writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 
-const root = process.argv[2];
-const lines = (text) => text.trim().split('\n').map((line) => line.replace(/^ {6}/, ''));
+const root = resolve(import.meta.dirname, '..');
+const lines = (text) =>
+  text
+    .trim()
+    .split('\n')
+    .map((line) => line.replace(/^ {6}/, ''));
 
 function test(script) {
   return { listen: 'test', script: { type: 'text/javascript', exec: lines(script) } };
@@ -20,7 +25,12 @@ const CLEAR_COOKIES = `
 
 const status = (code) => `pm.test('status ${code}', () => pm.response.to.have.status(${code}));`;
 
-function request(name, method, path, { auth, body, query, headers = [], tests = '', prerequest, description, formdata } = {}) {
+function request(
+  name,
+  method,
+  path,
+  { auth, body, query, headers = [], tests = '', prerequest, description, formdata } = {},
+) {
   const url = {
     raw: `{{baseUrl}}${path}${query ? `?${query.map(([key, value]) => `${key}=${value}`).join('&')}` : ''}`,
     host: ['{{baseUrl}}'],
@@ -36,8 +46,23 @@ function request(name, method, path, { auth, body, query, headers = [], tests = 
       method,
       header,
       ...(description ? { description } : {}),
-      ...(auth ? { auth: { type: 'bearer', bearer: [{ key: 'token', value: `{{${auth}}}`, type: 'string' }] } } : { auth: { type: 'noauth' } }),
-      ...(body ? { body: { mode: 'raw', raw: JSON.stringify(body, null, 2), options: { raw: { language: 'json' } } } } : {}),
+      ...(auth
+        ? {
+            auth: {
+              type: 'bearer',
+              bearer: [{ key: 'token', value: `{{${auth}}}`, type: 'string' }],
+            },
+          }
+        : { auth: { type: 'noauth' } }),
+      ...(body
+        ? {
+            body: {
+              mode: 'raw',
+              raw: JSON.stringify(body, null, 2),
+              options: { raw: { language: 'json' } },
+            },
+          }
+        : {}),
       ...(formdata ? { body: { mode: 'formdata', formdata } } : {}),
       url,
     },
@@ -99,10 +124,22 @@ const me = {
       ${status(200)}
       pm.test('is the student', () => pm.expect(pm.response.json().email).to.eql(pm.environment.get('studentEmail')));`,
     }),
-    request('Dashboard', 'GET', '/api/v1/me/dashboard', { auth: 'studentToken', tests: status(200) }),
-    request('My enrollments', 'GET', '/api/v1/me/enrollments', { auth: 'studentToken', tests: status(200) }),
-    request('My certificates', 'GET', '/api/v1/me/certificates', { auth: 'studentToken', tests: status(200) }),
-    request('Unread notifications', 'GET', '/api/v1/me/notifications/unread-count', { auth: 'studentToken', tests: status(200) }),
+    request('Dashboard', 'GET', '/api/v1/me/dashboard', {
+      auth: 'studentToken',
+      tests: status(200),
+    }),
+    request('My enrollments', 'GET', '/api/v1/me/enrollments', {
+      auth: 'studentToken',
+      tests: status(200),
+    }),
+    request('My certificates', 'GET', '/api/v1/me/certificates', {
+      auth: 'studentToken',
+      tests: status(200),
+    }),
+    request('Unread notifications', 'GET', '/api/v1/me/notifications/unread-count', {
+      auth: 'studentToken',
+      tests: status(200),
+    }),
     request('Without a token', 'GET', '/api/v1/me', {
       prerequest: CLEAR_COOKIES,
       tests: `
@@ -123,7 +160,11 @@ const catalog = {
       pm.collectionVariables.set('categoryId', categories[0].id);`,
     }),
     request('Courses (filtered, paginated)', 'GET', '/api/v1/courses', {
-      query: [['level', 'beginner'], ['page', '1'], ['limit', '6']],
+      query: [
+        ['level', 'beginner'],
+        ['page', '1'],
+        ['limit', '6'],
+      ],
       tests: `
       ${status(200)}
       const page = pm.response.json();
@@ -132,7 +173,9 @@ const catalog = {
       if (page.items[0]) pm.collectionVariables.set('anyCourseSlug', page.items[0].slug);`,
     }),
     request('Course by slug', 'GET', '/api/v1/courses/{{anyCourseSlug}}', { tests: status(200) }),
-    request('Course reviews', 'GET', '/api/v1/courses/{{anyCourseSlug}}/reviews', { tests: status(200) }),
+    request('Course reviews', 'GET', '/api/v1/courses/{{anyCourseSlug}}/reviews', {
+      tests: status(200),
+    }),
     request('Public statistics', 'GET', '/api/v1/stats/public', { tests: status(200) }),
     request('Unknown course', 'GET', '/api/v1/courses/no-such-course', {
       tests: `
@@ -147,7 +190,12 @@ const instructorFlow = [
   request('Create a course', 'POST', '/api/v1/instructor/courses', {
     auth: 'instructorToken',
     prerequest: `pm.collectionVariables.set('courseTitle', 'Postman demo course ' + Date.now());`,
-    body: { title: '{{courseTitle}}', categoryId: '{{categoryId}}', level: 'beginner', language: 'en' },
+    body: {
+      title: '{{courseTitle}}',
+      categoryId: '{{categoryId}}',
+      level: 'beginner',
+      language: 'en',
+    },
     tests: `
       ${status(201)}
       const course = pm.response.json();
@@ -195,7 +243,11 @@ const instructorFlow = [
   ),
   request('Write lesson 1', 'PATCH', '/api/v1/instructor/lessons/{{lesson1Id}}', {
     auth: 'instructorToken',
-    body: { content: '# The API\n\nEvery screen of Learnly uses this REST API.', durationMinutes: 5, isPreview: true },
+    body: {
+      content: '# The API\n\nEvery screen of Learnly uses this REST API.',
+      durationMinutes: 5,
+      isPreview: true,
+    },
     tests: status(200),
   }),
   request('Write the quiz', 'PUT', '/api/v1/instructor/lessons/{{quizLessonId}}/quiz', {
@@ -239,7 +291,10 @@ const adminFlow = [
   login('admin', 'adminEmail', 'adminToken'),
   request('Pending courses', 'GET', '/api/v1/admin/courses', {
     auth: 'adminToken',
-    query: [['status', 'pending_review'], ['search', '{{courseTitle}}']],
+    query: [
+      ['status', 'pending_review'],
+      ['search', '{{courseTitle}}'],
+    ],
     tests: `
       ${status(200)}
       pm.test('contains the submitted course', () => {
@@ -279,7 +334,10 @@ const studentFlow = [
       const lessons = pm.response.json().modules.flatMap((module) => module.lessons);
       pm.collectionVariables.set('quizId', lessons.find((lesson) => lesson.type === 'quiz').quizId);`,
   }),
-  request('Open lesson 1', 'GET', '/api/v1/learn/lessons/{{lesson1Id}}', { auth: 'studentToken', tests: status(200) }),
+  request('Open lesson 1', 'GET', '/api/v1/learn/lessons/{{lesson1Id}}', {
+    auth: 'studentToken',
+    tests: status(200),
+  }),
   request('Complete lesson 1', 'PUT', '/api/v1/learn/lessons/{{lesson1Id}}/completion', {
     auth: 'studentToken',
     tests: `
@@ -296,18 +354,16 @@ const studentFlow = [
       const answer = question.options.find((option) => option.text === 'Accept-Language');
       pm.collectionVariables.set('answers', JSON.stringify({ [question.id]: [answer.id] }));`,
   }),
-  {
-    ...request('Submit the quiz', 'POST', '/api/v1/learn/quizzes/{{quizId}}/attempts', {
-      auth: 'studentToken',
-      tests: `
+  request('Submit the quiz', 'POST', '/api/v1/learn/quizzes/{{quizId}}/attempts', {
+    auth: 'studentToken',
+    tests: `
       ${status(201)}
       pm.test('passes with 100 %', () => {
         const result = pm.response.json();
         pm.expect(result.passed).to.eql(true);
         pm.expect(result.scorePercent).to.eql(100);
       });`,
-    }),
-  },
+  }),
   request('Review the course', 'POST', '/api/v1/courses/{{courseId}}/reviews', {
     auth: 'studentToken',
     body: { rating: 5, text: 'Created and reviewed entirely through the API.' },
@@ -324,35 +380,46 @@ const studentFlow = [
   }),
 ];
 // The quiz answers are computed in the previous request; Postman cannot template a JSON object.
-studentFlow[6].request.body = { mode: 'raw', raw: '{ "answers": {{answers}} }', options: { raw: { language: 'json' } } };
+studentFlow[6].request.body = {
+  mode: 'raw',
+  raw: '{ "answers": {{answers}} }',
+  options: { raw: { language: 'json' } },
+};
 studentFlow[6].request.header.push({ key: 'Content-Type', value: 'application/json' });
 
 function localizedError(language) {
   return request(`Validation error (${language})`, 'GET', '/api/v1/courses', {
-    query: [['level', 'expert'], ['minRating', '9']],
+    query: [
+      ['level', 'expert'],
+      ['minRating', '9'],
+    ],
     headers: [{ key: 'Accept-Language', value: language }],
     prerequest: CLEAR_COOKIES,
-    description: 'Anonymous on purpose: for a signed-in user the account language wins over Accept-Language.',
+    description:
+      'Anonymous on purpose: for a signed-in user the account language wins over Accept-Language.',
     tests: `
       ${status(400)}
       ${errorShape}
       const { error } = pm.response.json();
       pm.test('Content-Language is ${language}', () => pm.expect(pm.response.headers.get('Content-Language')).to.eql('${language}'));
       pm.test('details name the fields', () => pm.expect(error.details.map((detail) => detail.path)).to.include.members(['level', 'minRating']));
-      ${language === 'uk'
-        ? `pm.collectionVariables.set('ukErrorCode', error.code);
+      ${
+        language === 'uk'
+          ? `pm.collectionVariables.set('ukErrorCode', error.code);
       pm.collectionVariables.set('ukErrorMessage', error.message);
       pm.test('the message is in Ukrainian', () => pm.expect(error.message).to.match(/[а-яіїєґ]/i));`
-        : `pm.test('the same code as in Ukrainian', () => pm.expect(error.code).to.eql(pm.collectionVariables.get('ukErrorCode')));
+          : `pm.test('the same code as in Ukrainian', () => pm.expect(error.code).to.eql(pm.collectionVariables.get('ukErrorCode')));
       pm.test('a different, English message', () => {
         pm.expect(error.message).to.not.eql(pm.collectionVariables.get('ukErrorMessage'));
         pm.expect(error.message).to.not.match(/[а-яіїєґ]/i);
-      });`}`,
+      });`
+      }`,
   });
 }
 
 const localized = { name: 'Localized error', item: [localizedError('uk'), localizedError('en')] };
-for (const item of localized.item) item.request.header = item.request.header.filter((header) => header.value !== '{{locale}}');
+for (const item of localized.item)
+  item.request.header = item.request.header.filter((header) => header.value !== '{{locale}}');
 
 const collection = {
   info: {
@@ -397,9 +464,20 @@ const environment = {
     ['studentEmail', 'student1@learnly.local'],
     ['instructorEmail', 'olena.teacher@learnly.local'],
     ['adminEmail', 'admin@learnly.local'],
-  ].map(([key, value]) => ({ key, value, type: key === 'demoPassword' ? 'secret' : 'default', enabled: true })),
+  ].map(([key, value]) => ({
+    key,
+    value,
+    type: key === 'demoPassword' ? 'secret' : 'default',
+    enabled: true,
+  })),
   _postman_variable_scope: 'environment',
 };
 
-writeFileSync(join(root, 'docs/api/learnly.postman_collection.json'), JSON.stringify(collection, null, 2) + '\n');
-writeFileSync(join(root, 'docs/api/learnly.postman_environment.json'), JSON.stringify(environment, null, 2) + '\n');
+writeFileSync(
+  join(root, 'docs/api/learnly.postman_collection.json'),
+  JSON.stringify(collection, null, 2) + '\n',
+);
+writeFileSync(
+  join(root, 'docs/api/learnly.postman_environment.json'),
+  JSON.stringify(environment, null, 2) + '\n',
+);

@@ -13,7 +13,8 @@ const STARTUP_TIMEOUT_MS = 60_000;
 
 const envFile = resolve(ROOT, '.env');
 if (existsSync(envFile)) process.loadEnvFile(envFile);
-if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL is not set (copy .env.example to .env)');
+if (!process.env.DATABASE_URL)
+  throw new Error('DATABASE_URL is not set (copy .env.example to .env)');
 
 const databaseUrl = new URL(process.env.DATABASE_URL);
 databaseUrl.pathname = `${databaseUrl.pathname}_postman`;
@@ -67,7 +68,8 @@ try {
 } catch (error) {
   console.error(error instanceof Error ? error.message : error);
 } finally {
-  if (process.platform === 'win32') execSync(`taskkill /pid ${server.pid} /T /F`, { stdio: 'ignore' });
+  if (process.platform === 'win32')
+    execSync(`taskkill /pid ${server.pid} /T /F`, { stdio: 'ignore' });
   else server.kill('SIGTERM');
 }
 process.exit(exitCode);
