@@ -1,0 +1,43 @@
+<h1 class="heading-xl mb-6"><%= t('admin.panel.dashboard') %></h1>
+
+<dl class="mb-8 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
+  <% for (const key of ['users', 'users7d', 'published', 'pending', 'applications', 'enrollments7d']) { %>
+    <div class="card card-body flex flex-col gap-1">
+      <dt class="text-xs text-text-muted"><%= t(`admin.dashboard.${key}`) %></dt>
+      <dd class="heading-lg"><%= format.number(stats.cards[key]) %></dd>
+    </div>
+  <% } %>
+</dl>
+
+<section class="card card-body mb-8" aria-labelledby="chart-heading">
+  <h2 id="chart-heading" class="heading-md mb-4"><%= t('admin.dashboard.chartTitle') %></h2>
+  <%- include('../partials/svg-chart', {
+    id: 'daily-chart',
+    title: t('admin.dashboard.chartTitle'),
+    rows: stats.daily.map((day) => ({ label: day.date.slice(5), a: day.registrations, b: day.enrollments })),
+    labels: { a: t('admin.dashboard.registrations'), b: t('admin.dashboard.enrollments') },
+    tableLabel: t('admin.dashboard.chartTable'),
+  }) %>
+</section>
+
+<div class="grid gap-8 xl:grid-cols-2">
+  <section class="card card-body" aria-labelledby="top-heading">
+    <h2 id="top-heading" class="heading-md mb-4"><%= t('admin.dashboard.topCourses') %></h2>
+    <ol class="flex flex-col gap-2">
+      <% for (const course of stats.topCourses) { %>
+        <li class="flex items-center justify-between gap-3">
+          <a class="link" href="/admin/courses/<%= course.id %>" lang="<%= course.language %>"><%= course.title %></a>
+          <span class="text-sm text-text-muted"><%= t('common.counts.students', { count: course.studentCount }) %></span>
+        </li>
+      <% } %>
+    </ol>
+  </section>
+  <section class="card card-body" aria-labelledby="audit-heading">
+    <h2 id="audit-heading" class="heading-md mb-4"><%= t('admin.dashboard.recentAudit') %></h2>
+    <ul class="flex flex-col gap-2 text-sm">
+      <% for (const entry of stats.recentAudit) { %>
+        <li><span class="font-semibold"><%= entry.actor.name %></span> · <%= t(`admin.audit.${entry.action}`) %> · <span class="text-text-muted"><%= format.date(entry.createdAt, 'dateTime') %></span></li>
+      <% } %>
+    </ul>
+  </section>
+</div>

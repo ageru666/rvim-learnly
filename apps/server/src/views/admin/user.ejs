@@ -1,0 +1,55 @@
+<% const returnTo = `/admin/users/${detail.id}`; %>
+<a class="btn btn-ghost btn-sm mb-4" href="/admin/users"><%- include('../partials/icon', { name: 'arrow-left', size: 16 }) %><%= t('admin.common.back') %></a>
+<h1 class="heading-xl mb-2"><%= detail.name %></h1>
+<p class="mb-6 text-text-muted"><%= detail.email %> · <%= detail.emailVerified ? t('admin.users.verified') : t('admin.users.notVerified') %></p>
+
+<div class="grid gap-6 xl:grid-cols-[2fr_1fr]">
+  <div class="flex flex-col gap-6">
+    <dl class="card card-body grid gap-3 sm:grid-cols-2">
+      <div><dt class="text-xs text-text-muted"><%= t('admin.users.role') %></dt><dd><%= t(`enums.role.${detail.role}`) %></dd></div>
+      <div><dt class="text-xs text-text-muted"><%= t('admin.common.status') %></dt><dd><%= t(`enums.userStatus.${detail.status}`) %></dd></div>
+      <div><dt class="text-xs text-text-muted"><%= t('admin.users.locale') %></dt><dd><%= t(`enums.locale.${detail.locale}`) %></dd></div>
+      <div><dt class="text-xs text-text-muted"><%= t('admin.users.registered') %></dt><dd><%= format.date(detail.createdAt, 'dateTime') %></dd></div>
+      <div><dt class="text-xs text-text-muted"><%= t('admin.users.lastLogin') %></dt><dd><%= detail.lastLoginAt ? format.date(detail.lastLoginAt, 'dateTime') : t('admin.users.never') %></dd></div>
+      <% if (detail.blockedReason) { %><div><dt class="text-xs text-text-muted"><%= t('admin.users.blockedReason') %></dt><dd><%= detail.blockedReason %></dd></div><% } %>
+    </dl>
+
+    <% for (const [key, items, render] of [
+      ['enrollments', detail.enrollments, (item) => `${item.courseTitle} · ${t('admin.users.progress', { value: format.percent(item.progress) })}`],
+      ['authored', detail.courses, (item) => `${item.title} · ${t(`enums.courseStatus.${item.status}`)}`],
+      ['reviews', detail.reviews, (item) => `${item.courseTitle} · ${t('site.course.ratingOutOf', { value: item.rating })}${item.hidden ? ` · ${t('enums.reviewStatus.hidden')}` : ''}`],
+    ]) { %>
+      <section class="card card-body">
+        <h2 class="heading-md mb-3"><%= t(`admin.users.${key}`) %></h2>
+        <% if (items.length === 0) { %><p class="text-sm text-text-muted"><%= t('admin.users.noItems') %></p><% } else { %>
+          <ul class="flex flex-col gap-1 text-sm"><% for (const item of items) { %><li><%= render(item) %></li><% } %></ul>
+        <% } %>
+      </section>
+    <% } %>
+  </div>
+
+  <aside class="flex flex-col gap-6">
+    <% if (!isSelf) { %>
+      <form method="post" action="/admin/users/<%= detail.id %>/role" class="card card-body flex flex-col gap-3">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+        <input type="hidden" name="returnTo" value="<%= returnTo %>" />
+        <label class="field-label" for="user-role"><%= t('admin.users.changeRole') %></label>
+        <select id="user-role" name="role" class="input">
+          <% for (const role of roles) { %><option value="<%= role %>" <%= role === detail.role ? 'selected' : '' %>><%= t(`enums.role.${role}`) %></option><% } %>
+        </select>
+        <button type="submit" class="btn btn-primary self-start"><%= t('admin.categories.save') %></button>
+      </form>
+      <div class="card card-body">
+        <% if (detail.status === 'active') { %>
+          <%- include('../partials/reason-form', { action: `/admin/users/${detail.id}/block`, id: 'block-reason', label: t('admin.common.reason'), button: t('admin.users.block'), returnTo }) %>
+        <% } else { %>
+          <form method="post" action="/admin/users/<%= detail.id %>/unblock">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+            <input type="hidden" name="returnTo" value="<%= returnTo %>" />
+            <button type="submit" class="btn btn-primary"><%= t('admin.users.unblock') %></button>
+          </form>
+        <% } %>
+      </div>
+    <% } %>
+  </aside>
+</div>

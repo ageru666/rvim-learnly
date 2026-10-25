@@ -1,0 +1,16 @@
+<h1 class="heading-xl mb-6"><%= t('admin.panel.moderation') %></h1>
+<% if (queue.length === 0) { %>
+  <p class="text-text-muted"><%= t('admin.courses.queueEmpty') %></p>
+<% } else { %>
+  <ol class="flex flex-col gap-3">
+    <% for (const course of queue) { %>
+      <li class="card card-body flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <p class="font-semibold" lang="<%= course.language %>"><%= course.title %></p>
+          <p class="text-sm text-text-muted"><%= course.author.name %> · <%= t('admin.courses.submittedAt') %> <%= format.date(course.submittedAt, 'dateTime') %></p>
+        </div>
+        <a class="btn btn-primary btn-sm" href="/admin/courses/<%= course.id %>"><%= t('admin.common.open') %></a>
+      </li>
+    <% } %>
+  </ol>
+<% } %>

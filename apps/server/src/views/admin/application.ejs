@@ -1,0 +1,36 @@
+<a class="btn btn-ghost btn-sm mb-4" href="/admin/applications"><%- include('../partials/icon', { name: 'arrow-left', size: 16 }) %><%= t('admin.common.back') %></a>
+<h1 class="heading-xl mb-2"><%= application.user.name %></h1>
+<p class="mb-6 text-text-muted"><%= application.user.email %> · <%= t(`enums.applicationStatus.${application.status}`) %> · <%= format.date(application.createdAt, 'dateTime') %></p>
+
+<div class="grid gap-6 xl:grid-cols-[2fr_1fr]">
+  <div class="flex flex-col gap-6">
+    <section class="card card-body">
+      <h2 class="heading-md mb-2"><%= t('admin.applications.motivation') %></h2>
+      <p class="whitespace-pre-line"><%= application.motivation %></p>
+    </section>
+    <% if (application.experience) { %>
+      <section class="card card-body">
+        <h2 class="heading-md mb-2"><%= t('admin.applications.experience') %></h2>
+        <p class="whitespace-pre-line"><%= application.experience %></p>
+      </section>
+    <% } %>
+    <% if (application.reviewComment) { %>
+      <section class="card card-body">
+        <h2 class="heading-md mb-2"><%= t('admin.applications.comment') %></h2>
+        <p><%= application.reviewComment %></p>
+      </section>
+    <% } %>
+  </div>
+  <% if (application.status === 'pending') { %>
+    <aside class="flex flex-col gap-4">
+      <form method="post" action="/admin/applications/<%= application.id %>/approve" class="card card-body">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+        <input type="hidden" name="returnTo" value="/admin/applications" />
+        <button type="submit" class="btn btn-primary"><%= t('admin.applications.approve') %></button>
+      </form>
+      <div class="card card-body">
+        <%- include('../partials/reason-form', { action: `/admin/applications/${application.id}/reject`, id: 'reject-comment', label: t('admin.applications.comment'), button: t('admin.applications.reject'), returnTo: '/admin/applications' }) %>
+      </div>
+    </aside>
+  <% } %>
+</div>

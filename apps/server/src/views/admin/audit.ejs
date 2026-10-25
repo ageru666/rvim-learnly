@@ -1,0 +1,43 @@
+<h1 class="heading-xl mb-6"><%= t('admin.panel.audit') %></h1>
+<%- include('../partials/admin-filters', {
+  action: '/admin/audit-log',
+  selects: [
+    { id: 'filter-actor', name: 'actorId', label: t('admin.auditLog.actor'), current: query.actorId, options: admins.map((admin) => [admin.id, admin.name]) },
+    { id: 'filter-action', name: 'action', label: t('admin.auditLog.action'), current: query.action, options: actions.map((action) => [action, t(`admin.audit.${action}`)]) },
+  ],
+  extra: [
+    { id: 'filter-from', name: 'from', label: t('admin.auditLog.from'), type: 'date', value: query.from },
+    { id: 'filter-to', name: 'to', label: t('admin.auditLog.to'), type: 'date', value: query.to },
+  ],
+}) %>
+<% if (result.items.length === 0) { %>
+  <p class="text-text-muted"><%= t('admin.common.empty') %></p>
+<% } else { %>
+  <div class="card overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead class="border-b border-border text-left">
+        <tr>
+          <th scope="col" class="p-3"><%= t('admin.common.date') %></th>
+          <th scope="col" class="p-3"><%= t('admin.auditLog.actor') %></th>
+          <th scope="col" class="p-3"><%= t('admin.auditLog.action') %></th>
+          <th scope="col" class="p-3"><%= t('admin.auditLog.entity') %></th>
+          <th scope="col" class="p-3"><%= t('admin.auditLog.details') %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for (const entry of result.items) { %>
+          <tr class="border-b border-border align-top last:border-0">
+            <td class="p-3 whitespace-nowrap"><%= format.date(entry.createdAt, 'dateTime') %></td>
+            <td class="p-3"><%= entry.actor.name %></td>
+            <td class="p-3"><%= t(`admin.audit.${entry.action}`) %></td>
+            <td class="p-3 font-mono text-xs"><%= entry.entityType %> <%= entry.entityId.slice(0, 8) %></td>
+            <td class="p-3 text-xs text-text-muted">
+              <% for (const [key, value] of Object.entries(entry.meta)) { %><% if (value !== null && value !== '') { %><div><%= key %>: <%= String(value) %></div><% } %><% } %>
+            </td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+  <%- include('../partials/pagination', { page: result.page, totalPages, hrefFor: pageHref }) %>
+<% } %>

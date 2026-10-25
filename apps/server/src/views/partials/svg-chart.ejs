@@ -1,0 +1,47 @@
+<%#
+  Server-rendered bar chart for two daily series (FR-ADMIN-1). The SVG has a localized title and
+  description; a data table below is the accessible fallback.
+  Usage: include('../partials/svg-chart', { id, title, rows: [{ label, a, b }], labels: { a, b }, tableLabel }).
+%>
+<%
+  const width = 720;
+  const height = 220;
+  const padding = { top: 12, right: 8, bottom: 28, left: 32 };
+  const innerWidth = width - padding.left - padding.right;
+  const innerHeight = height - padding.top - padding.bottom;
+  const max = Math.max(1, ...rows.map((row) => Math.max(row.a, row.b)));
+  const slot = innerWidth / rows.length;
+  const bar = Math.max(1, slot / 2 - 1);
+  const y = (value) => padding.top + innerHeight - (value / max) * innerHeight;
+  const ticks = [0, Math.round(max / 2), max];
+%>
+<figure class="flex flex-col gap-3">
+  <svg viewBox="0 0 <%= width %> <%= height %>" class="h-auto w-full" role="img" aria-labelledby="<%= id %>-title">
+    <title id="<%= id %>-title"><%= title %></title>
+    <% for (const tick of ticks) { %>
+      <line x1="<%= padding.left %>" x2="<%= width - padding.right %>" y1="<%= y(tick) %>" y2="<%= y(tick) %>" stroke="var(--color-chart-grid)" stroke-width="1" />
+      <text x="<%= padding.left - 6 %>" y="<%= y(tick) + 4 %>" text-anchor="end" font-size="10" fill="var(--color-chart-label)"><%= format.number(tick) %></text>
+    <% } %>
+    <% rows.forEach((row, index) => { %>
+      <% const x = padding.left + index * slot; %>
+      <rect x="<%= x %>" y="<%= y(row.a) %>" width="<%= bar %>" height="<%= padding.top + innerHeight - y(row.a) %>" fill="var(--color-accent-blue)"><title><%= row.label %>: <%= labels.a %> <%= row.a %></title></rect>
+      <rect x="<%= x + bar + 1 %>" y="<%= y(row.b) %>" width="<%= bar %>" height="<%= padding.top + innerHeight - y(row.b) %>" fill="var(--color-accent-green)"><title><%= row.label %>: <%= labels.b %> <%= row.b %></title></rect>
+      <% if (index % 5 === 0) { %>
+        <text x="<%= x + bar %>" y="<%= height - 8 %>" text-anchor="middle" font-size="10" fill="var(--color-chart-label)"><%= row.label %></text>
+      <% } %>
+    <% }) %>
+  </svg>
+  <figcaption class="flex flex-wrap gap-4 text-sm">
+    <span class="flex items-center gap-2"><span class="inline-block size-3 rounded-sm bg-accent-blue" aria-hidden="true"></span><%= labels.a %></span>
+    <span class="flex items-center gap-2"><span class="inline-block size-3 rounded-sm bg-accent-green" aria-hidden="true"></span><%= labels.b %></span>
+  </figcaption>
+  <details>
+    <summary class="cursor-pointer text-sm text-text-muted"><%= tableLabel %></summary>
+    <table class="mt-2 w-full text-sm">
+      <thead><tr><th scope="col" class="text-left"><%= t('admin.common.date') %></th><th scope="col" class="text-right"><%= labels.a %></th><th scope="col" class="text-right"><%= labels.b %></th></tr></thead>
+      <tbody>
+        <% for (const row of rows) { %><tr><td><%= row.label %></td><td class="text-right"><%= row.a %></td><td class="text-right"><%= row.b %></td></tr><% } %>
+      </tbody>
+    </table>
+  </details>
+</figure>

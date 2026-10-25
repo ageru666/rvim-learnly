@@ -1,0 +1,13 @@
+<%#
+  A POST action that requires a reason (10–1000 characters).
+  Usage: include('../partials/reason-form', { action, id, label, button, variant?, returnTo }).
+%>
+<% const buttonVariant = typeof variant === 'undefined' ? 'btn-danger' : variant; %>
+<form method="post" action="<%= action %>" class="flex flex-col gap-2">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+  <input type="hidden" name="returnTo" value="<%= returnTo %>" />
+  <label class="field-label" for="<%= id %>"><%= label %></label>
+  <textarea id="<%= id %>" name="reason" rows="3" class="input" minlength="10" maxlength="1000" required aria-describedby="<%= id %>-hint"></textarea>
+  <p id="<%= id %>-hint" class="field-hint"><%= t('admin.common.reasonHint') %></p>
+  <button type="submit" class="btn <%= buttonVariant %> self-start"><%= button %></button>
+</form>

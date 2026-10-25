@@ -1,0 +1,69 @@
+<%
+  const categoryFields = (prefix, category) => [
+    { id: `${prefix}-uk`, name: 'nameUk', label: t('admin.categories.nameUk'), value: category ? category.nameUk : '', lang: 'uk' },
+    { id: `${prefix}-en`, name: 'nameEn', label: t('admin.categories.nameEn'), value: category ? category.nameEn : '', lang: 'en' },
+  ];
+%>
+<h1 class="heading-xl mb-6"><%= t('admin.panel.categories') %></h1>
+
+<ul class="mb-8 flex flex-col gap-3">
+  <% for (const category of categories) { %>
+    <li class="card card-body flex flex-col gap-3">
+      <form method="post" action="/admin/categories/<%= category.id %>" class="grid items-end gap-3 md:grid-cols-[1fr_1fr_10rem_6rem_auto]">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+        <% for (const field of categoryFields(`category-${category.id}`, category)) { %>
+          <div class="field">
+            <label class="field-label" for="<%= field.id %>"><%= field.label %></label>
+            <input id="<%= field.id %>" name="<%= field.name %>" class="input" value="<%= field.value %>" lang="<%= field.lang %>" minlength="2" maxlength="40" required />
+          </div>
+        <% } %>
+        <div class="field">
+          <label class="field-label" for="category-<%= category.id %>-accent"><%= t('admin.categories.accent') %></label>
+          <select id="category-<%= category.id %>-accent" name="accent" class="input">
+            <% for (const accent of accents) { %><option value="<%= accent %>" <%= accent === category.accent ? 'selected' : '' %>><%= t(`enums.accent.${accent}`) %></option><% } %>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label" for="category-<%= category.id %>-order"><%= t('admin.categories.sortOrder') %></label>
+          <input id="category-<%= category.id %>-order" name="sortOrder" type="number" min="0" max="999" class="input" value="<%= category.sortOrder %>" />
+        </div>
+        <button type="submit" class="btn btn-primary"><%= t('admin.categories.save') %></button>
+      </form>
+      <div class="flex flex-wrap items-center justify-between gap-2 text-sm">
+        <span class="text-text-muted"><span class="tag tag-<%= category.accent %>"><%= category.slug %></span> · <%= t('admin.categories.courses') %>: <%= category.courseCount %></span>
+        <% if (category.courseCount === 0) { %>
+          <form method="post" action="/admin/categories/<%= category.id %>/delete" data-confirm="<%= t('admin.categories.deleteConfirm', { name: category.nameUk }) %>" data-confirm-ok="<%= t('admin.categories.delete') %>" data-confirm-cancel="<%= t('common.actions.cancel') %>">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+            <button type="submit" class="btn btn-ghost btn-sm"><%= t('admin.categories.delete') %></button>
+          </form>
+        <% } else { %>
+          <span class="text-text-muted"><%= t('admin.categories.inUse') %></span>
+        <% } %>
+      </div>
+    </li>
+  <% } %>
+</ul>
+
+<section class="card card-body" aria-labelledby="new-category">
+  <h2 id="new-category" class="heading-md mb-4"><%= t('admin.categories.create') %></h2>
+  <form method="post" action="/admin/categories" class="grid items-end gap-3 md:grid-cols-[1fr_1fr_10rem_6rem_auto]">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+    <% for (const field of categoryFields('new-category', null)) { %>
+      <div class="field">
+        <label class="field-label" for="<%= field.id %>"><%= field.label %></label>
+        <input id="<%= field.id %>" name="<%= field.name %>" class="input" lang="<%= field.lang %>" minlength="2" maxlength="40" required />
+      </div>
+    <% } %>
+    <div class="field">
+      <label class="field-label" for="new-category-accent"><%= t('admin.categories.accent') %></label>
+      <select id="new-category-accent" name="accent" class="input">
+        <% for (const accent of accents) { %><option value="<%= accent %>"><%= t(`enums.accent.${accent}`) %></option><% } %>
+      </select>
+    </div>
+    <div class="field">
+      <label class="field-label" for="new-category-order"><%= t('admin.categories.sortOrder') %></label>
+      <input id="new-category-order" name="sortOrder" type="number" min="0" max="999" class="input" value="0" />
+    </div>
+    <button type="submit" class="btn btn-primary"><%= t('admin.categories.create') %></button>
+  </form>
+</section>

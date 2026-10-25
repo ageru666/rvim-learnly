@@ -1,0 +1,73 @@
+<%#
+  Admin panel layout (FR-ADMIN). The sidebar shows counters for work waiting for the administrator;
+  on small screens the navigation collapses into a <details> menu that works without JavaScript.
+%>
+<%
+  const sections = [
+    { href: '/admin', key: 'dashboard', icon: 'layout-dashboard' },
+    { href: '/admin/users', key: 'users', icon: 'users' },
+    { href: '/admin/courses/moderation', key: 'moderation', icon: 'clipboard-check', count: adminCounters.pending },
+    { href: '/admin/courses', key: 'courses', icon: 'book-open' },
+    { href: '/admin/applications', key: 'applications', icon: 'user-plus', count: adminCounters.applications },
+    { href: '/admin/categories', key: 'categories', icon: 'tags' },
+    { href: '/admin/reviews', key: 'reviews', icon: 'message-square' },
+    { href: '/admin/certificates', key: 'certificates', icon: 'award' },
+    { href: '/admin/audit-log', key: 'audit', icon: 'scroll-text' },
+  ];
+%>
+<!doctype html>
+<html lang="<%= locale %>" data-theme="<%= theme %>">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title><%= t('site.meta.titleTemplate', { page: typeof pageTitle === 'string' && pageTitle ? pageTitle : t('admin.panel.title') }) %></title>
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
+    <link rel="stylesheet" href="/static/css/app.css" />
+    <script src="/static/js/theme.js" defer></script>
+    <script src="/static/js/menu.js" defer></script>
+    <script src="/static/js/confirm.js" defer></script>
+  </head>
+  <body class="min-h-screen bg-bg-subtle font-sans text-text antialiased">
+    <a href="#main" class="btn btn-primary sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50"><%= t('site.skipLink') %></a>
+    <div class="flex min-h-screen flex-col lg:flex-row">
+      <aside class="border-b border-border bg-bg lg:w-64 lg:shrink-0 lg:border-r lg:border-b-0">
+        <div class="flex h-16 items-center justify-between gap-2 px-4">
+          <%- include('../partials/logo') %>
+          <span class="tag tag-neutral"><%= t('admin.panel.title') %></span>
+        </div>
+        <details class="group px-2 pb-3 lg:block" open data-admin-nav>
+          <summary class="btn btn-ghost w-full justify-between lg:hidden"><%= t('admin.panel.openMenu') %><%- include('../partials/icon', { name: 'chevron-down', size: 16 }) %></summary>
+          <nav aria-label="<%= t('admin.panel.navLabel') %>">
+            <ul class="flex flex-col gap-0.5">
+              <% for (const section of sections) { %>
+                <% const active = section.key === adminSection; %>
+                <li>
+                  <a href="<%= section.href %>" class="btn btn-ghost w-full justify-start gap-3 <%= active ? 'bg-surface-selected font-bold' : '' %>" <% if (active) { %>aria-current="page"<% } %>>
+                    <%- include('../partials/icon', { name: section.icon, size: 16 }) %>
+                    <span class="flex-1 text-left"><%= t(`admin.panel.${section.key}`) %></span>
+                    <% if (section.count) { %><span class="tag tag-yellow"><%= format.number(section.count) %></span><% } %>
+                  </a>
+                </li>
+              <% } %>
+            </ul>
+          </nav>
+        </details>
+      </aside>
+
+      <div class="flex min-w-0 flex-1 flex-col">
+        <header class="flex h-16 items-center justify-end gap-2 border-b border-border bg-bg px-4">
+          <a href="/" class="btn btn-ghost btn-sm"><%- include('../partials/icon', { name: 'arrow-left', size: 16 }) %><%= t('admin.panel.toSite') %></a>
+          <%- include('../partials/locale-switcher') %>
+          <%- include('../partials/theme-switcher') %>
+        </header>
+        <main id="main" tabindex="-1" class="flex-1 px-4 py-6 lg:px-8">
+          <% if (flash) { %>
+            <div class="mb-6"><%- include('../partials/alert', { kind: flash.kind, message: t(flash.key, flash.params) }) %></div>
+          <% } %>
+          <%- body %>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

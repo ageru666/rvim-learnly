@@ -1,0 +1,40 @@
+<h1 class="heading-xl mb-6"><%= t('admin.panel.reviews') %></h1>
+<%- include('../partials/admin-filters', {
+  action: '/admin/reviews',
+  selects: [
+    { id: 'filter-rating', name: 'rating', label: t('admin.reviews.rating'), current: query.rating, options: [5, 4, 3, 2, 1].map((stars) => [stars, t('site.course.starsLabel', { stars })]) },
+    { id: 'filter-status', name: 'status', label: t('admin.common.status'), current: query.status, options: statuses.map((status) => [status, t(`enums.reviewStatus.${status}`)]) },
+  ],
+}) %>
+<% if (result.items.length === 0) { %>
+  <p class="text-text-muted"><%= t('admin.common.empty') %></p>
+<% } else { %>
+  <ul class="flex flex-col gap-3">
+    <% for (const review of result.items) { %>
+      <li class="card card-body flex flex-col gap-2">
+        <div class="flex flex-wrap items-center gap-2 text-sm">
+          <span class="font-semibold"><%= review.user.name %></span>
+          <%- include('../partials/star-rating', { value: review.rating, label: t('site.course.ratingOutOf', { value: review.rating }) }) %>
+          <a class="link" href="/courses/<%= review.course.slug %>"><%= review.course.title %></a>
+          <span class="text-text-muted"><%= format.date(review.createdAt) %></span>
+          <% if (review.hidden) { %><span class="tag tag-yellow"><%= t('enums.reviewStatus.hidden') %></span><% } %>
+        </div>
+        <p><%= review.text %></p>
+        <% if (review.hiddenReason) { %><p class="text-sm text-text-muted"><%= t('admin.reviews.hiddenReason') %>: <%= review.hiddenReason %></p><% } %>
+        <% if (review.hidden) { %>
+          <form method="post" action="/admin/reviews/<%= review.id %>/unhide">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+            <input type="hidden" name="returnTo" value="<%= currentPath %>" />
+            <button type="submit" class="btn btn-outline btn-sm"><%= t('admin.reviews.unhide') %></button>
+          </form>
+        <% } else { %>
+          <details>
+            <summary class="btn btn-outline btn-sm"><%= t('admin.reviews.hide') %></summary>
+            <div class="mt-3"><%- include('../partials/reason-form', { action: `/admin/reviews/${review.id}/hide`, id: `hide-${review.id}`, label: t('admin.common.reason'), button: t('admin.reviews.hide'), returnTo: currentPath }) %></div>
+          </details>
+        <% } %>
+      </li>
+    <% } %>
+  </ul>
+  <%- include('../partials/pagination', { page: result.page, totalPages, hrefFor: pageHref }) %>
+<% } %>

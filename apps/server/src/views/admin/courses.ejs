@@ -1,0 +1,33 @@
+<h1 class="heading-xl mb-6"><%= t('admin.panel.courses') %></h1>
+<%- include('../partials/admin-filters', {
+  action: '/admin/courses',
+  search: { name: 'search', label: t('admin.common.search'), value: query.search },
+  selects: [{ id: 'filter-status', name: 'status', label: t('admin.common.status'), current: query.status, options: statuses.map((status) => [status, t(`enums.courseStatus.${status}`)]) }],
+}) %>
+<% if (result.items.length === 0) { %>
+  <p class="text-text-muted"><%= t('admin.common.empty') %></p>
+<% } else { %>
+  <div class="card overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead class="border-b border-border text-left">
+        <tr>
+          <th scope="col" class="p-3"><%= t('admin.reviews.course') %></th>
+          <th scope="col" class="p-3"><%= t('admin.courses.author') %></th>
+          <th scope="col" class="p-3"><%= t('admin.common.status') %></th>
+          <th scope="col" class="p-3 text-right"><%= t('admin.courses.students') %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for (const course of result.items) { %>
+          <tr class="border-b border-border last:border-0">
+            <td class="p-3"><a class="link" href="/admin/courses/<%= course.id %>" lang="<%= course.language %>"><%= course.title %></a></td>
+            <td class="p-3"><%= course.author.name %></td>
+            <td class="p-3"><%= t(`enums.courseStatus.${course.status}`) %></td>
+            <td class="p-3 text-right"><%= t('common.counts.students', { count: course.studentCount }) %></td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+  <%- include('../partials/pagination', { page: result.page, totalPages, hrefFor: pageHref }) %>
+<% } %>

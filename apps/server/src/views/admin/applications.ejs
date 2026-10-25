@@ -1,0 +1,21 @@
+<h1 class="heading-xl mb-6"><%= t('admin.panel.applications') %></h1>
+<%- include('../partials/admin-filters', {
+  action: '/admin/applications',
+  selects: [{ id: 'filter-status', name: 'status', label: t('admin.common.status'), current: query.status, options: statuses.map((status) => [status, t(`enums.applicationStatus.${status}`)]) }],
+}) %>
+<% if (result.items.length === 0) { %>
+  <p class="text-text-muted"><%= t('admin.common.empty') %></p>
+<% } else { %>
+  <ul class="flex flex-col gap-3">
+    <% for (const application of result.items) { %>
+      <li class="card card-body flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <p class="font-semibold"><%= application.user.name %> <span class="text-sm font-normal text-text-muted"><%= application.user.email %></span></p>
+          <p class="text-sm text-text-muted"><%= t(`enums.applicationStatus.${application.status}`) %> · <%= format.date(application.createdAt, 'dateTime') %></p>
+        </div>
+        <a class="btn btn-outline btn-sm" href="/admin/applications/<%= application.id %>"><%= t('admin.common.open') %></a>
+      </li>
+    <% } %>
+  </ul>
+  <%- include('../partials/pagination', { page: result.page, totalPages, hrefFor: pageHref }) %>
+<% } %>

@@ -1,0 +1,31 @@
+<%#
+  GET filter form for admin lists. Usage: include('../partials/admin-filters', { action, search?, selects: [{ id, name, label, current, options: [[value, label]] }], extra? }).
+  `search` is { name, label, value }; `extra` lists other inputs { id, name, label, type, value }.
+%>
+<form method="get" action="<%= action %>" class="card card-body mb-6 flex flex-wrap items-end gap-4">
+  <% if (typeof search !== 'undefined' && search) { %>
+    <div class="field min-w-56 flex-1">
+      <label class="field-label" for="filter-<%= search.name %>"><%= search.label %></label>
+      <input id="filter-<%= search.name %>" type="search" name="<%= search.name %>" class="input" value="<%= search.value || '' %>" />
+    </div>
+  <% } %>
+  <% for (const select of selects) { %>
+    <div class="field">
+      <label class="field-label" for="<%= select.id %>"><%= select.label %></label>
+      <select id="<%= select.id %>" name="<%= select.name %>" class="input">
+        <option value=""><%= t('admin.common.all') %></option>
+        <% for (const [value, label] of select.options) { %>
+          <option value="<%= value %>" <%= String(select.current ?? '') === String(value) ? 'selected' : '' %>><%= label %></option>
+        <% } %>
+      </select>
+    </div>
+  <% } %>
+  <% for (const input of (typeof extra === 'undefined' ? [] : extra)) { %>
+    <div class="field">
+      <label class="field-label" for="<%= input.id %>"><%= input.label %></label>
+      <input id="<%= input.id %>" type="<%= input.type %>" name="<%= input.name %>" class="input" value="<%= input.value || '' %>" />
+    </div>
+  <% } %>
+  <button type="submit" class="btn btn-primary"><%= t('admin.common.filter') %></button>
+  <a class="btn btn-ghost" href="<%= action %>"><%= t('admin.common.reset') %></a>
+</form>

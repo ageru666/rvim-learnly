@@ -1,0 +1,38 @@
+<h1 class="heading-xl mb-6"><%= t('admin.panel.users') %></h1>
+<%- include('../partials/admin-filters', {
+  action: '/admin/users',
+  search: { name: 'search', label: t('admin.common.search'), value: query.search },
+  selects: [
+    { id: 'filter-role', name: 'role', label: t('admin.users.role'), current: query.role, options: roles.map((role) => [role, t(`enums.role.${role}`)]) },
+    { id: 'filter-status', name: 'status', label: t('admin.common.status'), current: query.status, options: statuses.map((status) => [status, t(`enums.userStatus.${status}`)]) },
+  ],
+}) %>
+<% if (result.items.length === 0) { %>
+  <p class="text-text-muted"><%= t('admin.common.empty') %></p>
+<% } else { %>
+  <div class="card overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead class="border-b border-border text-left">
+        <tr>
+          <th scope="col" class="p-3"><%= t('admin.users.name') %></th>
+          <th scope="col" class="p-3"><%= t('admin.users.email') %></th>
+          <th scope="col" class="p-3"><%= t('admin.users.role') %></th>
+          <th scope="col" class="p-3"><%= t('admin.common.status') %></th>
+          <th scope="col" class="p-3"><%= t('admin.users.registered') %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for (const item of result.items) { %>
+          <tr class="border-b border-border last:border-0">
+            <td class="p-3"><a class="link" href="/admin/users/<%= item.id %>"><%= item.name %></a></td>
+            <td class="p-3"><%= item.email %><% if (!item.emailVerified) { %> <span class="tag tag-yellow"><%= t('admin.users.notVerified') %></span><% } %></td>
+            <td class="p-3"><%= t(`enums.role.${item.role}`) %></td>
+            <td class="p-3"><span class="tag <%= item.status === 'blocked' ? 'tag-red' : 'tag-green' %>"><%= t(`enums.userStatus.${item.status}`) %></span></td>
+            <td class="p-3"><%= format.date(item.createdAt) %></td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+  <%- include('../partials/pagination', { page: result.page, totalPages, hrefFor: pageHref }) %>
+<% } %>

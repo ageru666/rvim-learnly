@@ -16,6 +16,8 @@ import { resolveRequestLocale } from './middlewares/locale.js';
 import { templateLocals } from './middlewares/locals.js';
 import { createRateLimiters, type RateLimits } from './middlewares/rateLimit.js';
 import { authApiRouter } from './modules/auth/auth.api.js';
+import { adminApiRouter } from './modules/admin/admin.api.js';
+import { adminWebRouter } from './modules/admin/admin.web.js';
 import { applicationsWebRouter } from './modules/applications/applications.web.js';
 import { authWebRouter } from './modules/auth/auth.web.js';
 import { certificatesApiRouter } from './modules/certificates/certificates.api.js';
@@ -88,10 +90,12 @@ function routers(): Router[] {
     reviewsApiRouter,
     instructorCoursesApiRouter,
     curriculumApiRouter,
+    adminApiRouter,
     certificatesApiRouter,
     authWebRouter,
     certificatesWebRouter,
     applicationsWebRouter,
+    adminWebRouter,
     catalogWebRouter,
     staticPagesRouter,
     seoRouter,

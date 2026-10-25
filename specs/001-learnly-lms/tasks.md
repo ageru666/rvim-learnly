@@ -439,18 +439,26 @@ catalog, both actions are in the audit log
 
 ### Tests for User Story 9
 
-- [ ] T149 [P] [US9] Integration tests in `apps/server/tests/integration/admin.test.ts`: non-admin → 403 on `/api/v1/admin/*` and `/admin/*`; approve/reject/unpublish with reason `10–1000` (missing → 422), notifications and emails in the recipient's locale; application approval sets role `instructor`; blocking revokes refresh tokens and blocks login; self-block/self-demote and the last active admin are protected (BR-U3); a category with courses cannot be deleted; categories require both `nameUk` and `nameEn`; review hide/unhide; certificate revoke; every mutation creates an audit entry
-- [ ] T150 [P] [US9] SSR tests in `apps/server/tests/integration/ssr-admin.test.ts`: every admin page renders for an admin in `uk` and `en`; forms without `_csrf` are rejected; PRG flash after actions
+- [X] T149 [P] [US9] Integration tests in `apps/server/tests/integration/admin.test.ts`: non-admin → 403 on `/api/v1/admin/*` and `/admin/*`; approve/reject/unpublish with reason `10–1000` (missing → 422), notifications and emails in the recipient's locale; application approval sets role `instructor`; blocking revokes refresh tokens and blocks login; self-block/self-demote and the last active admin are protected (BR-U3); a category with courses cannot be deleted; categories require both `nameUk` and `nameEn`; review hide/unhide; certificate revoke; every mutation creates an audit entry
+- [X] T150 [P] [US9] SSR tests in `apps/server/tests/integration/ssr-admin.test.ts`: every admin page renders for an admin in `uk` and `en`; forms without `_csrf` are rejected; PRG flash after actions
 
 ### Implementation for User Story 9
 
-- [ ] T151 [P] [US9] Define `packages/contracts/src/admin.ts` (reason payload, role payload, `AdminUserRow` with `locale`, `AdminUserDetail`, `AdminCategoryDto` with `nameUk`/`nameEn`, `AuditDto`, admin stats, filters)
-- [ ] T152 [US9] Implement `apps/server/src/modules/admin/admin.service.ts` (users list/detail/role/block/unblock with BR-U3, course moderation approve/reject/unpublish with notifications and emails, applications approve/reject, categories CRUD with names in both languages and the delete restriction, reviews hide/unhide with the `review_hidden` notification, certificate revoke, audit log query), recording an audit entry for every mutation
-- [ ] T153 [US9] Implement `apps/server/src/modules/stats/admin-stats.service.ts` (cards, 30-day daily registrations/enrollments, top-5 courses, recent audit)
-- [ ] T154 [US9] Implement `apps/server/src/modules/admin/admin.api.ts` (all `/admin/*` endpoints from contracts/rest-api.md) with OpenAPI
-- [ ] T155 [P] [US9] Create email templates `apps/server/src/views/emails/{course-approved,course-rejected,course-unpublished,application-approved,application-rejected}.ejs` and their `emails.*` keys
-- [ ] T156 [US9] Create `apps/server/src/views/layouts/admin.ejs` (sidebar navigation with counters, locale switcher, responsive collapse) and `apps/server/src/views/partials/admin-table.ejs`, `svg-chart.ejs` (server-rendered bar/line SVG with an accessible localized title and a data table fallback), `reason-form.ejs`
-- [ ] T157 [US9] Implement `apps/server/src/modules/admin/admin.web.ts` with views `apps/server/src/views/admin/{dashboard,users,user,courses,moderation,course,applications,application,categories,reviews,certificates,audit}.ejs` per contracts/ssr-routes.md, audit action labels from `admin.audit.<action>`
+- [X] T151 [P] [US9] Define `packages/contracts/src/admin.ts` (reason payload, role payload, `AdminUserRow` with `locale`, `AdminUserDetail`, `AdminCategoryDto` with `nameUk`/`nameEn`, `AuditDto`, admin stats, filters)
+- [X] T152 [US9] Implement `apps/server/src/modules/admin/admin.service.ts` (users list/detail/role/block/unblock with BR-U3, course moderation approve/reject/unpublish with notifications and emails, applications approve/reject, categories CRUD with names in both languages and the delete restriction, reviews hide/unhide with the `review_hidden` notification, certificate revoke, audit log query), recording an audit entry for every mutation
+- [X] T153 [US9] Implement `apps/server/src/modules/stats/admin-stats.service.ts` (cards, 30-day daily registrations/enrollments, top-5 courses, recent audit)
+- [X] T154 [US9] Implement `apps/server/src/modules/admin/admin.api.ts` (all `/admin/*` endpoints from contracts/rest-api.md) with OpenAPI
+- [X] T155 [P] [US9] Create email templates `apps/server/src/views/emails/{course-approved,course-rejected,course-unpublished,application-approved,application-rejected}.ejs` and their `emails.*` keys
+- [X] T156 [US9] Create `apps/server/src/views/layouts/admin.ejs` (sidebar navigation with counters, locale switcher, responsive collapse) and `apps/server/src/views/partials/admin-table.ejs`, `svg-chart.ejs` (server-rendered bar/line SVG with an accessible localized title and a data table fallback), `reason-form.ejs`
+- [X] T157 [US9] Implement `apps/server/src/modules/admin/admin.web.ts` with views `apps/server/src/views/admin/{dashboard,users,user,courses,moderation,course,applications,application,categories,reviews,certificates,audit}.ejs` per contracts/ssr-routes.md, audit action labels from `admin.audit.<action>`
+
+**Implementation notes (US9)**: the admin logic is split by area instead of one `admin.service.ts`
+(`admin-users`, `admin-courses`, `admin-applications`, `admin-categories`, `admin-content` for reviews and
+certificates, `audit-log`), shared by `admin.api.ts` and `admin.web.ts`; every mutation writes its audit entry in the
+same transaction; the panel uses `partials/admin-filters.ejs` (GET filters) instead of a generic table partial; every
+admin action is a POST with `returnTo` and a flash message (PRG); the email layout now has an optional reason quote and
+shows expiry/"ignore" lines only for link-token emails; the course page certificate mapper is shared
+(`toCertificateDto`); the 30-day series uses UTC days.
 
 **Checkpoint**: the full publication loop: application → course → moderation → catalog
 

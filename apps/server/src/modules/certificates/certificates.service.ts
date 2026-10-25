@@ -10,13 +10,13 @@ export function generateCode(): string {
   return Array.from({ length: CERTIFICATE_CODE_LENGTH }, () => CERTIFICATE_CODE_ALPHABET[randomInt(CERTIFICATE_CODE_ALPHABET.length)]).join('');
 }
 
-const certificateInclude = {
+export const certificateInclude = {
   enrollment: { select: { courseId: true, course: { select: { slug: true } } } },
 } satisfies Prisma.CertificateInclude;
 
-type CertificateRow = Prisma.CertificateGetPayload<{ include: typeof certificateInclude }>;
+export type CertificateRow = Prisma.CertificateGetPayload<{ include: typeof certificateInclude }>;
 
-function toDto(certificate: CertificateRow): CertificateDto {
+export function toCertificateDto(certificate: CertificateRow): CertificateDto {
   return {
     code: certificate.code,
     courseTitle: certificate.courseTitle,
@@ -62,7 +62,7 @@ export async function issueForEnrollment(tx: Tx, enrollmentId: string): Promise<
 export async function getByCode(code: string): Promise<CertificateDto> {
   const certificate = await db.certificate.findUnique({ where: { code }, include: certificateInclude });
   if (!certificate) throw notFound();
-  return toDto(certificate);
+  return toCertificateDto(certificate);
 }
 
 export async function listMine(userId: string): Promise<CertificateDto[]> {
@@ -71,5 +71,5 @@ export async function listMine(userId: string): Promise<CertificateDto[]> {
     include: certificateInclude,
     orderBy: { issuedAt: 'desc' },
   });
-  return certificates.map(toDto);
+  return certificates.map(toCertificateDto);
 }

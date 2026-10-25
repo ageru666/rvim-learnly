@@ -1,8 +1,10 @@
 <%#
-  Shared email body. Usage: include('layout', { name, intro, action, link, expires }), where `link`
-  is a path on the site. Email clients ignore stylesheets, so styles are inline (palette hex values).
+  Shared email body. Usage: include('layout', { name, intro, action, link, expires?, reason? }), where
+  `link` is a path on the site and `reason` is a moderator's comment shown as a quote. Email clients ignore stylesheets, so styles are inline (palette hex values).
 %>
 <% const href = appUrl + link; %>
+<% const hasExpires = typeof expires === 'string' && expires; %>
+<% const hasReason = typeof reason === 'string' && reason; %>
 <!doctype html>
 <html lang="<%= locale %>">
   <body style="margin:0;padding:24px;background:#f3f3f3;font-family:Inter,Arial,sans-serif;color:#090a0b;">
@@ -12,13 +14,17 @@
           <p style="margin:0 0 24px;font-size:20px;font-weight:700;">Learnly</p>
           <p style="margin:0 0 16px;font-size:16px;font-weight:600;"><%= t('emails.layout.greeting', { name }) %></p>
           <p style="margin:0 0 24px;font-size:15px;line-height:1.6;"><%= intro %></p>
+          <% if (hasReason) { %>
+            <p style="margin:0 0 4px;font-size:13px;color:#626266;"><%= t('emails.layout.reason') %></p>
+            <blockquote style="margin:0 0 24px;padding:12px 16px;border-left:4px solid #e9e9eb;background:#f3f3f3;font-size:14px;line-height:1.6;"><%= reason %></blockquote>
+          <% } %>
           <p style="margin:0 0 24px;">
             <a href="<%= href %>" style="display:inline-block;padding:12px 20px;background:#090a0b;color:#ffffff;border-radius:8px;text-decoration:none;font-weight:600;"><%= action %></a>
           </p>
-          <p style="margin:0 0 8px;font-size:13px;color:#626266;"><%= expires %></p>
+          <% if (hasExpires) { %><p style="margin:0 0 8px;font-size:13px;color:#626266;"><%= expires %></p><% } %>
           <p style="margin:0 0 4px;font-size:13px;color:#626266;"><%= t('emails.layout.linkFallback') %></p>
           <p style="margin:0 0 24px;font-size:13px;word-break:break-all;"><a href="<%= href %>" style="color:#090a0b;"><%= href %></a></p>
-          <p style="margin:0 0 8px;font-size:13px;color:#626266;"><%= t('emails.layout.ignore') %></p>
+          <% if (hasExpires) { %><p style="margin:0 0 8px;font-size:13px;color:#626266;"><%= t('emails.layout.ignore') %></p><% } %>
           <p style="margin:0;font-size:12px;color:#626266;"><%= t('emails.layout.footer') %></p>
         </td>
       </tr>

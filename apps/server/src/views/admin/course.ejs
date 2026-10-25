@@ -1,0 +1,64 @@
+<% const returnTo = `/admin/courses/${course.id}`; %>
+<a class="btn btn-ghost btn-sm mb-4" href="<%= course.status === 'pending_review' ? '/admin/courses/moderation' : '/admin/courses' %>"><%- include('../partials/icon', { name: 'arrow-left', size: 16 }) %><%= t('admin.common.back') %></a>
+<div class="mb-6 flex flex-wrap items-center gap-3">
+  <h1 class="heading-xl" lang="<%= course.language %>"><%= course.title %></h1>
+  <span class="tag tag-neutral"><%= t(`enums.courseStatus.${course.status}`) %></span>
+</div>
+
+<div class="grid gap-6 xl:grid-cols-[2fr_1fr]">
+  <div class="flex flex-col gap-6" lang="<%= course.language %>">
+    <section class="card card-body flex flex-col gap-3">
+      <p class="text-sm text-text-muted"><%= t('admin.courses.author') %>: <%= course.author.name %></p>
+      <% if (course.coverUrl) { %><img src="<%= course.coverUrl %>" alt="" class="aspect-video w-full max-w-xl rounded-md object-cover" width="640" height="360" /><% } %>
+      <p class="text-lead"><%= course.shortDescription %></p>
+      <% if (course.description) { %><div class="prose-content"><%- render(course.description) %></div><% } %>
+    </section>
+
+    <% for (const module of course.modules) { %>
+      <section class="card card-body flex flex-col gap-4">
+        <h2 class="heading-md"><%= module.title %></h2>
+        <% for (const lesson of module.lessons) { %>
+          <article class="border-t border-border pt-4">
+            <h3 class="font-semibold"><%= lesson.title %> <span class="text-sm font-normal text-text-muted">· <%= t(`enums.lessonType.${lesson.type}`) %> · <%= format.duration(lesson.durationMinutes) %></span></h3>
+            <% if (lesson.videoUrl) { %><p class="text-sm"><%= t('admin.courses.video') %>: <a class="link" href="<%= lesson.videoUrl %>" rel="noopener noreferrer" target="_blank"><%= lesson.videoUrl %></a></p><% } %>
+            <% if (lesson.content) { %><div class="prose-content mt-2"><%- render(lesson.content) %></div><% } else if (lesson.type !== 'quiz') { %><p class="text-sm text-text-muted"><%= t('admin.courses.noContent') %></p><% } %>
+            <% if (lesson.quiz) { %>
+              <p class="mt-2 text-sm text-text-muted"><%= t('admin.courses.quizSettings', { passScore: lesson.quiz.passScore, attempts: lesson.quiz.maxAttempts === null ? t('admin.courses.unlimited') : lesson.quiz.maxAttempts }) %></p>
+              <ol class="mt-2 flex flex-col gap-3">
+                <% for (const question of lesson.quiz.questions) { %>
+                  <li>
+                    <div class="prose-content"><%- render(question.text) %></div>
+                    <ul class="ml-4 list-disc text-sm">
+                      <% for (const option of question.options) { %>
+                        <li><%= option.text %><% if (option.isCorrect) { %> <span class="tag tag-green"><%= t('admin.courses.correct') %></span><% } %></li>
+                      <% } %>
+                    </ul>
+                    <% if (question.explanation) { %><p class="text-sm text-text-muted"><%= t('admin.courses.explanation') %>: <%= question.explanation %></p><% } %>
+                  </li>
+                <% } %>
+              </ol>
+            <% } %>
+          </article>
+        <% } %>
+      </section>
+    <% } %>
+  </div>
+
+  <aside class="flex flex-col gap-4">
+    <% if (course.status === 'pending_review') { %>
+      <form method="post" action="/admin/courses/<%= course.id %>/approve" class="card card-body">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+        <input type="hidden" name="returnTo" value="/admin/courses/moderation" />
+        <button type="submit" class="btn btn-primary"><%= t('admin.courses.approve') %></button>
+      </form>
+      <div class="card card-body">
+        <%- include('../partials/reason-form', { action: `/admin/courses/${course.id}/reject`, id: 'reject-reason', label: t('admin.common.reason'), button: t('admin.courses.reject'), returnTo: '/admin/courses/moderation' }) %>
+      </div>
+    <% } else if (course.status === 'published') { %>
+      <a class="btn btn-outline" href="/courses/<%= course.slug %>"><%= t('admin.courses.viewOnSite') %></a>
+      <div class="card card-body">
+        <%- include('../partials/reason-form', { action: `/admin/courses/${course.id}/unpublish`, id: 'unpublish-reason', label: t('admin.common.reason'), button: t('admin.courses.unpublish'), returnTo }) %>
+      </div>
+    <% } %>
+  </aside>
+</div>
