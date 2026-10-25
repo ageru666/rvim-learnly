@@ -7,6 +7,7 @@ import { useGetMeQuery } from '../auth/authApi';
 import { useLogout } from '../auth/useLogout';
 import { VerifyEmailBanner } from '../auth/VerifyEmailBanner';
 import { LocaleSwitcher } from '../locale/LocaleSwitcher';
+import { NotificationBell } from '../notifications/NotificationBell';
 import { useT } from '../locale/useT';
 import { ThemeToggle } from '../theme/ThemeToggle';
 import { Logo } from './components/Logo';
@@ -43,6 +44,7 @@ export function AppLayout() {
               <LocaleSwitcher />
             </div>
             <ThemeToggle />
+            {me && <NotificationBell />}
             {me && <UserMenu me={me} onLogout={logout} />}
           </div>
         </div>

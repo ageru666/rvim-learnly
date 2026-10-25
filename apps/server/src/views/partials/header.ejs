@@ -16,6 +16,10 @@
       <%- include('theme-switcher') %>
 
       <% if (user) { %>
+        <a href="/app/notifications" class="btn btn-ghost btn-icon relative" aria-label="<%= t('site.header.notifications') %><%= unreadNotifications ? ': ' + t('site.header.unread', { count: unreadNotifications }) : '' %>">
+          <%- include('icon', { name: 'bell', size: 18 }) %>
+          <% if (unreadNotifications) { %><span class="absolute -top-1 -right-1 grid min-w-5 place-items-center rounded-pill bg-accent-red px-1 text-xs font-bold text-on-primary" aria-hidden="true"><%= unreadNotifications > 99 ? '99+' : unreadNotifications %></span><% } %>
+        </a>
         <details class="dropdown" data-dropdown>
           <summary class="btn btn-ghost gap-2" aria-label="<%= t('site.header.userMenu') %>">
             <span class="grid size-8 place-items-center rounded-pill bg-secondary text-sm font-semibold" aria-hidden="true"><%= user.name.slice(0, 1).toUpperCase() %></span>

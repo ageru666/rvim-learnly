@@ -689,6 +689,16 @@ export const en = {
       chartData: 'Chart data',
       back: 'Back to the course editor',
     },
+    notificationsPage: {
+      title: 'Notifications',
+      markAll: 'Mark all as read',
+      empty: 'No notifications yet.',
+      listLabel: 'Notifications',
+      unread: 'New',
+      open: 'Open',
+      dashboardHeading: 'Latest notifications',
+      all: 'All notifications',
+    },
     settings: {
       title: 'Settings',
       securityTab: 'Security',

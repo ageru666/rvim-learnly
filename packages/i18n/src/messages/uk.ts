@@ -686,6 +686,16 @@ export const uk = {
       chartData: 'Дані графіка',
       back: 'До редактора курсу',
     },
+    notificationsPage: {
+      title: 'Сповіщення',
+      markAll: 'Позначити всі прочитаними',
+      empty: 'Сповіщень поки немає.',
+      listLabel: 'Сповіщення',
+      unread: 'Нове',
+      open: 'Відкрити',
+      dashboardHeading: 'Останні сповіщення',
+      all: 'Усі сповіщення',
+    },
     settings: {
       title: 'Налаштування',
       securityTab: 'Безпека',

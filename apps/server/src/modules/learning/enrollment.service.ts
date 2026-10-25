@@ -2,7 +2,7 @@ import type { CourseCard } from '@learnly/contracts/catalog';
 import type { Page } from '@learnly/contracts/common';
 import type { Locale } from '@learnly/contracts/enums';
 import type { Dashboard, EnrollResult, MyCourse, MyCoursesQuery } from '@learnly/contracts/learning';
-import { DASHBOARD_ACTIVE_COURSES, RECOMMENDATIONS_LIMIT } from '@learnly/contracts/limits';
+import { DASHBOARD_ACTIVE_COURSES, DASHBOARD_NOTIFICATIONS, RECOMMENDATIONS_LIMIT } from '@learnly/contracts/limits';
 import { db } from '../../lib/db.js';
 import { conflict, notFound, ruleViolation } from '../../lib/errors.js';
 import { toPage, toSkipTake } from '../../lib/pagination.js';
@@ -10,6 +10,7 @@ import { Prisma } from '../../generated/prisma/client.js';
 import { courseCardInclude, loadCourseCards, loadCourseStats, toCourseCard } from '../catalog/course-card.js';
 import { computeProgress } from '@learnly/contracts/progress';
 import { listMine } from '../certificates/certificates.service.js';
+import { latestNotifications } from '../notifications/notifications.service.js';
 
 /** First lesson in curriculum order: modules by position, then lessons by position. */
 function firstLesson(courseId: string): Promise<{ id: string; title: string } | null> {
@@ -136,6 +137,7 @@ export async function getDashboard(userId: string, locale: Locale): Promise<Dash
         : null,
     active,
     certificates: await listMine(userId),
+    notifications: await latestNotifications(userId, DASHBOARD_NOTIFICATIONS),
     recommendations: await recommendations(userId, categoryIds, locale),
   };
 }

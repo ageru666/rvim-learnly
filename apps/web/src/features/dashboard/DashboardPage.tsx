@@ -6,11 +6,12 @@ import { useGetMeQuery } from '../auth/authApi';
 import { CertificatesBlock } from '../certificates/CertificatesBlock';
 import { useGetDashboardQuery } from '../enrollments/enrollmentsApi';
 import { useT } from '../locale/useT';
+import { NotificationsBlock } from '../notifications/NotificationsBlock';
 import { ActiveCoursesList } from './components/ActiveCoursesList';
 import { ContinueLearningCard } from './components/ContinueLearningCard';
 import { RecommendationsList } from './components/RecommendationsList';
 
-/** FR-LEARN-2. Notifications (US11) join this page with their story. */
+/** FR-LEARN-2. */
 export function DashboardPage() {
   const i18n = useT();
   const { data: me } = useGetMeQuery();
@@ -37,6 +38,7 @@ export function DashboardPage() {
         <>
           {data.continue && <ContinueLearningCard item={data.continue} />}
           <ActiveCoursesList courses={data.active} />
+          <NotificationsBlock notifications={data.notifications} />
           <CertificatesBlock certificates={data.certificates} />
           <RecommendationsList courses={data.recommendations} />
         </>

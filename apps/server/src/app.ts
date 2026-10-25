@@ -25,6 +25,7 @@ import { certificatesWebRouter } from './modules/certificates/certificates.web.j
 import { catalogApiRouter } from './modules/catalog/catalog.api.js';
 import { catalogWebRouter } from './modules/catalog/catalog.web.js';
 import { learningApiRouter } from './modules/learning/learning.api.js';
+import { notificationsApiRouter } from './modules/notifications/notifications.api.js';
 import { quizzesApiRouter } from './modules/quizzes/quizzes.api.js';
 import { instructorCoursesApiRouter } from './modules/courses/instructor-courses.api.js';
 import { curriculumApiRouter } from './modules/curriculum/curriculum.api.js';
@@ -83,6 +84,7 @@ function routers(): Router[] {
     docsRouter,
     preferencesRouter,
     authApiRouter,
+    notificationsApiRouter,
     meApiRouter,
     catalogApiRouter,
     learningApiRouter,

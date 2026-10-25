@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { courseCardSchema } from './catalog.js';
 import { certificateSchema } from './certificates.js';
 import { dateTimeSchema, idSchema, pageQuerySchema } from './common.js';
+import { notificationSchema } from './notifications.js';
 import { enrollmentStatusSchema, lessonTypeSchema, localeSchema } from './enums.js';
 
 export const myCourseSchema = z.object({
@@ -30,11 +31,11 @@ export const continueLearningSchema = z.object({
 });
 export type ContinueLearning = z.infer<typeof continueLearningSchema>;
 
-/** Notifications (US11) are added to this shape by their story. */
 export const dashboardSchema = z.object({
   continue: continueLearningSchema.nullable(),
   active: z.array(myCourseSchema),
   certificates: z.array(certificateSchema),
+  notifications: z.array(notificationSchema),
   recommendations: z.array(courseCardSchema),
 });
 export type Dashboard = z.infer<typeof dashboardSchema>;

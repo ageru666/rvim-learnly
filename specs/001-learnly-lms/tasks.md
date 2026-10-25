@@ -503,15 +503,20 @@ a link within a minute
 
 ### Tests for User Story 11
 
-- [ ] T165 [P] [US11] Integration tests in `apps/server/tests/integration/notifications.test.ts`: list pagination newest first, unread count, read one (own only, otherwise 404), read all; a link is built for every `NotificationType`
-- [ ] T166 [P] [US11] SPA tests in `apps/web/src/features/notifications/__tests__/` (`buildNotificationLink` and `notificationMessage(type, payload)` utils 100 % for every type in both locales; the bell shows the count as text; read-all resets the count)
+- [X] T165 [P] [US11] Integration tests in `apps/server/tests/integration/notifications.test.ts`: list pagination newest first, unread count, read one (own only, otherwise 404), read all; a link is built for every `NotificationType`
+- [X] T166 [P] [US11] SPA tests in `apps/web/src/features/notifications/__tests__/` (`buildNotificationLink` and `notificationMessage(type, payload)` utils 100 % for every type in both locales; the bell shows the count as text; read-all resets the count)
 
 ### Implementation for User Story 11
 
-- [ ] T167 [P] [US11] Define `packages/contracts/src/notifications.ts` (`NotificationDto`, payload schemas per type; the `notifications.<type>` messages already exist from T023)
-- [ ] T168 [US11] Add `list`, `unreadCount`, `markRead`, `markAllRead` to `apps/server/src/modules/notifications/notifications.service.ts` and implement `apps/server/src/modules/notifications/notifications.api.ts` (`/me/notifications*`) with OpenAPI
-- [ ] T169 [US11] Render the unread counter and notifications link in `apps/server/src/views/partials/header.ejs` via `apps/server/src/middlewares/locals.ts`
-- [ ] T170 [US11] Implement `apps/web/src/features/notifications/notificationsApi.ts` (unread count with `pollingInterval: 60000` and `refetchOnFocus`, list as an `infiniteQuery`, mark read with an optimistic update, read all), `utils.ts`, `NotificationBell.tsx` (in the AppLayout header), `NotificationsPage.tsx` at `/app/notifications` (`VirtualList`), `NotificationsBlock.tsx` for the dashboard
+- [X] T167 [P] [US11] Define `packages/contracts/src/notifications.ts` (`NotificationDto`, payload schemas per type; the `notifications.<type>` messages already exist from T023)
+- [X] T168 [US11] Add `list`, `unreadCount`, `markRead`, `markAllRead` to `apps/server/src/modules/notifications/notifications.service.ts` and implement `apps/server/src/modules/notifications/notifications.api.ts` (`/me/notifications*`) with OpenAPI
+- [X] T169 [US11] Render the unread counter and notifications link in `apps/server/src/views/partials/header.ejs` via `apps/server/src/middlewares/locals.ts`
+- [X] T170 [US11] Implement `apps/web/src/features/notifications/notificationsApi.ts` (unread count with `pollingInterval: 60000` and `refetchOnFocus`, list as an `infiniteQuery`, mark read with an optimistic update, read all), `utils.ts`, `NotificationBell.tsx` (in the AppLayout header), `NotificationsPage.tsx` at `/app/notifications` (`VirtualList`), `NotificationsBlock.tsx` for the dashboard
+
+**Implementation notes (US11)**: `buildNotificationLink` lives in `packages/contracts/src/notifications.ts` and is
+used by the server DTO and the SPA alike (tested there for every type); the SPA `utils.ts` has `notificationMessage`
+and `linkTarget` (`/app/...` stays in the SPA); the SSR header counter comes from `templateLocals` (now async);
+the dashboard response includes the five latest notifications.
 
 **Checkpoint**: roles are connected by notifications
 
