@@ -596,14 +596,23 @@ everything is the same, no flashing
 
 ### Tests for User Story 14
 
-- [ ] T183 [P] [US14] Integration tests in `apps/server/tests/integration/profile.test.ts`: `PATCH /me` limits (`name 2–60`, `bio ≤ 500`, links valid URL ≤ 200, `locale` only `uk|en`); an avatar > 1 MB or a non-image (renamed .txt) is rejected; the avatar is stored as 256×256 WebP; delete avatar; the `theme` cookie renders `data-theme` on SSR
-- [ ] T184 [P] [US14] SPA tests in `apps/web/src/features/profile/__tests__/` (form validation from contracts with localized messages, avatar upload error display)
+- [X] T183 [P] [US14] Integration tests in `apps/server/tests/integration/profile.test.ts`: `PATCH /me` limits (`name 2–60`, `bio ≤ 500`, links valid URL ≤ 200, `locale` only `uk|en`); an avatar > 1 MB or a non-image (renamed .txt) is rejected; the avatar is stored as 256×256 WebP; delete avatar; the `theme` cookie renders `data-theme` on SSR
+- [X] T184 [P] [US14] SPA tests in `apps/web/src/features/profile/__tests__/` (form validation from contracts with localized messages, avatar upload error display)
 
 ### Implementation for User Story 14
 
-- [ ] T185 [US14] Add `updateProfile`, `setAvatar`, `removeAvatar` to `apps/server/src/modules/users/users.service.ts` and `PATCH /me` (profile fields), `POST|DELETE /me/avatar` to `apps/server/src/modules/users/me.api.ts`
-- [ ] T186 [US14] Implement `apps/web/src/features/profile/profileApi.ts` and `ProfilePage.tsx` at `/app/profile` (name, bio, links, avatar upload with preview and remove)
-- [ ] T187 [US14] Add `AppearanceSettings.tsx` (light/dark/system using the ThemeToggle state) to `apps/web/src/features/settings/SettingsPage.tsx` and verify SSR ↔ SPA theme sync through the `theme` cookie
+- [X] T185 [US14] Add `updateProfile`, `setAvatar`, `removeAvatar` to `apps/server/src/modules/users/users.service.ts` and `PATCH /me` (profile fields), `POST|DELETE /me/avatar` to `apps/server/src/modules/users/me.api.ts`
+- [X] T186 [US14] Implement `apps/web/src/features/profile/profileApi.ts` and `ProfilePage.tsx` at `/app/profile` (name, bio, links, avatar upload with preview and remove)
+- [X] T187 [US14] Add `AppearanceSettings.tsx` (light/dark/system using the ThemeToggle state) to `apps/web/src/features/settings/SettingsPage.tsx` and verify SSR ↔ SPA theme sync through the `theme` cookie
+
+**Implementation notes (US14)**: `updateMeSchema` now carries `name`, `bio` (empty → null) and `links` (empty → removed,
+http(s) only); `userNameSchema` moved to `contracts/me.ts` to avoid an import cycle with `auth.ts` (re-exported there).
+`PATCH /me` applies only the fields present; the avatar keeps the existing `saveAvatar` (signature check, 256×256
+WebP) and deletes the previous file. The SPA profile form follows the settings pattern (uncontrolled form, contract
+check, client errors in `profileSlice`); `checkForm`/`fieldErrorsFrom` moved to `shared/utils/checkForm.ts` for both
+features. The avatar file type and size are checked before uploading, the server checks again. The public author page
+(FR-PROFILE-3) already existed from US1. On Windows the avatar test reads image metadata from a buffer: sharp keeps a
+path open and delays the deletion the test checks.
 
 **Checkpoint**: every story is implemented
 

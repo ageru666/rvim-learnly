@@ -10,7 +10,8 @@ import { describeError } from '../../../shared/utils/describeError';
 import { useT } from '../../locale/useT';
 import { useChangePasswordMutation } from '../settingsApi';
 import { formChecked, selectClientErrors } from '../settingsSlice';
-import { checkForm, fieldErrorsFrom, passwordFormSchema } from '../utils';
+import { checkForm, fieldErrorsFrom } from '../../../shared/utils/checkForm';
+import { passwordFormSchema } from '../utils';
 
 export function ChangePasswordForm() {
   const i18n = useT();

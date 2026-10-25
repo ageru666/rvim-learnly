@@ -1,5 +1,5 @@
 import type { Me } from '@learnly/contracts/me';
-import { ChevronDown, LogOut, Settings, Shield } from 'lucide-react';
+import { ChevronDown, LogOut, Settings, Shield, UserRound } from 'lucide-react';
 import { Link } from 'react-router';
 import { Avatar } from '../../../shared/components/Avatar';
 import { DropdownMenu } from '../../../shared/components/DropdownMenu';
@@ -23,6 +23,12 @@ export function UserMenu({ me, onLogout }: UserMenuProps) {
         </button>
       }
     >
+      <DropdownMenuItem asChild>
+        <Link to="/profile">
+          <UserRound aria-hidden size={16} />
+          {t('app.profile.title')}
+        </Link>
+      </DropdownMenuItem>
       <DropdownMenuItem asChild>
         <Link to="/settings">
           <Settings aria-hidden size={16} />

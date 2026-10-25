@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import type { FieldErrors } from './utils';
+import type { FieldErrors } from '../../shared/utils/checkForm';
 
 export type SecurityForm = 'password' | 'email';
 

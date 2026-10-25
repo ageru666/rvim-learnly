@@ -10,7 +10,8 @@ import { describeError } from '../../../shared/utils/describeError';
 import { useT } from '../../locale/useT';
 import { useRequestEmailChangeMutation } from '../settingsApi';
 import { formChecked, selectClientErrors } from '../settingsSlice';
-import { checkForm, emailFormSchema, fieldErrorsFrom } from '../utils';
+import { checkForm, fieldErrorsFrom } from '../../../shared/utils/checkForm';
+import { emailFormSchema } from '../utils';
 
 interface ChangeEmailFormProps {
   currentEmail: string;

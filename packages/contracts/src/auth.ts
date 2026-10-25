@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { LIMITS } from './limits.js';
-import { meSchema } from './me.js';
+import { meSchema, userNameSchema } from './me.js';
 import { VALIDATION_MESSAGES } from './validation.js';
 
 export const emailSchema = z.email().max(LIMITS.email.max);
@@ -13,7 +13,7 @@ export const passwordSchema = z
   .regex(/\p{L}/u, { error: VALIDATION_MESSAGES.passwordLetterAndDigit })
   .regex(/\d/, { error: VALIDATION_MESSAGES.passwordLetterAndDigit });
 
-export const userNameSchema = z.string().trim().min(LIMITS.userName.min).max(LIMITS.userName.max);
+export { userNameSchema };
 
 export const registerSchema = z.object({
   name: userNameSchema,

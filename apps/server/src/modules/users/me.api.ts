@@ -7,14 +7,24 @@ import { meSchema, updateMeSchema } from '@learnly/contracts/me';
 import { Router } from 'express';
 import { z } from 'zod';
 import { COOKIES, readCookie, setPreferenceCookie } from '../../lib/cookies.js';
+import { AppError } from '../../lib/errors.js';
 import { API_PREFIX } from '../../lib/http.js';
 import { parseInput } from '../../lib/validation.js';
 import { currentUser, requireAuth } from '../../middlewares/requireRole.js';
+import { avatarUpload } from '../../middlewares/upload.js';
 import { registerRoute } from '../../openapi/registry.js';
 import { applyForInstructor, getMyApplication } from '../applications/applications.service.js';
 import { listMine } from '../certificates/certificates.service.js';
 import { getDashboard, listMyCourses } from '../learning/enrollment.service.js';
-import { changePassword, getMe, requestEmailChange, updateLocale } from './users.service.js';
+import {
+  changePassword,
+  getMe,
+  removeAvatar,
+  requestEmailChange,
+  setAvatar,
+  updateLocale,
+  updateProfile,
+} from './users.service.js';
 
 const TAG = 'Me';
 const ME = `${API_PREFIX}/me`;
@@ -38,19 +48,49 @@ registerRoute({
   method: 'patch',
   path: ME,
   tag: TAG,
-  summary: 'Update the account; `locale` also becomes the language of this device',
+  summary: 'Update the profile (name, about, links) and the language; `locale` also becomes the language of this device',
   access: 'user',
   body: updateMeSchema,
+  bodyExample: { name: 'Olha Kovalenko', bio: 'Frontend developer.', links: { github: 'https://github.com/olha' } },
   responses: { 200: { description: 'Me', schema: meSchema } },
 });
 meApiRouter.patch(ME, async (req, res) => {
   const input = parseInput(updateMeSchema, req.body, req.i18n);
   const userId = currentUser(req).id;
-  if (input.locale) {
-    await updateLocale(userId, input.locale);
-    setPreferenceCookie(res, COOKIES.locale, input.locale);
+  const { locale, ...profile } = input;
+  await updateProfile(userId, profile);
+  if (locale) {
+    await updateLocale(userId, locale);
+    setPreferenceCookie(res, COOKIES.locale, locale);
   }
   res.json(await getMe(userId));
+});
+
+registerRoute({
+  method: 'post',
+  path: `${ME}/avatar`,
+  tag: TAG,
+  summary: 'Upload an avatar: JPG, PNG or WebP up to 1 MB, cropped to 256×256 (FR-PROFILE-2)',
+  access: 'user',
+  body: z.object({ file: z.string().meta({ format: 'binary' }) }),
+  bodyContentType: 'multipart/form-data',
+  responses: { 200: { description: 'Me', schema: meSchema } },
+});
+meApiRouter.post(`${ME}/avatar`, avatarUpload, async (req, res) => {
+  if (!req.file) throw new AppError('VALIDATION_ERROR', 'errors.upload.invalidType');
+  res.json(await setAvatar(currentUser(req).id, req.file.buffer));
+});
+
+registerRoute({
+  method: 'delete',
+  path: `${ME}/avatar`,
+  tag: TAG,
+  summary: 'Remove the avatar; initials are shown instead',
+  access: 'user',
+  responses: { 200: { description: 'Me', schema: meSchema } },
+});
+meApiRouter.delete(`${ME}/avatar`, async (req, res) => {
+  res.json(await removeAvatar(currentUser(req).id));
 });
 
 registerRoute({

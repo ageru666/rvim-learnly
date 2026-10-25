@@ -163,3 +163,12 @@ describe('interface language', () => {
     await waitFor(() => expect(saved).toEqual({ locale: 'en' }));
   });
 });
+
+describe('appearance', () => {
+  it('applies the chosen theme and remembers it in the cookie the server renders with', async () => {
+    renderSettings();
+    await userEvent.click(await screen.findByRole('radio', { name: 'Темна' }));
+    await waitFor(() => expect(document.documentElement.dataset.theme).toBe('dark'));
+    expect(document.cookie).toContain('theme=dark');
+  });
+});

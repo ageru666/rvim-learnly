@@ -17,6 +17,7 @@ import { playerReducer } from './features/player/playerSlice';
 import { startQuizListeners } from './features/quizzes/quizListeners';
 import { quizReducer } from './features/quizzes/quizSlice';
 import { reviewsReducer } from './features/reviews/reviewsSlice';
+import { profileReducer } from './features/profile/profileSlice';
 import { settingsReducer } from './features/settings/settingsSlice';
 import { teachCoursesReducer } from './features/teachCourses/teachCoursesSlice';
 import { curriculumReducer } from './features/teachCurriculum/curriculumSlice';
@@ -46,6 +47,7 @@ const rootReducer = combineReducers({
   player: playerReducer,
   quiz: quizReducer,
   reviews: reviewsReducer,
+  profile: profileReducer,
   settings: settingsReducer,
   teachCourses: teachCoursesReducer,
   teachLessons: teachLessonsReducer,

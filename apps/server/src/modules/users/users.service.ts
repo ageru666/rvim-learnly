@@ -1,7 +1,8 @@
 import type { Locale } from '@learnly/contracts/enums';
-import { userLinksSchema, type Me } from '@learnly/contracts/me';
+import { userLinksSchema, type Me, type UpdateMeInput } from '@learnly/contracts/me';
 import { db } from '../../lib/db.js';
 import { conflict, notFound } from '../../lib/errors.js';
+import { deleteUpload, saveAvatar } from '../../lib/images.js';
 import { hashPassword } from '../../lib/passwords.js';
 import { checkPassword, sendVerificationEmail } from '../auth/auth.service.js';
 import { revokeAllSessions } from '../auth/session.service.js';
@@ -25,6 +26,37 @@ export async function getMe(userId: string): Promise<Me> {
 
 export async function updateLocale(userId: string, locale: Locale): Promise<void> {
   await db.user.update({ where: { id: userId }, data: { locale } });
+}
+
+type ProfileInput = Omit<UpdateMeInput, 'locale'>;
+
+/** FR-PROFILE-1: only the fields present in the request change; `links` replaces all three links. */
+export async function updateProfile(userId: string, input: ProfileInput): Promise<void> {
+  await db.user.update({
+    where: { id: userId },
+    data: {
+      ...(input.name === undefined ? {} : { name: input.name }),
+      ...(input.bio === undefined ? {} : { bio: input.bio }),
+      ...(input.links === undefined ? {} : { links: userLinksSchema.parse(input.links) }),
+    },
+  });
+}
+
+/** FR-PROFILE-2: the image is checked by its signature, cropped to 256×256 WebP; the old file is removed. */
+export async function setAvatar(userId: string, image: Buffer): Promise<Me> {
+  const avatarUrl = await saveAvatar(image);
+  const previous = await db.user.findUniqueOrThrow({ where: { id: userId }, select: { avatarUrl: true } });
+  await db.user.update({ where: { id: userId }, data: { avatarUrl } });
+  await deleteUpload(previous.avatarUrl);
+  return getMe(userId);
+}
+
+/** Without an avatar the initials are shown. */
+export async function removeAvatar(userId: string): Promise<Me> {
+  const previous = await db.user.findUniqueOrThrow({ where: { id: userId }, select: { avatarUrl: true } });
+  await db.user.update({ where: { id: userId }, data: { avatarUrl: null } });
+  await deleteUpload(previous.avatarUrl);
+  return getMe(userId);
 }
 
 /** FR-AUTH-6: other sessions end; the session identified by `keepRefreshToken` stays. */

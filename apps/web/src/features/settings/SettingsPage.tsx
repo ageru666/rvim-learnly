@@ -1,6 +1,7 @@
 import { PageLoader } from '../../shared/components/PageLoader';
 import { useGetMeQuery } from '../auth/authApi';
 import { useT } from '../locale/useT';
+import { AppearanceSettings } from './components/AppearanceSettings';
 import { LanguageSettings } from './components/LanguageSettings';
 import { SecuritySettings } from './components/SecuritySettings';
 
@@ -12,6 +13,7 @@ export function SettingsPage() {
     <div className="mx-auto flex max-w-3xl flex-col gap-6">
       <h1 className="heading-xl">{t('app.settings.title')}</h1>
       <LanguageSettings />
+      <AppearanceSettings />
       <section aria-label={t('app.settings.securityTab')}>
         <SecuritySettings email={me.email} />
       </section>
