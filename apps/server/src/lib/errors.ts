@@ -1,6 +1,6 @@
-import { ERROR_HTTP_STATUS, type ErrorCode, type ErrorDetail } from '@learnly/contracts/errors';
+import { ERROR_HTTP_STATUS, type ApiError, type ErrorCode, type ErrorDetail } from '@learnly/contracts/errors';
 import type { MessageKey } from '@learnly/i18n/keys';
-import type { LooseParams } from '@learnly/i18n/translator';
+import type { LooseParams, Translator } from '@learnly/i18n/translator';
 
 interface AppErrorOptions {
   params?: LooseParams;
@@ -26,6 +26,21 @@ export class AppError extends Error {
     this.name = 'AppError';
     this.status = ERROR_HTTP_STATUS[code];
   }
+}
+
+/** The JSON body of an API error response, in the language of `i18n`. */
+export function apiErrorBody(error: AppError, i18n: Translator): ApiError {
+  const { params, details, rule, unmet, retryAfterSec } = error.options;
+  return {
+    error: {
+      code: error.code,
+      message: i18n.translate(error.messageKey, params),
+      ...(details ? { details } : {}),
+      ...(rule ? { rule } : {}),
+      ...(unmet ? { unmet } : {}),
+      ...(retryAfterSec ? { retryAfterSec } : {}),
+    },
+  };
 }
 
 export const notFound = (messageKey: MessageKey = 'errors.codes.NOT_FOUND') =>

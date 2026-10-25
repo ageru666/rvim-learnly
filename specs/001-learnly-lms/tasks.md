@@ -563,14 +563,25 @@ approved course appearing in the catalog
 
 ### Tests for User Story 13
 
-- [ ] T178 [P] [US13] Test in `apps/server/tests/integration/openapi.test.ts`: every Express route under `/api/v1` is present in the generated document with security requirements and the `Accept-Language` parameter; the document validates against the OpenAPI 3.1 schema
-- [ ] T179 [P] [US13] Test in `apps/server/tests/integration/api-conventions.test.ts`: unauthenticated → 401 `UNAUTHORIZED`, wrong role → 403, invalid body → 400 with `details` in the request locale, rate limit → 429 with `retryAfterSec`, `X-Request-Id` and `Content-Language` present
+- [X] T178 [P] [US13] Test in `apps/server/tests/integration/openapi.test.ts`: every Express route under `/api/v1` is present in the generated document with security requirements and the `Accept-Language` parameter; the document validates against the OpenAPI 3.1 schema
+- [X] T179 [P] [US13] Test in `apps/server/tests/integration/api-conventions.test.ts`: unauthenticated → 401 `UNAUTHORIZED`, wrong role → 403, invalid body → 400 with `details` in the request locale, rate limit → 429 with `retryAfterSec`, `X-Request-Id` and `Content-Language` present
 
 ### Implementation for User Story 13
 
-- [ ] T180 [US13] Complete OpenAPI metadata in `apps/server/src/openapi/document.ts` (info, servers, tags per module, examples for key requests/responses incl. a localized error in both languages, error response components) and Swagger UI options (persistAuthorization, Authorize for Bearer)
-- [ ] T181 [US13] Create `docs/api/learnly.postman_collection.json` and `docs/api/learnly.postman_environment.json` (variables baseUrl, tokens, `locale`; folders per module; login scripts saving tokens; status-code tests; folder "Demo flow": student login → catalog → enroll → complete lesson → submit quiz → review; instructor login → create course → module → lessons → quiz → submit; admin login → approve; the catalog contains the course; request "Localized error" sent with `Accept-Language: uk` and `en` asserting the same `code`)
-- [ ] T182 [US13] Add the root script `test:postman` running the collection with `newman` against a freshly seeded server and wire it into `npm run check:full`
+- [X] T180 [US13] Complete OpenAPI metadata in `apps/server/src/openapi/document.ts` (info, servers, tags per module, examples for key requests/responses incl. a localized error in both languages, error response components) and Swagger UI options (persistAuthorization, Authorize for Bearer)
+- [X] T181 [US13] Create `docs/api/learnly.postman_collection.json` and `docs/api/learnly.postman_environment.json` (variables baseUrl, tokens, `locale`; folders per module; login scripts saving tokens; status-code tests; folder "Demo flow": student login → catalog → enroll → complete lesson → submit quiz → review; instructor login → create course → module → lessons → quiz → submit; admin login → approve; the catalog contains the course; request "Localized error" sent with `Accept-Language: uk` and `en` asserting the same `code`)
+- [X] T182 [US13] Add the root script `test:postman` running the collection with `newman` against a freshly seeded server and wire it into `npm run check:full`
+
+**Implementation notes (US13)**: the route-coverage test walks the Express router stack and compares it with
+the generated document both ways; the document is validated with `@seriousme/openapi-schema-validator`. The error
+examples are built by the real `parseInput` and `apiErrorBody` (now shared by the error handler), so the uk/en
+examples in Swagger are exactly what the API returns. The demo flow runs instructor → administrator → catalog →
+student on a course the collection creates itself, so it does not depend on random seed data and can run again.
+`npm run test:postman` (`scripts/postman.mjs`) applies migrations to a separate `<db>_postman` database with the
+non-destructive `migrate deploy`, seeds it (the seed truncates every table), starts the server on port 3199 and
+runs Newman through `npx newman@6.2.3`; Newman is not a dependency because it pulls 19 known-vulnerable
+transitive packages. Anonymous requests in the collection drop the session cookie first: for a signed-in user the
+account language wins over `Accept-Language`.
 
 **Checkpoint**: lab 3 is demonstrated with developer tools
 

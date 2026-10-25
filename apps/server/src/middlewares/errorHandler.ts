@@ -5,7 +5,7 @@ import type { NextFunction, Request, Response } from 'express';
 import multer from 'multer';
 import { isProduction } from '../config/env.js';
 import { Prisma } from '../generated/prisma/client.js';
-import { AppError, notFound } from '../lib/errors.js';
+import { apiErrorBody, AppError, notFound } from '../lib/errors.js';
 import { isApiRequest } from '../lib/http.js';
 import { translatorFor } from '../lib/i18n.js';
 import { logger } from '../lib/logger.js';
@@ -45,18 +45,9 @@ function requestTranslator(req: Request): Translator {
 }
 
 function sendApiError(res: Response, error: AppError, i18n: Translator): void {
-  const { params, details, rule, unmet, retryAfterSec } = error.options;
+  const { retryAfterSec } = error.options;
   if (retryAfterSec) res.setHeader('Retry-After', String(retryAfterSec));
-  res.status(error.status).json({
-    error: {
-      code: error.code,
-      message: i18n.translate(error.messageKey, params),
-      ...(details ? { details } : {}),
-      ...(rule ? { rule } : {}),
-      ...(unmet ? { unmet } : {}),
-      ...(retryAfterSec ? { retryAfterSec } : {}),
-    },
-  });
+  res.status(error.status).json(apiErrorBody(error, i18n));
 }
 
 async function sendErrorPage(req: Request, res: Response, error: AppError, i18n: Translator) {

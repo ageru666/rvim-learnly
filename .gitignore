@@ -11,6 +11,7 @@ coverage/
 
 apps/server/uploads/
 apps/server/uploads-test/
+apps/server/uploads-postman/
 apps/server/src/generated/
 playwright-report/
 test-results/

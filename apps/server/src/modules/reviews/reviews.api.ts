@@ -34,6 +34,7 @@ registerRoute({
   access: 'user',
   params: idParams,
   body: createReviewSchema,
+  bodyExample: { rating: 5, text: 'Clear explanations and useful quizzes.' },
   responses: { 201: { description: 'Review', schema: reviewSchema }, 409: { description: 'Already reviewed' } },
 });
 reviewsApiRouter.post(`${API_PREFIX}/courses/:id/reviews`, requireAuth, async (req, res) => {

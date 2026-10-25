@@ -62,6 +62,7 @@ registerRoute({
   summary: 'Create a student account; the account locale is the request locale',
   access: 'public',
   body: registerSchema,
+  bodyExample: { name: 'Olha Kovalenko', email: 'olha@example.com', password: 'Str0ng!pass', acceptTerms: true },
   responses: {
     201: { description: 'Signed in', schema: authResponseSchema },
     409: { description: 'The email is taken' },
@@ -79,6 +80,7 @@ registerRoute({
   summary: 'Log in with email and password',
   access: 'public',
   body: loginSchema,
+  bodyExample: { email: 'student1@learnly.local', password: 'Learnly2026!' },
   responses: {
     200: { description: 'Signed in', schema: authResponseSchema },
     401: { description: 'Wrong email or password' },
