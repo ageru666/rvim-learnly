@@ -820,32 +820,69 @@ An unauthenticated user opening `/app/*` is redirected to `/login?returnTo=...`.
 
 ### Lab 1, backend
 
-- [ ] Node.js + Express server, data in PostgreSQL, migrations and seeds run with one command.
-- [ ] Dynamic HTML pages generated on the server from the database: home, catalog with filters and pagination, course page, author page, certificate verification, admin panel.
-- [ ] Static content: About, FAQ, terms, privacy policy, contacts.
-- [ ] Registration and login with email and password, email verification, logout, password recovery (emails in the local Mailpit).
-- [ ] Actions of registered users persisted on the server: enrollment, review, instructor application (through SSR forms), plus taking lessons and quizzes.
-- [ ] Administrative users: an admin panel with user management, moderation of courses, applications and reviews, categories, audit log.
-- [ ] Server-side access control for all roles.
-- [ ] The site and the admin panel are available in Ukrainian and English.
+- [x] Node.js + Express server, data in PostgreSQL, migrations and seeds run with one command.
+- [x] Dynamic HTML pages generated on the server from the database: home, catalog with filters and pagination, course page, author page, certificate verification, admin panel.
+- [x] Static content: About, FAQ, terms, privacy policy, contacts.
+- [x] Registration and login with email and password, email verification, logout, password recovery (emails in the local Mailpit).
+- [x] Actions of registered users persisted on the server: enrollment, review, instructor application (through SSR forms), plus taking lessons and quizzes.
+- [x] Administrative users: an admin panel with user management, moderation of courses, applications and reviews, categories, audit log.
+- [x] Server-side access control for all roles.
+- [x] The site and the admin panel are available in Ukrainian and English.
 
 ### Lab 2, frontend
 
-- [ ] SPA on React + Vite + TypeScript + Tailwind + Radix + Redux Toolkit/RTK Query; code follows `architecture-and-guidelines.md`.
-- [ ] Various user actions with UI updates without reloads: lessons, quizzes with results, notes, course editor with drag and drop, quiz editor, notifications, statistics charts, optimistic updates, instant language switching.
-- [ ] Work with the own web API (the whole dashboard through the lab 3 REST API).
-- [ ] Work with public external APIs: Wikipedia REST (term lookup), noembed (video data).
-- [ ] Local storage: theme, locale, notes, unfinished quiz, lesson and course drafts, lookup cache, UI state.
-- [ ] Responsive (mobile, tablet, desktop), light and dark themes, accessibility, Ukrainian and English.
+- [x] SPA on React + Vite + TypeScript + Tailwind + Radix + Redux Toolkit/RTK Query; code follows `architecture-and-guidelines.md`.
+- [x] Various user actions with UI updates without reloads: lessons, quizzes with results, notes, course editor with drag and drop, quiz editor, notifications, statistics charts, optimistic updates, instant language switching.
+- [x] Work with the own web API (the whole dashboard through the lab 3 REST API).
+- [x] Work with public external APIs: Wikipedia REST (term lookup), noembed (video data).
+- [x] Local storage: theme, locale, notes, unfinished quiz, lesson and course drafts, lookup cache, UI state.
+- [x] Responsive (mobile, tablet, desktop), light and dark themes, accessibility, Ukrainian and English.
 
 ### Lab 3, web API
 
-- [ ] REST API `/api/v1` with read methods (catalog, course, curriculum, progress, statistics) and action methods persisted in the database (enrollment, completion, quiz attempts, reviews, course CRUD, moderation).
-- [ ] Authentication: JWT (cookie and Bearer), refresh tokens, role and ownership checks.
-- [ ] One error format, validation, pagination, rate limiting, localized messages by `Accept-Language`.
-- [ ] Demo with developer tools: Swagger UI and a Postman collection with a scenario.
-- [ ] Demo on a client: the lab 2 SPA works entirely through this API.
-- [ ] Integration tests of key endpoints.
+- [x] REST API `/api/v1` with read methods (catalog, course, curriculum, progress, statistics) and action methods persisted in the database (enrollment, completion, quiz attempts, reviews, course CRUD, moderation).
+- [x] Authentication: JWT (cookie and Bearer), refresh tokens, role and ownership checks.
+- [x] One error format, validation, pagination, rate limiting, localized messages by `Accept-Language`.
+- [x] Demo with developer tools: Swagger UI and a Postman collection with a scenario.
+- [x] Demo on a client: the lab 2 SPA works entirely through this API.
+- [x] Integration tests of key endpoints.
+
+### Verification and deviations (2026-10-30)
+
+How the boxes above were checked: `npm run check:full` passes. It runs lint, typecheck, unit and integration
+tests, the i18n parity and style checks, licences and `npm audit`, knip, Playwright e2e in Ukrainian and English
+(with axe accessibility and 360–1440 px responsive checks), the Postman collection through Newman, and the load
+check. The quickstart scenarios (`specs/001-learnly-lms/quickstart.md`) were also run in a browser against a seeded
+server.
+
+- **Lab 1**:
+  - SSR pages and forms: `apps/server/tests/integration/ssr-public.test.ts` and `ssr-admin.test.ts`.
+  - Access control: `admin.test.ts`, `api-conventions.test.ts`.
+  - The application, moderation and audit flow: `apps/web/e2e/publish-course.spec.ts`.
+- **Lab 2**:
+  - The guideline layering is enforced by ESLint boundaries; the coverage gate is 100 % on `utils.ts` and `shared/utils`.
+  - Learning flow: `e2e/complete-course.spec.ts`. Language switching: `e2e/locale.spec.ts`.
+  - `e2e/a11y.spec.ts` and `e2e/responsive.spec.ts` in both themes.
+- **Lab 3**:
+  - OpenAPI coverage of every route: `openapi.test.ts`.
+  - The Postman demo flow: `npm run test:postman`.
+  - The dashboard uses only `/api/v1` through RTK Query.
+
+Deviations from this document:
+
+1. **Enrollment.** It goes through the SSR form on the course page (with sign-up and login continuation), not
+   through the dashboard. The REST endpoint exists and is covered by tests and Postman.
+2. **Load check (10.2, section 16).** It uses plain `fetch` with keep-alive instead of autocannon, because
+   autocannon's dependency tree contains a known-vulnerable package. Measured p95: about 160 ms for the catalog and
+   course pages, about 30 ms for the catalog API.
+3. **Dictionaries (10.2).** Only English is loaded on demand. Ukrainian is the source dictionary and the fallback
+   for missing English keys, so it is always in the initial bundle (228 KB gzip of the 250 KB budget).
+4. **Images by URL in text lessons (5.10).** The Markdown toolbar inserts them, but the Content Security Policy
+   (10.1) allows images only from Wikimedia, YouTube and Vimeo hosts, so images from other sites do not load.
+   The two requirements conflict and a decision is pending; see `docs/security-notes.md`, open item 2.
+5. **Security headers (10.1).** Two were added: `Permissions-Policy`, and HSTS sent only when the site is served
+   over HTTPS. Deployment requirements for lab 4 (`COOKIE_SECURE=true`, `trust proxy`) are listed in
+   `docs/security-notes.md`.
 
 ---
 
