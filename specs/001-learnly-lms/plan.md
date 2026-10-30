@@ -156,12 +156,12 @@ apps/server/
 │   │   ├── pages/               # static.web.ts, seo.web.ts, theme.web.ts, locale.web.ts, health.api.ts
 │   │   └── spa/                 # spa.web.ts (serves /app/*)
 │   ├── openapi/                 # registry.ts, document.ts, docs.web.ts
+│   ├── styles/app.css           # Tailwind CLI input (imports theme.css) → dist/public/css/app.css
 │   ├── views/
 │   │   ├── layouts/  partials/  pages/  pages/auth/  pages/static/  pages/errors/
 │   │   ├── admin/
 │   │   └── emails/                # one template per email, texts via t()
-│   └── public/
-│       ├── css/app.css          # Tailwind CLI input (imports theme.css) → dist/public/css/app.css
+│   └── public/                  # served as /static; the build adds css/app.css from dist/public
 │       └── js/                  # theme.js, locale.js, menu.js, confirm.js, star-input.js
 ├── uploads/                     # .gitignore
 └── tests/

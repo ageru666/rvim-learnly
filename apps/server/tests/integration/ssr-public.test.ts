@@ -87,4 +87,10 @@ describe('public pages', () => {
     expect(robots.text).toContain('Disallow: /app');
     expect(robots.text).toContain('Disallow: /admin');
   });
+
+  it('serves the built stylesheet, never the Tailwind source', async () => {
+    // Without a CSS build the path is a 404; with one it must be the compiled file.
+    const stylesheet = await request(app).get('/static/css/app.css');
+    expect(stylesheet.text).not.toContain("@import 'tailwindcss'");
+  });
 });

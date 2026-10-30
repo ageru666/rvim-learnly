@@ -3,8 +3,8 @@
 @import '@learnly/design-tokens/theme.css';
 @import '@learnly/design-tokens/components.css';
 
-@source '../../views';
-@source '../js';
+@source '../views';
+@source '../public/js';
 
 /* The certificate prints as a single landscape page without the site chrome (FR-SITE-8). */
 @media print {

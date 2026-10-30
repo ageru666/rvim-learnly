@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "concurrently -n api,css \"tsx watch --conditions=source src/main.ts\" \"npm run watch:css\"",
     "build": "npm run build:css && tsc -p tsconfig.build.json",
-    "build:css": "tailwindcss -i src/public/css/app.css -o dist/public/css/app.css --minify",
-    "watch:css": "tailwindcss -i src/public/css/app.css -o dist/public/css/app.css --watch",
+    "build:css": "tailwindcss -i src/styles/app.css -o dist/public/css/app.css --minify",
+    "watch:css": "tailwindcss -i src/styles/app.css -o dist/public/css/app.css --watch",
     "start": "node dist/main.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
