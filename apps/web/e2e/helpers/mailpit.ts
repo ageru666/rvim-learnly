@@ -17,12 +17,12 @@ async function search(to: string): Promise<MailpitSummary[]> {
   return ((await response.json()) as { messages: MailpitSummary[] }).messages;
 }
 
-/** The newest email to the address, waiting for it to arrive. */
-export async function latestEmail(to: string): Promise<ReceivedEmail> {
+/** The newest email to the address, waiting for it to arrive (and, with `subject`, for that email). */
+export async function latestEmail(to: string, subject?: string): Promise<ReceivedEmail> {
   const deadline = Date.now() + TIMEOUT_MS;
   while (Date.now() < deadline) {
     const [newest] = await search(to);
-    if (newest) {
+    if (newest && (subject === undefined || newest.Subject === subject)) {
       const message = (await (await fetch(`${MAILPIT_API}/message/${newest.ID}`)).json()) as { HTML: string };
       return { subject: newest.Subject, html: message.HTML };
     }
