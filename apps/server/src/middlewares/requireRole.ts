@@ -1,6 +1,6 @@
 import type { Role } from '@learnly/contracts/enums';
 import type { NextFunction, Request, Response } from 'express';
-import { forbidden, ruleViolation, unauthorized } from '../lib/errors.js';
+import { forbidden, unauthorized } from '../lib/errors.js';
 import { isApiRequest } from '../lib/http.js';
 import type { AuthUser } from '../modules/auth/auth.types.js';
 
@@ -25,15 +25,6 @@ export function requireRole(...roles: Role[]) {
     }
     next(roles.includes(req.user.role) ? undefined : forbidden());
   };
-}
-
-/** BR-U4: reviews, instructor applications and course submission need a verified email. */
-export function requireVerifiedEmail(req: Request, res: Response, next: NextFunction): void {
-  if (!req.user) {
-    requireAuth(req, res, next);
-    return;
-  }
-  next(req.user.emailVerified ? undefined : ruleViolation('BR-U4', 'errors.auth.emailNotVerified'));
 }
 
 /** For handlers behind `requireAuth`: narrows `req.user` without a non-null assertion. */

@@ -8,7 +8,7 @@ interface NotesState {
 
 const initialState: NotesState = { drafts: {} };
 
-export const noteKey = (courseId: string, lessonId: string) => `${courseId}:${lessonId}`;
+const noteKey = (courseId: string, lessonId: string) => `${courseId}:${lessonId}`;
 
 const notesSlice = createSlice({
   name: 'notes',

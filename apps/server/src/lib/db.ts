@@ -7,7 +7,3 @@ export const db = new PrismaClient({
 });
 
 export type Tx = Prisma.TransactionClient;
-
-export function withTransaction<T>(work: (tx: Tx) => Promise<T>): Promise<T> {
-  return db.$transaction(work);
-}

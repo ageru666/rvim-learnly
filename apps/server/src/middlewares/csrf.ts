@@ -5,8 +5,8 @@ import { forbidden } from '../lib/errors.js';
 import { randomToken } from '../lib/tokens.js';
 
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
-export const CSRF_HEADER = 'x-csrf-token';
-export const CSRF_FIELD = '_csrf';
+const CSRF_HEADER = 'x-csrf-token';
+const CSRF_FIELD = '_csrf';
 
 function submittedToken(req: Request): string | undefined {
   const header = req.get(CSRF_HEADER);

@@ -4,7 +4,7 @@ import type { Request, Response } from 'express';
 import { z } from 'zod';
 import { clearFlashCookie, COOKIES, readCookie, setFlashCookie } from './cookies.js';
 
-export type FlashKind = 'success' | 'error' | 'info';
+type FlashKind = 'success' | 'error' | 'info';
 
 export interface Flash {
   kind: FlashKind;

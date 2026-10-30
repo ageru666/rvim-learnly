@@ -91,10 +91,6 @@ export function assertEditable(status: CourseStatus): void {
   if (status === 'archived') throw ruleViolation('BR-P4', 'errors.courses.archived');
 }
 
-export async function assertCourseEditable(user: AuthUser, courseId: string): Promise<void> {
-  assertEditable((await ownCourse(user, courseId)).status);
-}
-
 async function slugTaken(slug: string, exceptCourseId?: string): Promise<boolean> {
   const [course, history] = await Promise.all([
     db.course.findFirst({ where: { slug, ...(exceptCourseId ? { id: { not: exceptCourseId } } : {}) }, select: { id: true } }),

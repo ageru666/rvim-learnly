@@ -1,6 +1,6 @@
 import { LIMITS } from '@learnly/contracts/limits';
 
-export interface StoredNote {
+interface StoredNote {
   text: string;
   updatedAt: string;
 }

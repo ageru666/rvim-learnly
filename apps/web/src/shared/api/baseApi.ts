@@ -70,7 +70,7 @@ async function refreshSession(api: Parameters<BaseQueryFn>[1]): Promise<boolean>
  * Normalizes every failure to `ApiError`, adds CSRF and language headers, and retries once after
  * refreshing an expired session (guideline §3.5).
  */
-export const baseQuery: BaseQueryFn<string | FetchArgs, unknown, ApiError> = async (
+const baseQuery: BaseQueryFn<string | FetchArgs, unknown, ApiError> = async (
   args,
   api,
   extraOptions: object,

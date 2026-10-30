@@ -5,7 +5,7 @@ import { baseApi } from '../../shared/api/baseApi';
 
 const certificatesSchema = z.array(certificateSchema);
 
-export const certificatesApi = baseApi.injectEndpoints({
+const certificatesApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
     getMyCertificates: build.query<CertificateDto[], void>({
       query: () => '/me/certificates',

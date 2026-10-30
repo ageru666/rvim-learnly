@@ -2,7 +2,7 @@ import { CircleAlert, CircleCheck, Info, TriangleAlert, type LucideIcon } from '
 import type { ReactNode } from 'react';
 import { cx } from '../utils/cx';
 
-export type AlertKind = 'info' | 'success' | 'warning' | 'error';
+type AlertKind = 'info' | 'success' | 'warning' | 'error';
 
 const ALERT_ICONS: Record<AlertKind, LucideIcon> = {
   info: Info,

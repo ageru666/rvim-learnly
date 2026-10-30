@@ -2,10 +2,8 @@ import { pageSchema, type Page } from '@learnly/contracts/common';
 import type { EnrollmentStatus } from '@learnly/contracts/enums';
 import {
   dashboardSchema,
-  enrollResultSchema,
   myCourseSchema,
   type Dashboard,
-  type EnrollResult,
   type MyCourse,
 } from '@learnly/contracts/learning';
 import { baseApi } from '../../shared/api/baseApi';
@@ -26,11 +24,6 @@ export const enrollmentsApi = baseApi.injectEndpoints({
       transformResponse: (response: unknown) => myCoursesPageSchema.parse(response),
       providesTags: ['Enrollments', 'Locale'],
     }),
-    enroll: build.mutation<EnrollResult, string>({
-      query: (courseId) => ({ url: `/courses/${courseId}/enrollment`, method: 'POST' }),
-      transformResponse: (response: unknown) => enrollResultSchema.parse(response),
-      invalidatesTags: ['Dashboard', 'Enrollments'],
-    }),
     leaveCourse: build.mutation<null, string>({
       query: (courseId) => ({ url: `/courses/${courseId}/enrollment`, method: 'DELETE' }),
       invalidatesTags: ['Dashboard', 'Enrollments', 'LearnCourse'],
@@ -38,4 +31,4 @@ export const enrollmentsApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useGetDashboardQuery, useGetMyCoursesQuery, useEnrollMutation, useLeaveCourseMutation } = enrollmentsApi;
+export const { useGetDashboardQuery, useGetMyCoursesQuery, useLeaveCourseMutation } = enrollmentsApi;

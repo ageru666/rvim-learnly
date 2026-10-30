@@ -56,7 +56,7 @@ export async function createCategory(overrides: { nameEn?: string; nameUk?: stri
   });
 }
 
-export interface QuestionSpec {
+interface QuestionSpec {
   type: QuestionType;
   points?: number;
   /** One flag per option: is it correct. */
@@ -72,7 +72,7 @@ export interface QuizSpec {
   questions?: QuestionSpec[];
 }
 
-export interface LessonSpec {
+interface LessonSpec {
   type: LessonType;
   isPreview?: boolean;
   minutes?: number;

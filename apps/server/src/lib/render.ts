@@ -1,6 +1,6 @@
 import type { Response } from 'express';
 
-export type Layout = 'main' | 'admin';
+type Layout = 'main' | 'admin';
 
 export interface PageOptions {
   /** Page title (already translated); the layout appends the brand. */

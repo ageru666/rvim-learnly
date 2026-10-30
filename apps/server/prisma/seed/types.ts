@@ -16,7 +16,7 @@ export interface CategorySeed {
   accent: Accent;
 }
 
-export interface QuestionSeed {
+interface QuestionSeed {
   text: string;
   explanation?: string;
   points?: number;
@@ -38,7 +38,7 @@ export type LessonSeed =
       quiz: { passScore?: number; maxAttempts?: number; questions: QuestionSeed[] };
     });
 
-export interface ModuleSeed {
+interface ModuleSeed {
   title: string;
   lessons: LessonSeed[];
 }

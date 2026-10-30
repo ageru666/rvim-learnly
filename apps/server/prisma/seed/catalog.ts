@@ -10,7 +10,7 @@ import { generateCover } from './covers.js';
 import { daysAgo } from './random.js';
 import type { AuthorKey, CategoryKey, CourseSeed, LessonSeed } from './types.js';
 
-export const COURSES: CourseSeed[] = [
+const COURSES: CourseSeed[] = [
   javascriptBasics,
   gitBasics,
   sqlForAnalysts,

@@ -4,7 +4,7 @@ import { baseApi } from '../../shared/api/baseApi';
 const parseMe = (response: unknown): Me => meSchema.parse(response);
 
 /** FR-PROFILE-1–2. Every change refreshes `Me`, so the header and the menus show it at once. */
-export const profileApi = baseApi.injectEndpoints({
+const profileApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
     updateProfile: build.mutation<Me, Omit<UpdateMeInput, 'locale'>>({
       query: (body) => ({ url: '/me', method: 'PATCH', body }),

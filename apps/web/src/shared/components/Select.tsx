@@ -2,7 +2,7 @@ import { Check, ChevronDown } from 'lucide-react';
 import { Select as SelectPrimitive } from 'radix-ui';
 import type { FieldControlProps } from './FormField';
 
-export interface SelectOption {
+interface SelectOption {
   value: string;
   label: string;
 }

@@ -8,7 +8,7 @@ const lessonTags = (lessonId: string, courseId: string) => [
   { type: 'Readiness' as const, id: courseId },
 ];
 
-export const teachLessonsApi = baseApi.injectEndpoints({
+const teachLessonsApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
     getLessonEditor: build.query<LessonEditor, string>({
       query: (lessonId) => `/instructor/lessons/${lessonId}`,

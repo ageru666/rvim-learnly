@@ -5,7 +5,7 @@ import { baseApi } from '../../shared/api/baseApi';
 const PAGE_SIZE = 20;
 const notificationsPageSchema = pageSchema(notificationSchema);
 
-export const notificationsApi = baseApi.injectEndpoints({
+const notificationsApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
     getUnreadCount: build.query<number, void>({
       query: () => '/me/notifications/unread-count',

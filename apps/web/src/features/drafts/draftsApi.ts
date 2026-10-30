@@ -3,15 +3,15 @@ import { readStored, removeStored, writeStored } from '../../shared/api/browserS
 import { storageApi, storageResult } from '../../shared/api/storageApi';
 
 /** `draft:lesson:<id>` and `draft:course:<id>` values (contracts/client-storage-and-external.md). */
-export const storedDraftSchema = z.object({
+const storedDraftSchema = z.object({
   fields: z.unknown(),
   savedAt: z.string(),
   /** `updatedAt` of the server version the draft started from, to detect conflicts. */
   baseUpdatedAt: z.string(),
 });
-export type StoredDraft = z.infer<typeof storedDraftSchema>;
+type StoredDraft = z.infer<typeof storedDraftSchema>;
 
-export const draftsApi = storageApi.injectEndpoints({
+const draftsApi = storageApi.injectEndpoints({
   endpoints: (build) => ({
     getDraft: build.query<StoredDraft | null, string>({
       queryFn: (key) => storageResult(() => readStored(key, storedDraftSchema)),

@@ -12,7 +12,7 @@ export interface GradableQuestion {
 }
 
 /** Stored with the attempt (a JSON column), so later edits of the quiz do not change past results (BR-Q5). */
-export type GradedQuestion = {
+type GradedQuestion = {
   id: string;
   selectedOptionIds: string[];
   correctOptionIds: string[];
@@ -21,7 +21,7 @@ export type GradedQuestion = {
   explanation: string | null;
 };
 
-export interface Grade {
+interface Grade {
   questions: GradedQuestion[];
   scorePoints: number;
   maxPoints: number;

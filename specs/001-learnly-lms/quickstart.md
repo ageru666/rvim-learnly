@@ -40,10 +40,12 @@ Demo accounts (password `Learnly2026!`): `admin@learnly.local`, `olena.teacher@l
 ## Automated checks
 
 ```bash
-npm run check       # lint + typecheck + unit/integration tests + i18n parity + knip + licenses and audit
-npm run check:full  # check + e2e + the Postman collection through newman
-npm run test:server # API integration tests on learnly_test
-npm run e2e         # Playwright: 4 end-to-end flows (needs docker compose)
+npm run check        # lint + typecheck + unit/integration tests with coverage (incl. i18n parity) + EJS strings + licenses and audit
+npm run check:full   # check + knip + e2e + the Postman collection through newman + perf
+npm run test:server  # API integration tests on learnly_test
+npm run e2e          # SPA build + bundle budget + Playwright in uk and en (needs docker compose)
+npm run test:postman # the Postman collection through newman on a seeded server
+npm run perf         # p95 of the catalog, a course page and the catalog API (budgets 300/300/200 ms)
 ```
 
 Expected result: every command exits with code 0.

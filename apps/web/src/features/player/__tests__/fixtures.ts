@@ -1,12 +1,12 @@
 import type { LearnCourse, LessonContent } from '@learnly/contracts/learning';
 
 export const COURSE_ID = '01970000-0000-7000-8000-00000000c001';
-export const MODULE_1 = '01970000-0000-7000-8000-00000000a001';
-export const MODULE_2 = '01970000-0000-7000-8000-00000000a002';
+const MODULE_1 = '01970000-0000-7000-8000-00000000a001';
+const MODULE_2 = '01970000-0000-7000-8000-00000000a002';
 export const LESSON_1 = '01970000-0000-7000-8000-00000000b001';
 export const LESSON_2 = '01970000-0000-7000-8000-00000000b002';
 export const LESSON_3 = '01970000-0000-7000-8000-00000000b003';
-export const QUIZ_ID = '01970000-0000-7000-8000-00000000d001';
+const QUIZ_ID = '01970000-0000-7000-8000-00000000d001';
 
 export function learnCourse(overrides: Partial<LearnCourse> = {}): LearnCourse {
   return {

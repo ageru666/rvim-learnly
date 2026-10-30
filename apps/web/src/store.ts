@@ -101,4 +101,3 @@ export function createStore() {
 }
 
 export type AppStore = ReturnType<typeof createStore>;
-export type RootState = ReturnType<typeof rootReducer>;

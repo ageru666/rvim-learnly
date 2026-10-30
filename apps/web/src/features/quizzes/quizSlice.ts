@@ -75,13 +75,6 @@ export const selectQuizSession =
   (state: { quiz: QuizState }): QuizSession | null =>
     state.quiz.sessions[quizId] ?? null;
 
-export const selectAnsweredCount =
-  (quizId: string) =>
-  (state: { quiz: QuizState }): number => {
-    const session = state.quiz.sessions[quizId];
-    return session ? session.order.length - unansweredIndexes(session.order, session.answers).length : 0;
-  };
-
 const NONE: number[] = [];
 
 /** Unanswered positions; computed on demand by the submit flow, so no memoization is needed. */

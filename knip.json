@@ -1,6 +1,5 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
-  "ignoreDependencies": ["newman"],
   "workspaces": {
     ".": {
       "entry": ["scripts/*.mjs"]
@@ -22,22 +21,11 @@
       ]
     },
     "apps/server": {
-      "entry": ["prisma.config.ts"],
       "project": ["src/**/*.ts", "prisma/**/*.ts", "tests/**/*.ts"],
-      "ignore": ["src/generated/**"],
-      "ignoreDependencies": [
-        "@prisma/client",
-        "ejs",
-        "@types/ejs",
-        "pino-pretty",
-        "@learnly/design-tokens",
-        "tailwindcss"
-      ]
+      "ignoreDependencies": ["@prisma/client", "pino-pretty"]
     },
     "apps/web": {
-      "entry": ["src/index.tsx"],
-      "project": ["src/**/*.{ts,tsx}"],
-      "ignoreDependencies": ["@learnly/design-tokens", "tailwindcss"]
+      "project": ["src/**/*.{ts,tsx}"]
     }
   }
 }

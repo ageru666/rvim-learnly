@@ -4,7 +4,7 @@ import { AppError } from '../../lib/errors.js';
 import { setFlash } from '../../lib/flash.js';
 import { enroll } from './enrollment.service.js';
 
-export function learnPath(courseId: string, lessonId?: string | null): string {
+function learnPath(courseId: string, lessonId?: string | null): string {
   return lessonId ? `/app/learn/${courseId}/${lessonId}` : `/app/learn/${courseId}`;
 }
 

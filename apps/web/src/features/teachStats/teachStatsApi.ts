@@ -1,7 +1,7 @@
 import { courseStatsSchema, type CourseStats } from '@learnly/contracts/instructor';
 import { baseApi } from '../../shared/api/baseApi';
 
-export const teachStatsApi = baseApi.injectEndpoints({
+const teachStatsApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
     getCourseStats: build.query<CourseStats, string>({
       query: (courseId) => `/instructor/courses/${courseId}/stats`,

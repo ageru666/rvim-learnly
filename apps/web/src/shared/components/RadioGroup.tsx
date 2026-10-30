@@ -2,7 +2,7 @@ import { RadioGroup as RadioPrimitive } from 'radix-ui';
 import type { ReactNode } from 'react';
 import { cx } from '../utils/cx';
 
-export interface RadioOption {
+interface RadioOption {
   value: string;
   label: ReactNode;
 }

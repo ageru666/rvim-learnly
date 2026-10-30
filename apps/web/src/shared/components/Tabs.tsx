@@ -1,7 +1,7 @@
 import { Tabs as TabsPrimitive } from 'radix-ui';
 import type { ReactNode } from 'react';
 
-export interface TabItem {
+interface TabItem {
   value: string;
   label: string;
   content: ReactNode;

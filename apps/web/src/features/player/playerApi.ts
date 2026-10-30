@@ -14,7 +14,7 @@ interface CompletionArgs {
   lessonId: string;
 }
 
-export const playerApi = baseApi.injectEndpoints({
+const playerApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
     getLearnCourse: build.query<LearnCourse, string>({
       query: (courseId) => `/learn/courses/${courseId}`,
