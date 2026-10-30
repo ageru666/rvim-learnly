@@ -12,7 +12,7 @@ describe('ThemeToggle', () => {
     document.documentElement.dataset.theme = 'system';
     const { store } = renderWithStore(<ThemeToggle />);
 
-    await userEvent.click(screen.getByRole('button', { name: 'Theme' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Theme' }));
     await userEvent.click(await screen.findByRole('menuitem', { name: 'Dark' }));
 
     expect(selectTheme(store.getState())).toBe('dark');

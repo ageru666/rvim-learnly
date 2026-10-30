@@ -33,7 +33,7 @@ describe('VideoMetaCard', () => {
     server.use(http.get('https://noembed.com/embed', () => HttpResponse.json({ title: 'Never Gonna Give You Up', author_name: 'Rick Astley' })));
     const { unmount } = renderWithStore(<VideoMetaCard url={YOUTUBE} />);
     expect(await screen.findByText('Never Gonna Give You Up')).toBeInTheDocument();
-    expect(screen.getByText('By Rick Astley')).toBeInTheDocument();
+    expect(await screen.findByText('By Rick Astley')).toBeInTheDocument();
     unmount();
 
     server.use(http.get('https://noembed.com/embed', () => HttpResponse.json({ error: '404 Not Found' })));

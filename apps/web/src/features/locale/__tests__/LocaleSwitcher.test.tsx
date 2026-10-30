@@ -76,7 +76,8 @@ describe('switching the language while signed in', () => {
     await userEvent.type(input, 'draft text');
     await userEvent.click(screen.getByRole('button', { name: 'English' }));
 
-    expect(screen.getByText('3 students')).toBeInTheDocument();
+    // The English dictionary is a chunk of its own; the typed text survives its arrival.
+    expect(await screen.findByText('3 students')).toBeInTheDocument();
     expect(screen.getByText('October 25, 2026')).toBeInTheDocument();
     expect(screen.getByRole('textbox', { name: 'Search by title' })).toBe(input);
     expect(input).toHaveValue('draft text');

@@ -19,11 +19,11 @@ function Greeting() {
 }
 
 describe('language switching', () => {
-  it('starts from the cookie set by the server', () => {
+  it('starts from the cookie set by the server; the English dictionary arrives as its own chunk', async () => {
     document.cookie = 'locale=en; path=/';
     const { store } = renderWithStore(<Greeting />);
     expect(selectLocale(store.getState())).toBe('en');
-    expect(screen.getByText(/5 lessons/)).toBeInTheDocument();
+    expect(await screen.findByText(/5 lessons/)).toBeInTheDocument();
   });
 
   it('re-renders texts and formats without a reload and remembers the choice', async () => {
@@ -38,7 +38,7 @@ describe('language switching', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'English' }));
 
-    expect(screen.getByText(/5 lessons 1,234.5/)).toBeInTheDocument();
+    expect(await screen.findByText(/5 lessons 1,234.5/)).toBeInTheDocument();
     expect(document.documentElement.lang).toBe('en');
     expect(readCookie('locale')).toBe('en');
     expect(window.localStorage.getItem('learnly:v1:locale')).toBe('"en"');

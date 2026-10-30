@@ -39,7 +39,8 @@ export function seedDatabase(env) {
 }
 
 export function startServer(env) {
-  return spawn('npx', ['tsx', '--conditions=source', 'src/main.ts'], {
+  // One command string: with `shell: true` (needed for npx on Windows) separate arguments are deprecated.
+  return spawn('npx tsx --conditions=source src/main.ts', {
     cwd: SERVER_DIR,
     env,
     stdio: 'inherit',

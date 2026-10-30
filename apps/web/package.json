@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run --coverage",
-    "e2e": "vite build && playwright test -c e2e/playwright.config.ts"
+    "e2e": "vite build && node ../../scripts/bundle-budget.mjs && playwright test -c e2e/playwright.config.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
