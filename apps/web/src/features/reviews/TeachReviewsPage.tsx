@@ -1,14 +1,12 @@
 import { MessageSquare } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { isApiError } from '../../shared/api/apiError';
 import { EmptyState } from '../../shared/components/EmptyState';
-import { ErrorState } from '../../shared/components/ErrorState';
 import { FormField } from '../../shared/components/FormField';
 import { Select } from '../../shared/components/Select';
 import { Skeleton } from '../../shared/components/Skeleton';
 import { VirtualList } from '../../shared/components/VirtualList';
-import { describeError } from '../../shared/utils/describeError';
 import { useT } from '../locale/useT';
+import { QueryErrorState } from '../navigation/QueryErrorState';
 import { ReplyDialog } from './components/ReplyDialog';
 import { ReviewItem } from './components/ReviewItem';
 import { useGetInstructorReviewsInfiniteQuery } from './reviewsApi';
@@ -56,12 +54,7 @@ export function TeachReviewsPage() {
       </div>
       {query.isLoading && <Skeleton className="h-48" />}
       {query.error && (
-        <ErrorState
-          message={describeError(query.error, i18n)}
-          retryable={isApiError(query.error) && query.error.retryable}
-          onRetry={() => void query.refetch()}
-          retryLabel={t('common.actions.retry')}
-        />
+        <QueryErrorState error={query.error} onRetry={() => void query.refetch()} />
       )}
       {query.data && reviews.length === 0 && (
         <EmptyState icon={<MessageSquare aria-hidden size={40} />} title={t('app.teachReviews.empty')} />

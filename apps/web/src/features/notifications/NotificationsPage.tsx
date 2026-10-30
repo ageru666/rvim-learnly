@@ -1,12 +1,10 @@
 import { Bell, CheckCheck } from 'lucide-react';
-import { isApiError } from '../../shared/api/apiError';
 import { Button } from '../../shared/components/Button';
 import { EmptyState } from '../../shared/components/EmptyState';
-import { ErrorState } from '../../shared/components/ErrorState';
 import { Skeleton } from '../../shared/components/Skeleton';
 import { VirtualList } from '../../shared/components/VirtualList';
-import { describeError } from '../../shared/utils/describeError';
 import { useT } from '../locale/useT';
+import { QueryErrorState } from '../navigation/QueryErrorState';
 import { NotificationItem } from './components/NotificationItem';
 import { useGetNotificationsInfiniteQuery, useMarkAllNotificationsReadMutation } from './notificationsApi';
 
@@ -34,12 +32,7 @@ export function NotificationsPage() {
       </div>
       {query.isLoading && <Skeleton className="h-48" />}
       {query.error && (
-        <ErrorState
-          message={describeError(query.error, i18n)}
-          retryable={isApiError(query.error) && query.error.retryable}
-          onRetry={() => void query.refetch()}
-          retryLabel={t('common.actions.retry')}
-        />
+        <QueryErrorState error={query.error} onRetry={() => void query.refetch()} />
       )}
       {query.data && items.length === 0 && <EmptyState icon={<Bell aria-hidden size={40} />} title={t('app.notificationsPage.empty')} />}
       {items.length > 0 && (

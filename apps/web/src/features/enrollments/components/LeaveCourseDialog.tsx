@@ -1,5 +1,4 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { Alert } from '../../../shared/components/Alert';
 import { ConfirmDialog } from '../../../shared/components/ConfirmDialog';
 import { describeError } from '../../../shared/utils/describeError';
 import { useT } from '../../locale/useT';
@@ -12,24 +11,25 @@ export function LeaveCourseDialog() {
   const { t } = i18n;
   const dispatch = useDispatch();
   const leaving = useSelector(selectLeavingCourse);
-  const [leaveCourse, { error }] = useLeaveCourseMutation();
+  const [leaveCourse, { isLoading, error, reset }] = useLeaveCourseMutation();
 
   return (
-    <>
-      {error && <Alert kind="error">{describeError(error, i18n)}</Alert>}
-      <ConfirmDialog
+    <ConfirmDialog
       open={leaving !== null}
       onOpenChange={(open) => {
-        if (!open) dispatch(leaveRequested(null));
+        if (open) return;
+        dispatch(leaveRequested(null));
+        reset();
       }}
       title={t('app.myCourses.leaveTitle', { title: leaving?.title ?? '' })}
       description={t('app.myCourses.leaveText')}
       confirmLabel={t('app.myCourses.leaveConfirm')}
       cancelLabel={t('common.actions.cancel')}
+      pending={isLoading}
+      error={error ? describeError(error, i18n) : null}
       onConfirm={() => {
         if (leaving) void leaveCourse(leaving.courseId);
       }}
-      />
-    </>
+    />
   );
 }

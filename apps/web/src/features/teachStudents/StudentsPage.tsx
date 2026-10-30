@@ -2,11 +2,9 @@ import { STUDENT_SORTS, studentSortSchema, type StudentRow } from '@learnly/cont
 import { ArrowLeft, Download, Users } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useParams } from 'react-router';
-import { isApiError } from '../../shared/api/apiError';
 import { Avatar } from '../../shared/components/Avatar';
 import { buttonClass } from '../../shared/components/buttonClass';
 import { EmptyState } from '../../shared/components/EmptyState';
-import { ErrorState } from '../../shared/components/ErrorState';
 import { FormField } from '../../shared/components/FormField';
 import { Input } from '../../shared/components/Input';
 import { ProgressBar } from '../../shared/components/ProgressBar';
@@ -15,10 +13,10 @@ import { Skeleton } from '../../shared/components/Skeleton';
 import type { TableColumn } from '../../shared/components/Table';
 import { VirtualTable } from '../../shared/components/VirtualTable';
 import { config } from '../../shared/config';
-import { describeError } from '../../shared/utils/describeError';
 import { selectLocale } from '../locale/localeSlice';
 import { useFormat } from '../locale/useFormat';
 import { useT } from '../locale/useT';
+import { QueryErrorState } from '../navigation/QueryErrorState';
 import { QuizResults } from './components/QuizResults';
 import { ResetAttemptsDialog } from './components/ResetAttemptsDialog';
 import { useGetCourseStudentsInfiniteQuery } from './teachStudentsApi';
@@ -94,11 +92,10 @@ export function StudentsPage() {
       </div>
       {query.isLoading && <Skeleton className="h-64" />}
       {query.error && (
-        <ErrorState
-          message={describeError(query.error, i18n)}
-          retryable={isApiError(query.error) && query.error.retryable}
+        <QueryErrorState
+          error={query.error}
           onRetry={() => void query.refetch()}
-          retryLabel={t('common.actions.retry')}
+          back={{ to: '/teach', label: t('app.teach.editor.backToCourses') }}
         />
       )}
       {query.data && rows.length === 0 && (

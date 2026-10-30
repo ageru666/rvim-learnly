@@ -2,10 +2,13 @@ import type { CourseEditor } from '@learnly/contracts/instructor';
 import { CircleCheck, CircleX } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
+import { isApiError } from '../../../shared/api/apiError';
 import { Alert } from '../../../shared/components/Alert';
 import { Badge } from '../../../shared/components/Badge';
 import { Button } from '../../../shared/components/Button';
 import { ConfirmDialog } from '../../../shared/components/ConfirmDialog';
+import { ErrorState } from '../../../shared/components/ErrorState';
+import { Skeleton } from '../../../shared/components/Skeleton';
 import { describeError } from '../../../shared/utils/describeError';
 import { useT } from '../../locale/useT';
 import { useCourseActionMutation, useDeleteCourseMutation, useGetReadinessQuery, type CourseAction } from '../teachCoursesApi';
@@ -26,9 +29,10 @@ export function PublishTab({ course }: { course: CourseEditor }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const deleteOpen = useSelector(selectDeleteConfirmOpen);
-  const { data: readiness } = useGetReadinessQuery(course.id);
+  const { data: readiness, error: readinessError, refetch: refetchReadiness } = useGetReadinessQuery(course.id);
   const [runAction, { isLoading, error }] = useCourseActionMutation();
-  const [deleteCourse, { error: deleteError }] = useDeleteCourseMutation();
+  const [deleteCourse, deleteState] = useDeleteCourseMutation();
+  const isDraft = course.status === 'draft';
 
   return (
     <div className="flex flex-col gap-6">
@@ -42,7 +46,16 @@ export function PublishTab({ course }: { course: CourseEditor }) {
           {course.moderationComment}
         </Alert>
       )}
-      {readiness && course.status === 'draft' && (
+      {isDraft && !readiness && !readinessError && <Skeleton className="h-32" />}
+      {isDraft && readinessError && (
+        <ErrorState
+          message={describeError(readinessError, i18n)}
+          retryable={isApiError(readinessError) && readinessError.retryable}
+          onRetry={() => void refetchReadiness()}
+          retryLabel={t('common.actions.retry')}
+        />
+      )}
+      {readiness && isDraft && (
         <section aria-labelledby="readiness-heading" className="flex flex-col gap-2">
           <h2 id="readiness-heading" className="heading-md">
             {t('app.teach.publish.checklist')}
@@ -62,20 +75,20 @@ export function PublishTab({ course }: { course: CourseEditor }) {
           </ul>
         </section>
       )}
-      {(error ?? deleteError) && <Alert kind="error">{describeError(error ?? deleteError, i18n)}</Alert>}
+      {error && <Alert kind="error">{describeError(error, i18n)}</Alert>}
       <div className="flex flex-wrap gap-2">
         {ACTIONS[course.status].map((action) => (
           <Button
             key={action}
             variant={action === 'submit' ? 'primary' : 'outline'}
             loading={isLoading}
-            disabled={action === 'submit' && readiness?.ready === false}
+            disabled={action === 'submit' && readiness?.ready !== true}
             onClick={() => void runAction({ id: course.id, action })}
           >
             {t(`app.teach.publish.${action}`)}
           </Button>
         ))}
-        {course.status === 'draft' && (
+        {isDraft && (
           <Button variant="danger" onClick={() => dispatch(deleteConfirmToggled(true))}>
             {t('app.teach.publish.delete')}
           </Button>
@@ -83,14 +96,21 @@ export function PublishTab({ course }: { course: CourseEditor }) {
       </div>
       <ConfirmDialog
         open={deleteOpen}
-        onOpenChange={(open) => dispatch(deleteConfirmToggled(open))}
+        onOpenChange={(open) => {
+          dispatch(deleteConfirmToggled(open));
+          if (!open) deleteState.reset();
+        }}
         title={t('app.teach.publish.deleteTitle', { title: course.title })}
         description={t('app.teach.publish.deleteText')}
         confirmLabel={t('common.actions.delete')}
         cancelLabel={t('common.actions.cancel')}
+        pending={deleteState.isLoading}
+        error={deleteState.error ? describeError(deleteState.error, i18n) : null}
         onConfirm={() =>
           void deleteCourse(course.id).then((result) => {
-            if (!result.error) void navigate('/teach');
+            if (result.error) return;
+            dispatch(deleteConfirmToggled(false));
+            void navigate('/teach');
           })
         }
       />

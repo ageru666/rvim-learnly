@@ -1,10 +1,8 @@
 import { Navigate, useParams } from 'react-router';
-import { isApiError } from '../../shared/api/apiError';
 import { EmptyState } from '../../shared/components/EmptyState';
-import { ErrorState } from '../../shared/components/ErrorState';
 import { PageLoader } from '../../shared/components/PageLoader';
-import { describeError } from '../../shared/utils/describeError';
 import { useT } from '../locale/useT';
+import { QueryErrorState } from '../navigation/QueryErrorState';
 import { useGetLearnCourseQuery } from './playerApi';
 import { resumeLessonId } from './utils';
 
@@ -17,12 +15,7 @@ export function ResumeCoursePage() {
   if (error) {
     return (
       <main id="main" className="page-container py-8">
-        <ErrorState
-          message={describeError(error, i18n)}
-          retryable={isApiError(error) && error.retryable}
-          onRetry={() => void refetch()}
-          retryLabel={i18n.t('common.actions.retry')}
-        />
+        <QueryErrorState error={error} onRetry={() => void refetch()} back={{ to: '/courses', label: i18n.t('site.header.myCourses') }} />
       </main>
     );
   }

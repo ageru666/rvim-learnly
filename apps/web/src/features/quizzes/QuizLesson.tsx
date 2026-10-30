@@ -7,6 +7,7 @@ import { Card } from '../../shared/components/Card';
 import { Skeleton } from '../../shared/components/Skeleton';
 import { describeError } from '../../shared/utils/describeError';
 import { useT } from '../locale/useT';
+import { QueryErrorState } from '../navigation/QueryErrorState';
 import { AttemptHistory } from './components/AttemptHistory';
 import { QuizNavigator } from './components/QuizNavigator';
 import { QuizQuestion } from './components/QuizQuestion';
@@ -37,12 +38,14 @@ export function QuizLesson({ quizId, courseId, language, onCourseCompleted }: Qu
   const i18n = useT();
   const { t } = i18n;
   const dispatch = useDispatch();
-  const { data: quiz, error: loadError } = useGetQuizQuery(quizId);
+  const { data: quiz, error: loadError, refetch } = useGetQuizQuery(quizId);
   const session = useSelector(selectQuizSession(quizId));
   const unanswered = useSelector(selectUnanswered(quizId), shallowEqual);
   const [submit, { data: result, originalArgs, isLoading, error: submitError, reset }] = useSubmitAttemptMutation();
 
-  if (loadError) return <Alert kind="error">{describeError(loadError, i18n)}</Alert>;
+  if (loadError) {
+    return <QueryErrorState error={loadError} onRetry={() => void refetch()} back={{ to: '/courses', label: t('site.header.myCourses') }} />;
+  }
   if (!quiz) return <Skeleton className="h-48" />;
 
   const start = () => dispatch(quizStarted({ quizId, order: quiz.questions.map((question) => question.id) }));

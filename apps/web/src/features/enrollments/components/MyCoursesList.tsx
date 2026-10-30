@@ -1,14 +1,12 @@
 import type { EnrollmentStatus } from '@learnly/contracts/enums';
 import { BookOpen } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { isApiError } from '../../../shared/api/apiError';
 import { buttonClass } from '../../../shared/components/buttonClass';
 import { EmptyState } from '../../../shared/components/EmptyState';
-import { ErrorState } from '../../../shared/components/ErrorState';
 import { Skeleton } from '../../../shared/components/Skeleton';
 import { config } from '../../../shared/config';
-import { describeError } from '../../../shared/utils/describeError';
 import { useT } from '../../locale/useT';
+import { QueryErrorState } from '../../navigation/QueryErrorState';
 import { useGetMyCoursesQuery } from '../enrollmentsApi';
 import { leaveRequested, selectMyCoursesSearch } from '../enrollmentsSlice';
 import { filterByTitle, sortByLastActivity } from '../utils';
@@ -37,12 +35,7 @@ export function MyCoursesList({ status }: MyCoursesListProps) {
   }
   if (error) {
     return (
-      <ErrorState
-        message={describeError(error, i18n)}
-        retryable={isApiError(error) && error.retryable}
-        onRetry={() => void refetch()}
-        retryLabel={i18n.t('common.actions.retry')}
-      />
+      <QueryErrorState error={error} onRetry={() => void refetch()} />
     );
   }
 

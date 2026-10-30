@@ -33,9 +33,10 @@ export function CurriculumDialogs({ courseId }: { courseId: string }) {
   const [createModule, createModuleState] = useCreateModuleMutation();
   const [renameModule, renameState] = useRenameModuleMutation();
   const [createLesson, createLessonState] = useCreateLessonMutation();
-  const [deleteModule] = useDeleteModuleMutation();
-  const [deleteLesson] = useDeleteLessonMutation();
+  const [deleteModule, deleteModuleState] = useDeleteModuleMutation();
+  const [deleteLesson, deleteLessonState] = useDeleteLessonMutation();
   const close = () => dispatch(dialogOpened(null));
+  const deleteError = deleteModuleState.error ?? deleteLessonState.error;
   const error = createModuleState.error ?? renameState.error ?? createLessonState.error;
 
   const moduleDialog = dialog?.kind === 'addModule' || dialog?.kind === 'renameModule' ? dialog : null;
@@ -90,7 +91,12 @@ export function CurriculumDialogs({ courseId }: { courseId: string }) {
 
       <ConfirmDialog
         open={dialog?.kind === 'deleteModule' || dialog?.kind === 'deleteLesson'}
-        onOpenChange={(open) => !open && close()}
+        onOpenChange={(open) => {
+          if (open) return;
+          close();
+          deleteModuleState.reset();
+          deleteLessonState.reset();
+        }}
         title={
           dialog?.kind === 'deleteModule'
             ? t('app.curriculum.deleteModuleTitle', { title: dialog.title })
@@ -99,6 +105,8 @@ export function CurriculumDialogs({ courseId }: { courseId: string }) {
         description={dialog?.kind === 'deleteModule' ? t('app.curriculum.deleteModuleText') : t('app.curriculum.deleteLessonText')}
         confirmLabel={t('common.actions.delete')}
         cancelLabel={t('common.actions.cancel')}
+        pending={deleteModuleState.isLoading || deleteLessonState.isLoading}
+        error={deleteError ? describeError(deleteError, i18n) : null}
         onConfirm={() => {
           if (dialog?.kind === 'deleteModule') void deleteModule({ courseId, moduleId: dialog.moduleId });
           if (dialog?.kind === 'deleteLesson') void deleteLesson({ courseId, lessonId: dialog.lessonId });

@@ -1,11 +1,9 @@
-import { isApiError } from '../../shared/api/apiError';
-import { ErrorState } from '../../shared/components/ErrorState';
 import { Skeleton } from '../../shared/components/Skeleton';
-import { describeError } from '../../shared/utils/describeError';
 import { useGetMeQuery } from '../auth/authApi';
 import { CertificatesBlock } from '../certificates/CertificatesBlock';
 import { useGetDashboardQuery } from '../enrollments/enrollmentsApi';
 import { useT } from '../locale/useT';
+import { QueryErrorState } from '../navigation/QueryErrorState';
 import { NotificationsBlock } from '../notifications/NotificationsBlock';
 import { ActiveCoursesList } from './components/ActiveCoursesList';
 import { ContinueLearningCard } from './components/ContinueLearningCard';
@@ -27,12 +25,7 @@ export function DashboardPage() {
         </div>
       )}
       {error && (
-        <ErrorState
-          message={describeError(error, i18n)}
-          retryable={isApiError(error) && error.retryable}
-          onRetry={() => void refetch()}
-          retryLabel={i18n.t('common.actions.retry')}
-        />
+        <QueryErrorState error={error} onRetry={() => void refetch()} />
       )}
       {data && (
         <>

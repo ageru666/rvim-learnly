@@ -6,14 +6,22 @@ import { PageLoader } from '../../shared/components/PageLoader';
 import { config } from '../../shared/config';
 import { useGetMyCertificatesQuery } from '../certificates/certificatesApi';
 import { useT } from '../locale/useT';
+import { QueryErrorState } from '../navigation/QueryErrorState';
 import { useGetLearnCourseQuery } from './playerApi';
 
 /** FR-LEARN-5: `/app/learn/:courseId/completed`, shown right after the last lesson or quiz. */
 export function CourseCompletedPage() {
   const { t } = useT();
   const { courseId = '' } = useParams();
-  const { data: course } = useGetLearnCourseQuery(courseId);
+  const { data: course, error, refetch } = useGetLearnCourseQuery(courseId);
   const { data: certificates } = useGetMyCertificatesQuery();
+  if (error) {
+    return (
+      <main id="main" className="page-container py-8">
+        <QueryErrorState error={error} onRetry={() => void refetch()} back={{ to: '/courses', label: t('site.header.myCourses') }} />
+      </main>
+    );
+  }
   if (!course) return <PageLoader />;
   const certificate = certificates?.find((item) => item.courseId === courseId);
 

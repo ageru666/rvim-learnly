@@ -1,15 +1,13 @@
 import { ArrowLeft, BarChart3, ExternalLink, Users } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useParams } from 'react-router';
-import { isApiError } from '../../shared/api/apiError';
 import { Alert } from '../../shared/components/Alert';
 import { buttonClass } from '../../shared/components/buttonClass';
-import { ErrorState } from '../../shared/components/ErrorState';
 import { PageLoader } from '../../shared/components/PageLoader';
 import { Tabs } from '../../shared/components/Tabs';
 import { config } from '../../shared/config';
-import { describeError } from '../../shared/utils/describeError';
 import { useT } from '../locale/useT';
+import { QueryErrorState } from '../navigation/QueryErrorState';
 import { CurriculumEditor } from '../teachCurriculum/CurriculumEditor';
 import { BasicTab } from './components/BasicTab';
 import { PublishTab } from './components/PublishTab';
@@ -33,17 +31,7 @@ export function CourseEditorPage() {
 
   if (error) {
     return (
-      <ErrorState
-        message={describeError(error, i18n)}
-        retryable={isApiError(error) && error.retryable}
-        onRetry={() => void refetch()}
-        retryLabel={t('common.actions.retry')}
-        fallbackAction={
-          <Link to="/teach" className={buttonClass('outline', 'sm')}>
-            {t('app.teach.editor.backToCourses')}
-          </Link>
-        }
-      />
+      <QueryErrorState error={error} onRetry={() => void refetch()} back={{ to: '/teach', label: t('app.teach.editor.backToCourses') }} />
     );
   }
   if (!course) return <PageLoader />;

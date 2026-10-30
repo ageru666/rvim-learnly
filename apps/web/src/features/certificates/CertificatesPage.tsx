@@ -1,10 +1,8 @@
 import { Award } from 'lucide-react';
-import { isApiError } from '../../shared/api/apiError';
 import { EmptyState } from '../../shared/components/EmptyState';
-import { ErrorState } from '../../shared/components/ErrorState';
 import { Skeleton } from '../../shared/components/Skeleton';
-import { describeError } from '../../shared/utils/describeError';
 import { useT } from '../locale/useT';
+import { QueryErrorState } from '../navigation/QueryErrorState';
 import { useGetMyCertificatesQuery } from './certificatesApi';
 import { CertificateCard } from './components/CertificateCard';
 
@@ -18,12 +16,7 @@ export function CertificatesPage() {
       <h1 className="heading-xl">{i18n.t('app.certificates.title')}</h1>
       {isLoading && <Skeleton className="h-32" />}
       {error && (
-        <ErrorState
-          message={describeError(error, i18n)}
-          retryable={isApiError(error) && error.retryable}
-          onRetry={() => void refetch()}
-          retryLabel={i18n.t('common.actions.retry')}
-        />
+        <QueryErrorState error={error} onRetry={() => void refetch()} />
       )}
       {data && data.length === 0 && <EmptyState icon={<Award aria-hidden size={40} />} title={i18n.t('app.certificates.empty')} />}
       {data && data.length > 0 && (

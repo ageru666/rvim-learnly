@@ -1,9 +1,7 @@
-import { isApiError } from '../../shared/api/apiError';
-import { ErrorState } from '../../shared/components/ErrorState';
 import { PageLoader } from '../../shared/components/PageLoader';
-import { describeError } from '../../shared/utils/describeError';
 import { useParams } from 'react-router';
 import { useT } from '../locale/useT';
+import { QueryErrorState } from '../navigation/QueryErrorState';
 import { LessonEditorForm } from './components/LessonEditorForm';
 import { useGetLessonEditorQuery } from './teachLessonsApi';
 
@@ -15,11 +13,10 @@ export function LessonEditorPage() {
 
   if (error) {
     return (
-      <ErrorState
-        message={describeError(error, i18n)}
-        retryable={isApiError(error) && error.retryable}
+      <QueryErrorState
+        error={error}
         onRetry={() => void refetch()}
-        retryLabel={i18n.t('common.actions.retry')}
+        back={{ to: '/teach', label: i18n.t('app.teach.editor.backToCourses') }}
       />
     );
   }

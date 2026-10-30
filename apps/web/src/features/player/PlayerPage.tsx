@@ -1,12 +1,10 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router';
-import { isApiError } from '../../shared/api/apiError';
 import { EmptyState } from '../../shared/components/EmptyState';
-import { ErrorState } from '../../shared/components/ErrorState';
 import { PageLoader } from '../../shared/components/PageLoader';
-import { describeError } from '../../shared/utils/describeError';
 import { useT } from '../locale/useT';
 import { notesPanelResized, selectUiLayout } from '../navigation/navigationSlice';
+import { QueryErrorState } from '../navigation/QueryErrorState';
 import { NotesPanel } from '../notes/NotesPanel';
 import { CurriculumDrawer } from './components/CurriculumDrawer';
 import { CurriculumSidebar } from './components/CurriculumSidebar';
@@ -37,11 +35,10 @@ export function PlayerPage() {
   if (error) {
     return (
       <main id="main" className="page-container py-8">
-        <ErrorState
-          message={describeError(error, i18n)}
-          retryable={isApiError(error) && error.retryable}
+        <QueryErrorState
+          error={error}
           onRetry={() => void (courseQuery.error ? courseQuery.refetch() : lessonQuery.refetch())}
-          retryLabel={i18n.t('common.actions.retry')}
+          back={{ to: '/courses', label: i18n.t('site.header.myCourses') }}
         />
       </main>
     );

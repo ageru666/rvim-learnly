@@ -1,15 +1,13 @@
 import { COURSE_STATUSES, courseStatusSchema } from '@learnly/contracts/enums';
 import { GraduationCap, Plus } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { isApiError } from '../../shared/api/apiError';
 import { Button } from '../../shared/components/Button';
 import { EmptyState } from '../../shared/components/EmptyState';
-import { ErrorState } from '../../shared/components/ErrorState';
 import { FormField } from '../../shared/components/FormField';
 import { Select } from '../../shared/components/Select';
 import { Skeleton } from '../../shared/components/Skeleton';
-import { describeError } from '../../shared/utils/describeError';
 import { useT } from '../locale/useT';
+import { QueryErrorState } from '../navigation/QueryErrorState';
 import { CreateCourseDialog } from './components/CreateCourseDialog';
 import { OverviewCards } from './components/OverviewCards';
 import { TeachCourseList } from './components/TeachCourseList';
@@ -58,12 +56,7 @@ export function TeachDashboardPage() {
       </div>
       {isLoading && <Skeleton className="h-40" />}
       {error && (
-        <ErrorState
-          message={describeError(error, i18n)}
-          retryable={isApiError(error) && error.retryable}
-          onRetry={() => void refetch()}
-          retryLabel={t('common.actions.retry')}
-        />
+        <QueryErrorState error={error} onRetry={() => void refetch()} />
       )}
       {courses && courses.length === 0 && (
         <EmptyState icon={<GraduationCap aria-hidden size={40} />} title={hasAny ? t('app.teach.noMatches') : t('app.teach.empty')} />

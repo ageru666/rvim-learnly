@@ -85,6 +85,25 @@ describe('CurriculumEditor', () => {
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
   });
 
+  it('keeps the delete confirmation open and busy until the server answers, and shows its error', async () => {
+    server.use(
+      http.delete(`${config.apiBaseUrl}/instructor/lessons/${C}`, async () => {
+        await delay(100);
+        return HttpResponse.json({ error: { code: 'CONFLICT', message: 'Урок уже має спроби тестів.' } }, { status: 409 });
+      }),
+    );
+    renderEditor();
+
+    const [, , lastDelete] = screen.getAllByRole('button', { name: 'Видалити урок' });
+    await userEvent.click(lastDelete as HTMLElement);
+    const dialog = await screen.findByRole('alertdialog', { name: 'Видалити урок «Задачі»?' });
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Видалити' }));
+
+    expect(within(dialog).getByRole('button', { name: 'Видалити' })).toHaveAttribute('aria-busy', 'true');
+    expect(await within(dialog).findByText('Урок уже має спроби тестів.')).toBeInTheDocument();
+    expect(within(dialog).getByRole('button', { name: 'Видалити' })).not.toHaveAttribute('aria-busy');
+  });
+
   it('is read-only while the course is in review', () => {
     renderEditor({ ...COURSE, status: 'pending_review', editable: false });
     expect(screen.queryByRole('button', { name: 'Додати модуль' })).not.toBeInTheDocument();
