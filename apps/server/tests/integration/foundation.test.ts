@@ -20,6 +20,22 @@ describe('system endpoints', () => {
     expect(document.body.openapi).toBe('3.1.0');
     expect(document.body.paths['/health']).toBeDefined();
   });
+
+  it('sends the security headers on pages and the API (docs/security-notes.md)', async () => {
+    for (const path of ['/', '/api/v1/courses']) {
+      const response = await request(app).get(path);
+      const csp = String(response.headers['content-security-policy']);
+      expect(csp, path).toContain("script-src 'self'");
+      expect(csp, path).toContain("frame-ancestors 'none'");
+      expect(csp, path).toContain("object-src 'none'");
+      expect(response.headers['x-content-type-options'], path).toBe('nosniff');
+      expect(response.headers['referrer-policy'], path).toBe('no-referrer');
+      expect(response.headers['permissions-policy'], path).toBe('camera=(), microphone=(), geolocation=(), payment=(), usb=()');
+      expect(response.headers['x-powered-by'], path).toBeUndefined();
+      // Served over plain HTTP here (COOKIE_SECURE=false), so HSTS would be meaningless.
+      expect(response.headers['strict-transport-security'], path).toBeUndefined();
+    }
+  });
 });
 
 describe('locale resolution (FR-I18N-2)', () => {

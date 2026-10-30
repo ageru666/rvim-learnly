@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import { JSON_BODY_LIMIT } from '@learnly/contracts/limits';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
-import express, { type Express, type Router } from 'express';
+import express, { type Express, type RequestHandler, type Router } from 'express';
 import helmet from 'helmet';
 import { pinoHttp } from 'pino-http';
 import { config, SERVER_ROOT, UPLOADS_PATH } from './config/env.js';
@@ -45,9 +45,20 @@ export interface AppOptions {
   rateLimits?: RateLimits;
 }
 
-/** Content Security Policy per contracts/client-storage-and-external.md. */
-function securityHeaders() {
-  return helmet({
+/** Browser features the product never uses; fullscreen and autoplay stay available to the embedded video players. */
+const PERMISSIONS_POLICY = 'camera=(), microphone=(), geolocation=(), payment=(), usb=()';
+
+/**
+ * Content Security Policy per contracts/client-storage-and-external.md, plus the other security headers
+ * (docs/security-notes.md). HSTS is sent only when the site is served over HTTPS (COOKIE_SECURE).
+ */
+function securityHeaders(): RequestHandler[] {
+  const permissions: RequestHandler = (_req, res, next) => {
+    res.setHeader('Permissions-Policy', PERMISSIONS_POLICY);
+    next();
+  };
+  const helmetHeaders = helmet({
+    strictTransportSecurity: config.COOKIE_SECURE,
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
@@ -75,6 +86,7 @@ function securityHeaders() {
       },
     },
   });
+  return [helmetHeaders, permissions];
 }
 
 /** Routers of the domain modules, mounted in order. Each story adds its routers here. */
