@@ -15,7 +15,10 @@ import { MainNav } from './components/MainNav';
 import { UserMenu } from './components/UserMenu';
 import { selectMobileMenuOpen, setMobileMenuOpen } from './navigationSlice';
 
-/** Dashboard shell: the same header language as the SSR site, navigation and the page outlet. */
+/**
+ * Dashboard shell: the same header language as the SSR site, navigation and the page outlet. Instructors and
+ * admins have six navigation items, so the inline navigation starts at `xl` and the drawer serves smaller screens.
+ */
 export function AppLayout() {
   const { t } = useT();
   const dispatch = useDispatch();
@@ -32,13 +35,13 @@ export function AppLayout() {
       <header className="border-b border-border bg-bg">
         <div className="page-container flex h-16 items-center gap-4">
           <IconButton
-            className="md:hidden"
+            className="xl:hidden"
             label={t('site.header.openMenu')}
             icon={<Menu aria-hidden size={20} />}
             onClick={() => dispatch(setMobileMenuOpen(true))}
           />
           <Logo />
-          <div className="hidden md:block">{me && <MainNav role={me.role} />}</div>
+          <div className="hidden xl:block">{me && <MainNav role={me.role} />}</div>
           <div className="ml-auto flex items-center gap-1">
             <div className="hidden sm:block">
               <LocaleSwitcher />

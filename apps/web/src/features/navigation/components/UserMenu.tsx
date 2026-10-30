@@ -18,7 +18,7 @@ export function UserMenu({ me, onLogout }: UserMenuProps) {
       trigger={
         <button type="button" className="btn btn-ghost gap-2" aria-label={t('site.header.userMenu')}>
           <Avatar name={me.name} src={me.avatarUrl} />
-          <span className="hidden max-w-32 truncate text-sm md:inline">{me.name}</span>
+          <span className="hidden max-w-32 truncate text-sm 2xl:inline">{me.name}</span>
           <ChevronDown aria-hidden size={16} />
         </button>
       }
