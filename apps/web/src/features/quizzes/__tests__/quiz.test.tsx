@@ -97,7 +97,7 @@ describe('QuizLesson', () => {
     expect(screen.getByText('Результат: 25% (1 з 4)')).toBeInTheDocument();
     expect(screen.getByText('2 + 2 = 4.')).toBeInTheDocument();
     expect(screen.queryByText('Правильна відповідь')).not.toBeInTheDocument();
-    expect(screen.getByText(/Правильні відповіді з’являться/)).toBeInTheDocument();
+    expect(screen.getByText(/Правильні відповіді зʼявляться/)).toBeInTheDocument();
     await waitFor(() => expect(window.localStorage.getItem(STORAGE_KEY)).toBeNull());
 
     await userEvent.click(screen.getByRole('button', { name: 'Спробувати ще раз' }));

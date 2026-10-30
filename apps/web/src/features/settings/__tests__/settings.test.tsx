@@ -70,7 +70,7 @@ describe('change password', () => {
     server.use(
       http.put(`${config.apiBaseUrl}/me/password`, () =>
         HttpResponse.json(
-          { error: { code: 'BUSINESS_RULE_VIOLATION', message: 'Невірний поточний пароль.', rule: 'CURRENT_PASSWORD' } },
+          { error: { code: 'BUSINESS_RULE_VIOLATION', message: 'Неправильний поточний пароль.', rule: 'CURRENT_PASSWORD' } },
           { status: 422 },
         ),
       ),
@@ -82,7 +82,7 @@ describe('change password', () => {
     await userEvent.type(screen.getByLabelText('Повторіть новий пароль'), 'newpass123');
     await userEvent.click(screen.getByRole('button', { name: 'Змінити пароль' }));
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('Невірний поточний пароль.');
+    expect(await screen.findByRole('alert')).toHaveTextContent('Неправильний поточний пароль.');
   });
 });
 

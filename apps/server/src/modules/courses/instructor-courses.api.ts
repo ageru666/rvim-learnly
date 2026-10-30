@@ -159,7 +159,7 @@ instructorCoursesApiRouter.get(`${COURSES}/:id/readiness`, async (req, res) => {
 
 const LIFECYCLE: Record<string, { summary: string; run: (user: AuthUser, id: string) => Promise<unknown> }> = {
   submit: { summary: 'Submit for moderation (BR-P1, BR-U4)', run: submitCourse },
-  withdraw: { summary: 'Withdraw from review back to the draft (BR-P2)', run: withdrawCourse },
+  withdraw: { summary: 'Withdraw from moderation back to the draft (BR-P2)', run: withdrawCourse },
   archive: { summary: 'Archive a published course (BR-P4)', run: archiveCourse },
   restore: { summary: 'Restore an archived course (BR-P4)', run: restoreCourse },
 };

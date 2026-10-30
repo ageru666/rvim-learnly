@@ -35,7 +35,7 @@ describe('CertificatesPage', () => {
     expect(await screen.findByText('Основи JavaScript')).toBeInTheDocument();
     expect(screen.getByText('Видано 20 жовтня 2026 р.')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Переглянути' })).toHaveAttribute('href', CERTIFICATE.url);
-    expect(screen.getByRole('link', { name: 'Друкувати / PDF' })).toHaveAttribute('href', `${CERTIFICATE.url}?print=1`);
+    expect(screen.getByRole('link', { name: 'Друкувати або зберегти PDF' })).toHaveAttribute('href', `${CERTIFICATE.url}?print=1`);
 
     await userEvent.click(screen.getByRole('button', { name: 'Копіювати посилання' }));
     expect(writeText).toHaveBeenCalledWith(CERTIFICATE.url);
@@ -57,6 +57,6 @@ describe('CertificatesPage', () => {
     expect(await screen.findByText('Анульовано')).toBeInTheDocument();
     unmount();
     renderPage([]);
-    expect(await screen.findByText('Сертифікат з’явиться тут, коли ви завершите курс.')).toBeInTheDocument();
+    expect(await screen.findByText('Сертифікат зʼявиться тут, коли ви завершите курс.')).toBeInTheDocument();
   });
 });

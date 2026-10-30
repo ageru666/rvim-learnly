@@ -38,11 +38,11 @@ describe('VerifyEmailBanner', () => {
     server.use(http.post(`${config.apiBaseUrl}/auth/email/resend`, () => new HttpResponse(null, { status: 204 })));
     renderBanner(false);
 
-    await userEvent.click(await screen.findByRole('button', { name: 'Send the email again' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Resend email' }));
 
     expect(await screen.findByText('A verification email was sent to taras@learnly.local.')).toBeInTheDocument();
     expect(screen.getByText(/You can resend in (60|59) s/)).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Send the email again' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Resend email' })).not.toBeInTheDocument();
   });
 
   it('uses the wait time from a rate-limit answer', async () => {
@@ -56,7 +56,7 @@ describe('VerifyEmailBanner', () => {
     );
     renderBanner(false);
 
-    await userEvent.click(await screen.findByRole('button', { name: 'Send the email again' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Resend email' }));
 
     expect(await screen.findByText(/You can resend in (42|41) s/)).toBeInTheDocument();
     expect(screen.queryByText('The email was just sent.')).not.toBeInTheDocument();

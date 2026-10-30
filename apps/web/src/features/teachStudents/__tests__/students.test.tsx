@@ -64,13 +64,13 @@ describe('StudentsPage', () => {
     expect(await screen.findByText('Анна')).toBeInTheDocument();
     expect(screen.getByText('Підсумковий тест: 40% (2 спроби)')).toBeInTheDocument();
     expect(screen.getByText('Підсумковий тест: без спроб')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Завантажити CSV' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Експортувати в CSV' })).toHaveAttribute(
       'href',
       `${config.apiBaseUrl}/instructor/courses/${COURSE_ID}/students.csv?sort=lastActivity&lang=uk`,
     );
 
     await userEvent.click(screen.getByRole('button', { name: 'Скинути спроби' }));
-    const dialog = await screen.findByRole('alertdialog', { name: 'Скинути спроби Анна для тесту «Підсумковий тест»?' });
+    const dialog = await screen.findByRole('alertdialog', { name: 'Скинути спроби студента Анна у тесті «Підсумковий тест»?' });
     await userEvent.click(within(dialog).getByRole('button', { name: 'Скинути спроби' }));
     await waitFor(() => expect(reset).toBe(`${student(1, 'Анна', 2).userId}:${QUIZ_ID}`));
 

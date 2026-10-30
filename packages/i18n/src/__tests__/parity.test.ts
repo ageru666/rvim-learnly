@@ -74,6 +74,28 @@ describe('dictionary parity', () => {
   });
 });
 
+/** The rules of packages/i18n/GLOSSARY.md that a machine can check. */
+describe('dictionary style', () => {
+  it('writes the Ukrainian apostrophe as ʼ (U+02BC) inside words', () => {
+    for (const [key, text] of ukMessages) expect(text, key).not.toMatch(/[а-яієїґ][’'][а-яієїґ]/i);
+  });
+
+  it('pluralizes every count instead of printing it next to a fixed word form', () => {
+    // A "label: {value}" pair is fine: the value stands alone (and may be a word such as "unlimited").
+    for (const [key, text] of [...ukMessages, ...enMessages]) expect(text, key).not.toMatch(/(?<!: )\{(count|days|attempts)\}/);
+  });
+
+  it('names audit actions with nouns in Ukrainian, so they fit an administrator of any gender', () => {
+    for (const [key, text] of ukMessages) {
+      if (key.startsWith('admin.audit.')) expect(text, key).not.toMatch(/^\S+(ив|ав|ів|ув)\s/);
+    }
+  });
+
+  it('uses American spelling in English', () => {
+    for (const [key, text] of enMessages) expect(text, key).not.toMatch(/colour|favour|behaviour|cancelled|centre|licence|catalogue|enrolment|(organ|recogn|real|custom|author|summar|optim|priorit|visual)is(e|ed|ing|ation)/i);
+  });
+});
+
 describe('coverage of domain values', () => {
   const translator = createTranslator('uk', uk);
   const required = [
