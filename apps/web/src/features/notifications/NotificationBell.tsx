@@ -15,7 +15,7 @@ export function NotificationBell() {
     <Link to="/notifications" className="btn btn-ghost btn-icon relative" aria-label={label} title={label}>
       <Bell aria-hidden size={18} />
       {count > 0 && (
-        <span aria-hidden className="absolute -top-1 -right-1 grid min-w-5 place-items-center rounded-pill bg-accent-red px-1 text-xs font-bold text-on-primary">
+        <span aria-hidden className="absolute -top-1 -right-1 grid min-w-5 place-items-center rounded-pill bg-danger px-1 text-xs font-bold text-text-inverse">
           {count > MAX_SHOWN ? `${MAX_SHOWN}+` : count}
         </span>
       )}
