@@ -8,6 +8,7 @@ import { Button } from '../../../shared/components/Button';
 import { Card } from '../../../shared/components/Card';
 import { IconButton } from '../../../shared/components/IconButton';
 import { useT } from '../../locale/useT';
+import { DROP_PREFIX } from '../utils';
 
 interface SortableModuleProps {
   module: ModuleDto;
@@ -26,7 +27,7 @@ export function SortableModule({ module, disabled, onRename, onDelete, onAddLess
     disabled,
   });
   // Empty modules still accept dropped lessons.
-  const { setNodeRef: setDropRef } = useDroppable({ id: `drop:${module.id}`, data: { type: 'module', moduleId: module.id } });
+  const { setNodeRef: setDropRef } = useDroppable({ id: `${DROP_PREFIX}${module.id}`, data: { type: 'module', moduleId: module.id } });
 
   return (
     <li ref={setNodeRef} style={{ transform: CSS.Transform.toString(transform), transition }}>

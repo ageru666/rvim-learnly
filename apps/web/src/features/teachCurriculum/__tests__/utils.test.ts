@@ -1,6 +1,6 @@
 import type { ModuleDto } from '@learnly/contracts/instructor';
 import { describe, expect, it } from 'vitest';
-import { coursePosition, dropTarget, locateLesson, moveLesson, moveModule, shiftLesson, toStructurePayload } from '../utils';
+import { coursePosition, DROP_PREFIX, dropTarget, isDropCandidate, locateLesson, moveLesson, moveModule, shiftLesson, toStructurePayload } from '../utils';
 
 function lesson(id: string) {
   return { id, title: id, type: 'text' as const, durationMinutes: 5, isPreview: false, position: 0 };
@@ -56,5 +56,17 @@ describe('curriculum utils', () => {
       ],
     });
     expect(coursePosition(MODULES, 'c')).toBe(3);
+  });
+
+  it('lets a lesson land on lessons and empty modules only, and a module on modules', () => {
+    const zone = (moduleId: string) => ({ id: `${DROP_PREFIX}${moduleId}`, type: 'module' });
+    expect(isDropCandidate(MODULES, 'lesson', { id: 'b', type: 'lesson' })).toBe(true);
+    expect(isDropCandidate(MODULES, 'lesson', { id: 'm1', type: 'module' })).toBe(false);
+    expect(isDropCandidate(MODULES, 'lesson', zone('m1'))).toBe(false);
+    expect(isDropCandidate(MODULES, 'lesson', zone('m3'))).toBe(true);
+    expect(isDropCandidate(MODULES, 'lesson', zone('missing'))).toBe(false);
+    expect(isDropCandidate(MODULES, 'module', { id: 'm2', type: 'module' })).toBe(true);
+    expect(isDropCandidate(MODULES, 'module', zone('m3'))).toBe(false);
+    expect(isDropCandidate(MODULES, 'module', { id: 'a', type: 'lesson' })).toBe(false);
   });
 });

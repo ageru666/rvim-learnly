@@ -7,6 +7,7 @@ import {
   useSensor,
   useSensors,
   type Announcements,
+  type CollisionDetection,
   type DragEndEvent,
 } from '@dnd-kit/core';
 import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
@@ -22,9 +23,7 @@ import { SortableLesson } from './components/SortableLesson';
 import { SortableModule } from './components/SortableModule';
 import { dialogOpened, orderChanged, selectPendingOrder } from './curriculumSlice';
 import { useSetLessonPreviewMutation, useSetStructureMutation } from './teachCurriculumApi';
-import { coursePosition, dropTarget, moveModule, shiftLesson, toStructurePayload, moveLesson } from './utils';
-
-const DROP_PREFIX = 'drop:';
+import { coursePosition, DROP_PREFIX, dropTarget, isDropCandidate, moveModule, shiftLesson, toStructurePayload, moveLesson } from './utils';
 
 /** FR-TEACH-3 "Curriculum": modules and lessons as a tree, reordered by drag and drop or buttons. */
 export function CurriculumEditor({ course }: { course: CourseEditor }) {
@@ -63,6 +62,14 @@ export function CurriculumEditor({ course }: { course: CourseEditor }) {
     onDragCancel: ({ active }) => t('app.curriculum.dragCancel', { title: titleOf(active.id) }),
   };
 
+  const collisionDetection: CollisionDetection = (args) => {
+    const dragged = args.active.data.current?.type === 'module' ? 'module' : 'lesson';
+    const droppableContainers = args.droppableContainers.filter((container) =>
+      isDropCandidate(modules, dragged, { id: String(container.id), type: container.data.current?.type }),
+    );
+    return closestCenter({ ...args, droppableContainers });
+  };
+
   function handleDragEnd({ active, over }: DragEndEvent) {
     if (!over || active.id === over.id) return;
     const activeId = String(active.id);
@@ -83,7 +90,7 @@ export function CurriculumEditor({ course }: { course: CourseEditor }) {
       {modules.length === 0 ? (
         <EmptyState icon={<ListTree aria-hidden size={40} />} title={t('app.curriculum.empty')} />
       ) : (
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd} accessibility={{ announcements }}>
+        <DndContext sensors={sensors} collisionDetection={collisionDetection} onDragEnd={handleDragEnd} accessibility={{ announcements }}>
           <SortableContext items={modules.map((module) => module.id)} strategy={verticalListSortingStrategy}>
             <ol className="flex flex-col gap-4">
               {modules.map((module) => (

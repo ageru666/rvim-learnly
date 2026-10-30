@@ -2,6 +2,9 @@ import type { ModuleDto, StructureInput } from '@learnly/contracts/instructor';
 
 type Lesson = ModuleDto['lessons'][number];
 
+/** Id prefix of a module's lesson list as a drop zone (the module card itself uses the module id). */
+export const DROP_PREFIX = 'drop:';
+
 export function locateLesson(modules: readonly ModuleDto[], lessonId: string): { moduleIndex: number; index: number } | null {
   for (const [moduleIndex, module] of modules.entries()) {
     const index = module.lessons.findIndex((lesson) => lesson.id === lessonId);
@@ -64,4 +67,17 @@ export function toStructurePayload(modules: readonly ModuleDto[]): StructureInpu
 /** 1-based position of a lesson across the whole course, for screen-reader announcements. */
 export function coursePosition(modules: readonly ModuleDto[], lessonId: string): number {
   return modules.flatMap((module) => module.lessons).findIndex((lesson) => lesson.id === lessonId) + 1;
+}
+
+/**
+ * Whether a drag may land on a droppable. A module's card and its drop zone both wrap its lessons, and their
+ * centers sit next to the middle lesson's, so the closest center often picked the module and sent the lesson to
+ * its end. A lesson therefore lands on lessons, or on the drop zone of an empty module; a module on modules.
+ */
+export function isDropCandidate(modules: readonly ModuleDto[], dragged: 'lesson' | 'module', droppable: { id: string; type: unknown }): boolean {
+  const isZone = droppable.id.startsWith(DROP_PREFIX);
+  if (dragged === 'module') return droppable.type === 'module' && !isZone;
+  if (droppable.type === 'lesson') return true;
+  const moduleId = droppable.id.slice(DROP_PREFIX.length);
+  return isZone && modules.some((module) => module.id === moduleId && module.lessons.length === 0);
 }
