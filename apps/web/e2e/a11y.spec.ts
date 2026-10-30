@@ -1,5 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test, type BrowserContext, type Page } from '@playwright/test';
+import { expect, test, type Browser, type BrowserContext, type Page } from '@playwright/test';
 import { logIn, NEW_PASSWORD, signUpVerified } from './helpers/accounts';
 import { bearer, DEMO, publishCourse, type PublishedCourse } from './helpers/api';
 import { translatorFor, uniqueEmail } from './helpers/i18n';
@@ -28,7 +28,7 @@ async function violationsIn(page: Page, context: BrowserContext, url: string): P
 }
 
 /** A context in the project's language: the cookie wins over the language of the seeded accounts. */
-async function newContext(browser: import('@playwright/test').Browser, locale: string) {
+async function newContext(browser: Browser, locale: string) {
   const context = await browser.newContext({ locale });
   await context.addCookies([{ name: 'locale', value: locale.slice(0, 2), url: BASE_URL }]);
   return context;
