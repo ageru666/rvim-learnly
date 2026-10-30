@@ -1,8 +1,8 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Browser, type BrowserContext, type Page } from '@playwright/test';
-import { logIn, NEW_PASSWORD, signUpVerified } from './helpers/accounts';
+import { logIn, preferLanguage, NEW_PASSWORD, signUpVerified } from './helpers/accounts';
 import { bearer, DEMO, publishCourse, type PublishedCourse } from './helpers/api';
-import { translatorFor, uniqueEmail } from './helpers/i18n';
+import { languageOf, translatorFor, uniqueEmail } from './helpers/i18n';
 import { BASE_URL } from './playwright.config';
 
 const THEMES = ['light', 'dark'] as const;
@@ -11,11 +11,13 @@ const BLOCKING = new Set(['serious', 'critical']);
 
 /** Serious and critical axe violations of the page, in both themes, as readable lines. */
 async function violationsIn(page: Page, context: BrowserContext, url: string): Promise<string[]> {
+  const language = languageOf(test.info().project.use.locale ?? 'uk-UA');
   const found: string[] = [];
   for (const theme of THEMES) {
     await context.addCookies([{ name: 'theme', value: theme, url: BASE_URL }]);
     await page.goto(url);
     await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
+    await expect(page.locator('html')).toHaveAttribute('lang', language);
     await expect(page.getByRole('heading', { level: 1 }).first()).toBeVisible();
     await page.waitForLoadState('networkidle');
     const { violations } = await new AxeBuilder({ page }).withTags(WCAG_TAGS).analyze();
@@ -30,7 +32,7 @@ async function violationsIn(page: Page, context: BrowserContext, url: string): P
 /** A context in the project's language: the cookie wins over the language of the seeded accounts. */
 async function newContext(browser: Browser, locale: string) {
   const context = await browser.newContext({ locale });
-  await context.addCookies([{ name: 'locale', value: locale.slice(0, 2), url: BASE_URL }]);
+  await preferLanguage(context, locale);
   return context;
 }
 
@@ -49,6 +51,7 @@ test('public and admin pages have no serious accessibility violations @both', as
     found.push(...(await violationsIn(page, context, url)));
   }
   await logIn(page, t, DEMO.admin);
+  await preferLanguage(page.context(), testInfo.project.use.locale ?? 'uk-UA');
   found.push(...(await violationsIn(page, context, '/admin')));
   expect(found).toEqual([]);
   await context.close();
@@ -63,6 +66,7 @@ test('learning and teaching screens have no serious accessibility violations @bo
   const studentPage = await student.newPage();
   const email = uniqueEmail('a11y');
   await signUpVerified(studentPage, email, 'E2E Reader');
+  await preferLanguage(studentPage.context(), locale);
   const enrolled = await studentPage.request.post(`/api/v1/courses/${course.id}/enrollment`, {
     headers: await bearer(studentPage.request, email, NEW_PASSWORD),
   });
@@ -82,6 +86,7 @@ test('learning and teaching screens have no serious accessibility violations @bo
   const instructor = await newContext(browser, locale);
   const instructorPage = await instructor.newPage();
   await logIn(instructorPage, t, DEMO.instructor);
+  await preferLanguage(instructorPage.context(), locale);
   found.push(...(await violationsIn(instructorPage, instructor, `/app/teach/courses/${course.id}`)));
   await instructor.close();
 

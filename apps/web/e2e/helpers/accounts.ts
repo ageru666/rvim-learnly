@@ -1,6 +1,7 @@
-import { expect, type Page } from '@playwright/test';
+import { expect, type BrowserContext, type Page } from '@playwright/test';
 import type { Translator } from '../../../../packages/i18n/src/translator';
-import { DEMO_PASSWORD } from './i18n';
+import { BASE_URL } from '../playwright.config';
+import { DEMO_PASSWORD, languageOf } from './i18n';
 import { latestEmail, linkFrom } from './mailpit';
 
 export const NEW_PASSWORD = 'Passw0rd!e2e';
@@ -22,4 +23,12 @@ export async function logIn(page: Page, t: Translator['t'], email: string, passw
   await form.getByLabel(t('site.auth.login.password'), { exact: true }).fill(password);
   await form.getByRole('button', { name: t('site.auth.login.submit') }).click();
   await expect(page).not.toHaveURL(/\/login/);
+}
+
+/**
+ * Sets the interface language of the context. Logging in resets the cookie to the account language, so the
+ * scenarios that check a screen in the project language call this again after signing in.
+ */
+export async function preferLanguage(context: BrowserContext, locale: string): Promise<void> {
+  await context.addCookies([{ name: 'locale', value: languageOf(locale), url: BASE_URL }]);
 }

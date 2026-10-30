@@ -16,3 +16,6 @@ export const translatorOf = (locale: keyof typeof translators): Translator => tr
 export const DEMO_PASSWORD = 'Learnly2026!';
 
 export const uniqueEmail = (prefix: string) => `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1e6)}@e2e.test`;
+
+/** The two-letter language of a browser locale such as `en-GB`. */
+export const languageOf = (locale: string) => locale.slice(0, 2);
