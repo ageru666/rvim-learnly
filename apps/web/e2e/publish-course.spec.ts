@@ -84,10 +84,22 @@ test('an applicant becomes an instructor and publishes a course after moderation
   const structureSaved = applicant.waitForResponse(
     (response) => response.url().endsWith('/structure') && response.request().method() === 'PUT',
   );
-  await applicant.getByRole('button', { name: i18n.translate('app.curriculum.dragHandle', { title: 'Variables' }) }).focus();
+  // The closing dialog hands focus back to its trigger, so the handle is focused only after it is gone.
+  await expect(dialog).toBeHidden();
+  const handle = applicant.getByRole('button', { name: i18n.translate('app.curriculum.dragHandle', { title: 'Variables' }) });
+  await handle.focus();
+  await expect(handle).toBeFocused();
+  // Each key waits for the dnd-kit announcement of the previous one, as a screen reader user would hear it
+  // (the pick-up message is replaced by the first "over" one at once, so the pressed handle marks the start).
+  const announced = (key: 'dragOver' | 'dragEnd', position: number) =>
+    expect(applicant.getByText(i18n.translate(`app.curriculum.${key}`, { title: 'Variables', position }), { exact: true })).toBeAttached();
   await applicant.keyboard.press('Space');
+  await expect(handle).toHaveAttribute('aria-pressed', 'true');
+  await announced('dragOver', 2);
   await applicant.keyboard.press('ArrowUp');
+  await announced('dragOver', 1);
   await applicant.keyboard.press('Space');
+  await announced('dragEnd', 1);
   expect((await structureSaved).ok()).toBe(true);
   await applicant.reload();
   await applicant.getByRole('tab', { name: t('app.teach.editor.curriculum') }).click();

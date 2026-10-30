@@ -71,7 +71,10 @@ test('a student completes a course, gets a certificate and reviews the course', 
 
   await page.getByRole('link', { name: t('app.completed.review') }).click();
   await expect(page).toHaveURL(new RegExp(`/courses/${course.slug}#reviews$`));
-  await page.getByText(i18n.translate('site.course.reviewForm.star', { count: 5 }), { exact: true }).click();
+  // The radio is visually hidden; a person clicks its star, the label around it.
+  const fiveStars = page.getByRole('radio', { name: i18n.translate('site.course.reviewForm.star', { count: 5 }) });
+  await page.locator('label').filter({ has: fiveStars }).click();
+  await expect(fiveStars).toBeChecked();
   await page.getByLabel(t('site.course.reviewForm.text')).fill('Short, clear and the quiz checks the right things.');
   await page.getByRole('button', { name: t('site.course.reviewForm.submit') }).click();
   await expect(page.getByText(t('site.course.reviewForm.saved'))).toBeVisible();
