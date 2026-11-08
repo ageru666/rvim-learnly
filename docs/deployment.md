@@ -36,17 +36,19 @@ npm run prod:up      # PostgreSQL, Mailpit, one-off setup (migrations + demo dat
      connects over IPv4.
    - Append `?sslmode=require`. The connection is encrypted; the certificate is not checked against a CA, as with
      libpq's `require` (`apps/server/src/lib/pgConfig.ts`).
-3. Prepare the database once from your own terminal, so the password stays on your machine:
+3. Prepare the database once. Put the string into `.env.supabase` in the repository root. The file is
+   git-ignored, and it is a separate file so that the development `.env` keeps pointing at the local database.
 
-   ```powershell
-   $env:DATABASE_URL = "postgresql://postgres.<project>:<password>@aws-0-eu-central-1.pooler.supabase.com:5432/postgres?sslmode=require"
-   npm run db:setup
-   Remove-Item Env:DATABASE_URL
+   ```
+   DATABASE_URL=postgresql://postgres.<project>:<password>@aws-0-eu-central-1.pooler.supabase.com:5432/postgres?sslmode=require
    ```
 
-   It applies the migrations, which create the `citext` and `pg_trgm` extensions, and loads the demo data while the
-   database is empty. Running it again only applies new migrations. `npm run db:setup -- --reseed` replaces all data
-   with the demo set.
+   Then run `npm run db:setup:supabase`. It reads only that file and prints the host, never the password. It
+   applies the migrations, which create the `citext` and `pg_trgm` extensions, and loads the demo data while the
+   database is empty. Running it again only applies new migrations.
+   `npm run db:setup:supabase -- --reseed` replaces all data with the demo set.
+
+   Without the file, the same works with the variable set in the shell: `DATABASE_URL=… npm run db:setup`.
 
 ## Render
 

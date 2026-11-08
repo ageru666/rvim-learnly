@@ -7,6 +7,8 @@ coverage/
 
 .env
 .env.local
+# The Supabase connection string for `npm run db:setup:supabase` (docs/deployment.md).
+.env.supabase
 !.env.example
 
 apps/server/uploads/

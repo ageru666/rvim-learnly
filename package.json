@@ -35,7 +35,8 @@
     "db:migrate": "npm run db:migrate -w @learnly/server",
     "db:seed": "npm run db:seed -w @learnly/server",
     "db:reset": "npm run db:reset -w @learnly/server",
-    "db:setup": "node scripts/db-setup.mjs"
+    "db:setup": "node scripts/db-setup.mjs",
+    "db:setup:supabase": "node --env-file=.env.supabase scripts/db-setup.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
