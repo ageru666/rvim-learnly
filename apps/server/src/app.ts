@@ -129,6 +129,8 @@ export function createApp(options: AppOptions = {}): Express {
   app.set('views', join(SERVER_ROOT, 'src', 'views'));
   app.set('view engine', 'ejs');
   app.disable('x-powered-by');
+  // Behind a hosting proxy req.ip is the client, not the proxy (rate limits, login lockout; docs/security-notes.md).
+  if (config.TRUST_PROXY > 0) app.set('trust proxy', config.TRUST_PROXY);
 
   app.use(
     pinoHttp({

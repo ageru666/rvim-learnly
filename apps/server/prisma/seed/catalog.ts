@@ -6,7 +6,7 @@ import { digitalMarketing, sqlForAnalysts } from './content/business.js';
 import { designSystems, englishForIt } from './content/english.js';
 import { timeManagement, uxResearchDraft } from './content/personal.js';
 import { gitBasics, javascriptBasics, jqueryLegacy, pythonFirstSteps } from './content/programming.js';
-import { generateCover } from './covers.js';
+import { seedCoverUrl } from './covers.js';
 import { daysAgo } from './random.js';
 import type { AuthorKey, CategoryKey, CourseSeed, LessonSeed } from './types.js';
 
@@ -136,7 +136,7 @@ export async function seedCatalog(
         title: course.title,
         shortDescription: course.shortDescription,
         description: course.description,
-        coverUrl: await generateCover(accents.get(course.category) ?? 'blue', index),
+        coverUrl: seedCoverUrl(accents.get(course.category) ?? 'blue', index),
         level: course.level,
         language: course.language,
         outcomes: course.outcomes,

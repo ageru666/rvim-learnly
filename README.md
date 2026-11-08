@@ -104,6 +104,9 @@ specs/001-learnly-lms/    specification, plan, data model, contracts, tasks
 | `npm run perf` | p95 of the catalog, a course page and the catalog API on a seeded production-mode server |
 | `npm run check:bundle` | Initial SPA JavaScript ≤ 250 KB gzip, English dictionary loaded on demand |
 | `npm run check:full` | `check`, knip, `e2e`, `test:postman` and `perf` |
+| `npm run prod:build`, `prod:up`, `prod:down` | The production Docker image on localhost:8080 with its own database ([deployment](docs/deployment.md)) |
+| `npm run db:setup` | Migrations, plus demo data while the database is empty, for the database in `DATABASE_URL` |
+| `npm run perf -- --url <address>` | Latency of a deployed server, under its rate limit |
 
 The e2e, Postman and perf runs each seed their own database (`<database>_e2e`, `_postman`, `_perf`), so they do not
 touch the development data. They need `docker compose up -d`.
@@ -153,7 +156,8 @@ Each lab's acceptance checklist is in [`docs/tz.md`](docs/tz.md), section 13.
 
 **Groundwork for labs 4 and 5.**
 
-- `npm run perf`, the bundle budget and `/health` prepare lab 4.
+- Lab 4: [`docs/deployment.md`](docs/deployment.md) deploys the production image on localhost (Docker Compose) and
+  on Render with a Supabase database. `npm run perf -- --url …` measures each deployment.
 - [`docs/security-notes.md`](docs/security-notes.md) records the security controls, and the open items for the
   deployment and for the lab 5 scan.
 

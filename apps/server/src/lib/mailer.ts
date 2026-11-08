@@ -9,11 +9,10 @@ import { logger } from './logger.js';
 
 const EMAIL_VIEWS = join(SERVER_ROOT, 'src', 'views', 'emails');
 
-const transport = nodemailer.createTransport({
-  host: config.SMTP_HOST,
-  port: config.SMTP_PORT,
-  secure: false,
-});
+/** No transport without SMTP_HOST: a public demo server logs that an email was not sent instead. */
+const transport = config.SMTP_HOST
+  ? nodemailer.createTransport({ host: config.SMTP_HOST, port: config.SMTP_PORT, secure: false })
+  : null;
 
 export interface EmailMessage {
   to: string;
@@ -26,6 +25,10 @@ export interface EmailMessage {
 }
 
 async function send(message: EmailMessage): Promise<void> {
+  if (!transport) {
+    logger.info({ template: message.template, locale: message.locale }, 'email not sent: no SMTP server configured');
+    return;
+  }
   const i18n = translatorFor(message.locale);
   const html = await ejs.renderFile(join(EMAIL_VIEWS, `${message.template}.ejs`), {
     ...message.data,

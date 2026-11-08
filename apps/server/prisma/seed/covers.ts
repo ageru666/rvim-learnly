@@ -1,6 +1,7 @@
-import type { Accent } from '@learnly/contracts/enums';
+import { join } from 'node:path';
+import { ACCENTS, type Accent } from '@learnly/contracts/enums';
 import sharp from 'sharp';
-import { saveCover } from '../../src/lib/images.js';
+import { SERVER_ROOT } from '../../src/config/env.js';
 
 /** Background and shape colours per category accent (light tag tones from the design tokens). */
 const COVER_COLORS: Record<Accent, { background: string; shape: string; ink: string }> = {
@@ -16,11 +17,28 @@ const COVER_COLORS: Record<Accent, { background: string; shape: string; ink: str
 
 const WIDTH = 1280;
 const HEIGHT = 720;
+/** The quality of uploaded covers (src/lib/images.ts). */
+const WEBP_QUALITY = 82;
+const COVER_VARIANTS = 4;
+
+/**
+ * Demo covers are static files in src/public/covers, served at /static/covers. Unlike uploads they exist on
+ * every server, including one with a read-only or ephemeral disk, whichever machine ran the seed.
+ */
+export const STATIC_COVERS_DIR = join(SERVER_ROOT, 'src', 'public', 'covers');
+
+export function seedCoverUrl(accent: Accent, variant: number): string {
+  return `/static/covers/${coverFileName(accent, variant % COVER_VARIANTS)}`;
+}
+
+export function coverFileName(accent: Accent, variant: number): string {
+  return `${accent}-${variant}.webp`;
+}
 
 /** A geometric cover without text, so it renders the same on every machine (no fonts needed). */
 function coverSvg(accent: Accent, variant: number): string {
   const { background, shape, ink } = COVER_COLORS[accent];
-  const offset = (variant % 4) * 120;
+  const offset = (variant % COVER_VARIANTS) * 120;
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${WIDTH}" height="${HEIGHT}">
   <rect width="100%" height="100%" fill="${background}"/>
   <circle cx="${900 - offset}" cy="${260 + offset / 2}" r="220" fill="${shape}" opacity="0.85"/>
@@ -30,7 +48,8 @@ function coverSvg(accent: Accent, variant: number): string {
 </svg>`;
 }
 
-export async function generateCover(accent: Accent, variant: number): Promise<string> {
-  const png = await sharp(Buffer.from(coverSvg(accent, variant))).png().toBuffer();
-  return saveCover(png);
+export function renderCover(accent: Accent, variant: number): Promise<Buffer> {
+  return sharp(Buffer.from(coverSvg(accent, variant))).webp({ quality: WEBP_QUALITY }).toBuffer();
 }
+
+export const ALL_COVERS = ACCENTS.flatMap((accent) => Array.from({ length: COVER_VARIANTS }, (_, variant) => ({ accent, variant })));

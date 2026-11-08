@@ -1,0 +1,33 @@
+# Render Blueprint (docs/deployment.md): New → Blueprint → this repository. One web service runs the Docker image,
+# which serves the site, the admin panel, the API and the dashboard. The database is Supabase (DATABASE_URL).
+services:
+  - type: web
+    name: rvim-learnly
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      # The Supabase session pooler URL with ?sslmode=require; entered in the Render dashboard, never committed.
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      # APP_URL is taken from RENDER_EXTERNAL_URL. HTTPS: Secure cookies, HSTS, upgrade-insecure-requests.
+      - key: COOKIE_SECURE
+        value: 'true'
+      # Render's proxy sits in front of the app: rate limits and the login lockout need the client IP.
+      - key: TRUST_PROXY
+        value: '1'
+      # No SMTP_HOST: the demo server sends no email (the demo accounts are verified already).
+      - key: MAIL_FROM
+        value: Learnly <no-reply@learnly.local>
+      - key: RATE_LIMIT_GLOBAL_PER_MIN
+        value: '300'
+      - key: RATE_LIMIT_AUTH_PER_MIN
+        value: '10'
+      - key: LOG_LEVEL
+        value: info

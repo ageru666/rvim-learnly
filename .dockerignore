@@ -1,0 +1,13 @@
+# Everything the image builds itself or must never contain.
+.git
+**/node_modules
+**/dist
+**/coverage
+apps/server/src/generated
+apps/server/uploads*
+apps/web/test-results
+apps/web/playwright-report
+.env
+.env.*
+!.env.example
+*.log

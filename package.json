@@ -15,6 +15,9 @@
     "dev": "concurrently -n server,web -c blue,magenta \"npm run dev -w @learnly/server\" \"npm run dev -w @learnly/web\"",
     "build": "npm run build -w @learnly/contracts -w @learnly/i18n && npm run build -w @learnly/server -w @learnly/web",
     "start": "npm run start -w @learnly/server",
+    "prod:build": "docker build --target build -t learnly:build . && docker build -t learnly:local .",
+    "prod:up": "docker compose -f docker-compose.prod.yml up -d",
+    "prod:down": "docker compose -f docker-compose.prod.yml down",
     "lint": "eslint .",
     "format": "prettier --write .",
     "typecheck": "npm run typecheck --workspaces --if-present",
@@ -31,7 +34,8 @@
     "check:full": "npm run check && npm run knip && npm run e2e && npm run test:postman && npm run perf",
     "db:migrate": "npm run db:migrate -w @learnly/server",
     "db:seed": "npm run db:seed -w @learnly/server",
-    "db:reset": "npm run db:reset -w @learnly/server"
+    "db:reset": "npm run db:reset -w @learnly/server",
+    "db:setup": "node scripts/db-setup.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -45,6 +49,7 @@
     "globals": "^17.13.0",
     "knip": "^6.43.0",
     "license-checker-rseidelsohn": "^5.0.1",
+    "pg": "8.23.1",
     "prettier": "^3.9.10",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.72.0"
