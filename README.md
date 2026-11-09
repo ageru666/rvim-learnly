@@ -107,6 +107,7 @@ specs/001-learnly-lms/    specification, plan, data model, contracts, tasks
 | `npm run prod:build`, `prod:up`, `prod:down` | The production Docker image on localhost:8080 with its own database ([deployment](docs/deployment.md)) |
 | `npm run db:setup` | Migrations, plus demo data while the database is empty, for the database in `DATABASE_URL` |
 | `npm run perf -- --url <address>` | Latency of a deployed server, under its rate limit |
+| `npm run security:probe -- --url <address>` | The manual security checks of lab 5 against a seeded, disposable deployment |
 
 The e2e, Postman and perf runs each seed their own database (`<database>_e2e`, `_postman`, `_perf`), so they do not
 touch the development data. They need `docker compose up -d`.
@@ -154,12 +155,12 @@ Each lab's acceptance checklist is in [`docs/tz.md`](docs/tz.md), section 13.
 - The dashboard is the client: it works only through this API.
 - Integration tests in `apps/server/tests/integration`.
 
-**Groundwork for labs 4 and 5.**
+**Labs 4 and 5.**
 
 - Lab 4: [`docs/deployment.md`](docs/deployment.md) deploys the production image on localhost (Docker Compose) and
   on Render with a Supabase database. `npm run perf -- --url …` measures each deployment.
-- [`docs/security-notes.md`](docs/security-notes.md) records the security controls, and the open items for the
-  deployment and for the lab 5 scan.
+- Lab 5: [`docs/security-notes.md`](docs/security-notes.md) records the security controls, the results of Gitleaks,
+  npm audit, Trivy, Semgrep, OWASP ZAP and the manual checks, the fixes they led to, and the accepted risks.
 
 ## Adding a translation key
 

@@ -1,7 +1,7 @@
 # Learnly security notes
 
-The state of security controls after the T198 pass (2026-10-30), as the starting point for lab 5 (OWASP ZAP
-scan, npm audit, header analysis, manual access-control testing). Requirements are in `docs/tz.md` section 10.1.
+The security controls of Learnly and the results of the lab 5 check (2026-11-09, section "Lab 5 results" below).
+Requirements are in `docs/tz.md` section 10.1.
 
 How the observations were made: a seeded server (`node scripts/e2e-server.mjs`, port 3198) probed with `curl`
 and a headless Chromium; the automated tests named below run in `npm run check`.
@@ -21,6 +21,7 @@ asserted in `apps/server/tests/integration/foundation.test.ts`:
 | Cross-Origin-Opener-Policy / Resource-Policy | `same-origin` |
 | Strict-Transport-Security | only with `COOKIE_SECURE=true`, that is over HTTPS (changed in this pass: it used to be sent over plain HTTP too) |
 | X-Powered-By | not sent |
+| Cache-Control | `private, no-cache` on pages and API responses: they set the CSRF cookie and carry user data, so shared caches must not keep them (added in lab 5). Static files: `public, max-age`. |
 
 - `/app` (the SPA) adds the SHA-256 hash of its one inline script (theme and language before the first paint)
   to `script-src` instead of allowing inline scripts.
@@ -78,6 +79,9 @@ Every endpoint and SSR route checks the role, plus ownership of the object. Auto
 ## Input, output and files
 
 - Every body, query and form goes through a Zod schema. JSON bodies are limited to 1 MB.
+- A NUL character in any query or body string is refused with a validation error before a handler runs
+  (`rejectNulInput`), and in route parameters by `parse()`: PostgreSQL text cannot hold it (lab 5).
+- A malformed multipart body or a file in an unexpected field is answered as invalid input (lab 5).
 - Uploads (covers up to 2 MB, avatars up to 1 MB): the type is checked from the file signature (`file-type`), not
   the name or MIME header. The image is re-encoded by sharp to WebP and stored under a random name.
   `/uploads` is served with `nosniff`.
@@ -90,13 +94,57 @@ Every endpoint and SSR route checks the role, plus ownership of the object. Auto
   `Prisma.sql` fragments, never user text.
 - Redirects: `returnTo` accepts only same-site paths. `//host` and backslashes fall back to `/`.
 
-## Dependencies and secrets
+## Dependencies, image and secrets
 
-- `npm audit --omit=dev` and the full `npm audit`: 0 vulnerabilities. `npm run check:deps` also fails on high or
-  critical advisories in production dependencies, and on licences outside the allow list.
+- `npm audit --omit=dev`: 0 vulnerabilities. `npm run check:deps` also fails on high or critical advisories in
+  production dependencies, and on licences outside the allow list.
+- The full `npm audit` reports 28 moderate advisories, all in one dev-only chain: license-checker-rseidelsohn pulls
+  old glob and minimatch. The fixed versions were less than two weeks old on 2026-11-09 (and glob 14 is a new major),
+  so they are not forced through `overrides` yet.
 - Two tools are deliberately not dependencies, because their trees contain known-vulnerable packages: newman runs
   through `npx newman@6.2.3`, and the load check uses plain `fetch` instead of autocannon.
-- Secrets live only in `.env` (git-ignored). The repository has `.env.example` with development values.
+- The runtime image is `gcr.io/distroless/nodejs24-debian13`: Node.js and its libraries, no shell, package manager
+  or npm. The app files are read-only for the process (user `nonroot`); only `apps/server/uploads` is writable.
+- Secrets live only in `.env` (git-ignored) and in the Render dashboard. The repository has `.env.example` with
+  development values.
+
+## Lab 5 results (2026-11-09)
+
+The run against a local deployment of the production image (scan containers with raised rate limits on the same
+database) and a passive baseline against https://rvim-learnly.onrender.com.
+
+| Tool | Result |
+|---|---|
+| Gitleaks 8.30.1, whole git history (80 commits) | no secrets |
+| npm audit | production 0; with dev tooling 28 moderate (see above) |
+| Trivy 0.76.2, the image | node:24-bookworm-slim: 1 critical, 40 high, 107 medium, 86 low, none in the app's code; distroless: 0 critical, 0 high, 34 medium, 12 low (libc6, libstdc++) |
+| Trivy, Dockerfile | no misconfigurations |
+| Semgrep 1.183.0 (OWASP Top 10, Node.js, Express, TS, JS, secrets, Dockerfile), 520 files | no findings; a canary file confirms the rules fire |
+| OWASP ZAP 2.17.0: baseline, full scan, API scan from the OpenAPI document with a Bearer token | no FAIL; findings below |
+| `npm run security:probe` (the manual checks as a script) | 44 of 44 pass |
+
+Fixed, each with a test (`foundation.test.ts`, `profile.test.ts`):
+
+1. **Vulnerable base image** (Trivy): the runtime stage moved to distroless.
+2. **Cacheable personal responses** (ZAP 10049): pages and API responses had no `Cache-Control`, although they set
+   the CSRF cookie and carry user data. Now `private, no-cache`.
+3. **A NUL character gave 500** (ZAP API and full scan, server log): a string with `\0` passed Zod, and PostgreSQL
+   rejected it (22021) in `/api/v1/me`, `/api/v1/me/enrollments` and the site catalog search. Now it is refused as
+   invalid input (`rejectNulInput` for the query and body, `parse()` for route parameters).
+4. **A malformed multipart body gave 500** (ZAP API scan): busboy and multer errors other than the size limit. Now 400.
+5. **A regression of fix 3** (ZAP rescan): the guard ran before the template locals, so an SSR request it refused
+   could not render its error page. It runs after them now, and the test checks the rendered page.
+
+ZAP warnings reviewed and kept:
+
+- SQL Injection on the login password: every payload got the same 401, and the password is only compared by argon2.
+  The difference ZAP saw was the lockout (401 against 429).
+- Cookie No HttpOnly: `csrf_token` (double-submit, the SPA reads it), `locale` and `theme` (read before first paint).
+- Cookie Poisoning on `/locale` and `/theme`: the values are enums.
+- Anti-CSRF Tokens Check: the header search form, which is a GET.
+- User Controllable HTML Element Attribute: filter values echoed, escaped, into form fields.
+- Re-examine Cache-control Directives: `private, no-cache` is deliberate (ETag revalidation, no shared caching).
+- CSP `style-src 'unsafe-inline'` and the missing Cross-Origin-Embedder-Policy: open items 1 and 8 below.
 
 ## Open items and accepted risks
 
@@ -110,23 +158,24 @@ Every endpoint and SSR route checks the role, plus ownership of the object. Auto
    keep the list and say in the editor which hosts work. A proxy for images is a third, heavier option.
 3. **`COOKIE_SECURE=true` is a deployment requirement.** It adds `Secure` to every cookie, HSTS and
    `upgrade-insecure-requests`. It is not enforced at start-up, so `npm start` keeps working over plain HTTP on a
-   local machine. The lab 4 deployment must set it.
-4. **Reverse proxy.** `trust proxy` is not set. Behind a proxy every client would share one IP for the rate limits
-   and the login lockout. The lab 4 deployment needs `app.set('trust proxy', …)` matching its proxy.
+   local machine. `render.yaml` sets it.
+4. **Reverse proxy.** `TRUST_PROXY` (default 0) must match the hosting proxy, or every client shares one IP for the
+   rate limits and the login lockout. `render.yaml` sets 1.
 5. **Rate limits are in memory.** That is enough for one server process; several instances would need a shared
    store such as Redis.
 6. **Account enumeration at sign-up.** Registering an existing email says the email is taken. That is a
    usability trade-off; login and password recovery do not reveal it.
 7. **HSTS without `preload`.** Opt-in once the production domain is final.
+8. **No Cross-Origin-Embedder-Policy.** `require-corp` would block the YouTube and Vimeo players in lessons.
+9. **The image carries the dashboard's dependencies**, since `npm prune` keeps every workspace's packages. They are
+   never loaded at run time and Trivy finds nothing in them, but a smaller image would leave them out.
 
-## Suggested lab 5 run
+## Repeating the check
 
-- ZAP baseline against a seeded server:
-  `docker run --rm -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://host.docker.internal:3198`
-  (start it with `node scripts/e2e-server.mjs`). Then an authenticated scan with a demo account from the README.
-- Manual checks:
-  - Swap ids of other users' lessons, quiz attempts, notes and courses in API calls and in `/app` URLs.
-  - Replay a submit with someone else's option ids.
-  - Upload an HTML or SVG file renamed to `.png`.
-  - Post Markdown payloads (`<svg onload>`, `data:` links) in lessons and reviews.
-  - Submit SSR forms from another origin without `_csrf`.
+- Manual checks: `npm run security:probe -- --url <seeded deployment> --limits-url <one with the normal limits>`.
+  It creates an account per run and edits the author bio for a moment, so use a local or disposable database.
+- ZAP: `zap-baseline.py -t <url>` anywhere; `zap-full-scan.py -t <url>` and
+  `zap-api-scan.py -t <url>/api/openapi.json -f openapi` (with `ZAP_AUTH_HEADER_VALUE=Bearer …`) only against a
+  local deployment, from `ghcr.io/zaproxy/zaproxy:stable`. Watch the server log during the scan: a 500 there is an
+  input the app does not handle.
+- Trivy: `trivy image learnly:local`. Semgrep: `semgrep scan --config p/owasp-top-ten --config p/nodejs …`.
