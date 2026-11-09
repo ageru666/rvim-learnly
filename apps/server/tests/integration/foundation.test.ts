@@ -36,6 +36,15 @@ describe('system endpoints', () => {
       expect(response.headers['strict-transport-security'], path).toBeUndefined();
     }
   });
+
+  it('keeps pages and API responses out of shared caches, but not static files', async () => {
+    for (const path of ['/', '/courses', '/api/v1/courses', '/no-such-page']) {
+      const response = await request(app).get(path);
+      expect(response.headers['cache-control'], path).toBe('private, no-cache');
+    }
+    const staticFile = await request(app).get('/static/favicon.svg');
+    expect(staticFile.headers['cache-control']).toBe('public, max-age=3600');
+  });
 });
 
 describe('locale resolution (FR-I18N-2)', () => {

@@ -24,27 +24,31 @@ RUN DATABASE_URL=postgresql://build:build@localhost:5432/build npm run db:genera
   && npm run build
 
 FROM build AS prune
-RUN npm prune --omit=dev --no-audit --no-fund
+RUN npm prune --omit=dev --no-audit --no-fund && mkdir -p apps/server/uploads
 
-FROM node:24-bookworm-slim AS runtime
+# Distroless: only Node.js and the libraries it needs. No shell, package manager or npm, so the image carries no
+# unused system packages with known vulnerabilities (lab 5, Trivy). The application files belong to root and are
+# read-only for the process; only the uploads directory is writable.
+FROM gcr.io/distroless/nodejs24-debian13:nonroot AS runtime
 ENV NODE_ENV=production \
   PORT=3000 \
   UPLOADS_DIR=uploads
 WORKDIR /app
 
-COPY --from=prune --chown=node:node /app/package.json ./
-COPY --from=prune --chown=node:node /app/node_modules ./node_modules
-COPY --from=prune --chown=node:node /app/packages ./packages
-COPY --from=prune --chown=node:node /app/apps/server/package.json ./apps/server/
-COPY --from=prune --chown=node:node /app/apps/server/dist ./apps/server/dist
-COPY --from=prune --chown=node:node /app/apps/server/src/views ./apps/server/src/views
-COPY --from=prune --chown=node:node /app/apps/server/src/public ./apps/server/src/public
-COPY --from=prune --chown=node:node /app/apps/web/package.json ./apps/web/
-COPY --from=prune --chown=node:node /app/apps/web/dist ./apps/web/dist
-RUN mkdir -p apps/server/uploads && chown node:node apps/server/uploads
+COPY --from=prune /app/package.json ./
+COPY --from=prune /app/node_modules ./node_modules
+COPY --from=prune /app/packages ./packages
+COPY --from=prune /app/apps/server/package.json ./apps/server/
+COPY --from=prune /app/apps/server/dist ./apps/server/dist
+COPY --from=prune /app/apps/server/src/views ./apps/server/src/views
+COPY --from=prune /app/apps/server/src/public ./apps/server/src/public
+COPY --from=prune /app/apps/web/package.json ./apps/web/
+COPY --from=prune /app/apps/web/dist ./apps/web/dist
+COPY --from=prune --chown=nonroot:nonroot /app/apps/server/uploads ./apps/server/uploads
 
-USER node
+USER nonroot
 EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s \
-  CMD node -e "fetch('http://localhost:' + process.env.PORT + '/health').then((r) => process.exit(r.ok ? 0 : 1), () => process.exit(1))"
-CMD ["node", "apps/server/dist/main.js"]
+  CMD ["/nodejs/bin/node", "-e", "fetch('http://localhost:' + process.env.PORT + '/health').then((r) => process.exit(r.ok ? 0 : 1), () => process.exit(1))"]
+# The image's entrypoint is node itself.
+CMD ["apps/server/dist/main.js"]

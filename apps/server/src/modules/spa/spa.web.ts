@@ -41,7 +41,7 @@ function productionRouter(): Router {
     }
     const policy = res.getHeader('Content-Security-Policy');
     if (typeof policy === 'string') res.setHeader('Content-Security-Policy', withScriptHashes(policy, hashes));
-    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Cache-Control', 'private, no-cache');
     res.type('html').send(indexHtml);
   });
   return router;

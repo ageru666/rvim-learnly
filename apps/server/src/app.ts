@@ -40,6 +40,7 @@ import { docsRouter } from './openapi/docs.web.js';
 
 const STATIC_MAX_AGE = '1h';
 const UPLOADS_MAX_AGE = '30d';
+const DYNAMIC_CACHE_CONTROL = 'private, no-cache';
 
 export interface AppOptions {
   rateLimits?: RateLimits;
@@ -164,6 +165,12 @@ export function createApp(options: AppOptions = {}): Express {
   app.use(resolveRequestLocale);
   app.use(templateLocals);
   app.use(csrfProtection);
+  // Pages and API responses depend on the session and set the CSRF cookie: the browser may keep them and revalidate
+  // with the ETag, shared caches must not (docs/security-notes.md, ZAP 10049). Static files set their own header.
+  app.use((req, res, next) => {
+    if (!req.path.startsWith('/app/assets/')) res.setHeader('Cache-Control', DYNAMIC_CACHE_CONTROL);
+    next();
+  });
 
   for (const router of routers()) app.use(router);
 
