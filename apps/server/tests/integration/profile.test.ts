@@ -74,8 +74,11 @@ describe('profile (FR-PROFILE-1)', () => {
 
     const query = await request(app).get(`${ME}/enrollments`).query({ search: '\u0000' }).set(auth);
     expect(query.status).toBe(400);
-    // The site catalog parses its query leniently, so the global guard is what stops it there.
-    expect(await request(app).get('/courses').query({ search: 'x\u0000' })).toHaveProperty('status', 400);
+    // The site catalog parses its query leniently, so the global guard is what stops it there, with an error page.
+    const page = await request(app).get('/courses').query({ search: 'x\u0000' });
+    expect(page.status).toBe(400);
+    expect(page.headers['content-type']).toMatch(/text\/html/);
+    expect(page.text).toContain('<main');
   });
 });
 

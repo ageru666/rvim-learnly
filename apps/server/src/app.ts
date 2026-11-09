@@ -164,7 +164,6 @@ export function createApp(options: AppOptions = {}): Express {
 
   app.use(authenticate);
   app.use(resolveRequestLocale);
-  app.use(rejectNulInput);
   app.use(templateLocals);
   app.use(csrfProtection);
   // Pages and API responses depend on the session and set the CSRF cookie: the browser may keep them and revalidate
@@ -173,6 +172,8 @@ export function createApp(options: AppOptions = {}): Express {
     if (!req.path.startsWith('/app/assets/')) res.setHeader('Cache-Control', DYNAMIC_CACHE_CONTROL);
     next();
   });
+  // After the template locals, so that a refused SSR request still gets a rendered error page.
+  app.use(rejectNulInput);
 
   for (const router of routers()) app.use(router);
 
