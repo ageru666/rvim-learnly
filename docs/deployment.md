@@ -31,7 +31,8 @@ npm run prod:up      # PostgreSQL, Mailpit, one-off setup (migrations + demo dat
 
 1. Create a project in the **Central EU (Frankfurt)** region and keep the database password.
 2. Copy the **session pooler** connection string: Connect → Session pooler.
-   - It looks like `postgresql://postgres.<project>:<password>@aws-0-eu-central-1.pooler.supabase.com:5432/postgres`.
+   - It looks like `postgresql://postgres.<project>:<password>@aws-<n>-eu-central-1.pooler.supabase.com:5432/postgres`. The
+     number in the host differs between projects: copy the string from the dashboard.
    - Use the session pooler, not the direct connection: the direct host is IPv6-only on the free plan, and Render
      connects over IPv4.
    - Append `?sslmode=require`. The connection is encrypted; the certificate is not checked against a CA, as with
@@ -40,7 +41,7 @@ npm run prod:up      # PostgreSQL, Mailpit, one-off setup (migrations + demo dat
    git-ignored, and it is a separate file so that the development `.env` keeps pointing at the local database.
 
    ```
-   DATABASE_URL=postgresql://postgres.<project>:<password>@aws-0-eu-central-1.pooler.supabase.com:5432/postgres?sslmode=require
+   DATABASE_URL=postgresql://postgres.<project>:<password>@aws-<n>-eu-central-1.pooler.supabase.com:5432/postgres?sslmode=require
    ```
 
    Then run `npm run db:setup:supabase`. It reads only that file and prints the host, never the password. It
