@@ -59,7 +59,7 @@
   <% if (page.items.length === 0) { %>
     <%- include('../partials/empty-state', { title: t('site.catalog.emptyTitle'), text: t('site.catalog.emptyText'), actionHref: '/courses', actionLabel: t('site.catalog.reset') }) %>
   <% } else { %>
-    <%- include('../partials/course-grid', { cards: page.items }) %>
+    <%- include('../partials/course-grid', { cards: page.items, headingLevel: 2 }) %>
     <%- include('../partials/pagination', { page: query.page, totalPages, hrefFor: (target) => hrefFor({ page: target }) }) %>
   <% } %>
 </div>

@@ -1,4 +1,6 @@
-<%# Usage: include('../partials/course-card', { card }) — a CourseCard from the catalog service. %>
+<%# Usage: include('../partials/course-card', { card, headingLevel }) — a CourseCard from the catalog service; the title is an h3
+    unless headingLevel says otherwise (2 where the grid follows the page h1). %>
+<% const heading = `h${locals.headingLevel ?? 3}`; %>
 <article class="card flex h-full flex-col overflow-hidden transition-shadow hover:shadow-md">
   <a href="/courses/<%= card.slug %>" class="focus-ring block" tabindex="-1" aria-hidden="true">
     <% if (card.coverUrl) { %>
@@ -12,9 +14,9 @@
       <%- include('tag', { label: card.category.name, accent: card.category.accent, href: `/courses?category=${card.category.slug}` }) %>
       <span class="tag tag-neutral" lang="<%= card.language %>"><%= t(`site.locale.short.${card.language}`) %></span>
     </div>
-    <h3 class="heading-md">
+    <<%= heading %> class="heading-md">
       <a class="focus-ring rounded-sm hover:underline" href="/courses/<%= card.slug %>" lang="<%= card.language %>"><%= card.title %></a>
-    </h3>
+    </<%= heading %>>
     <p class="line-clamp-2 text-sm text-text-muted" lang="<%= card.language %>"><%= card.shortDescription %></p>
     <p class="text-sm"><%= t('site.course.by', { name: card.author.name }) %></p>
     <% if (card.tags.length > 0) { %>
