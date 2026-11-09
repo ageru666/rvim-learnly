@@ -25,6 +25,7 @@
     "test:server": "npm run test -w @learnly/server",
     "e2e": "npm run e2e -w @learnly/web",
     "test:postman": "node scripts/postman.mjs",
+    "security:probe": "node scripts/security-probe.mjs",
     "perf": "node scripts/perf.mjs",
     "check:strings": "node scripts/check-ejs-strings.mjs",
     "check:deps": "license-checker-rseidelsohn --production --excludePrivatePackages --onlyAllow \"MIT;ISC;Apache-2.0;BSD-2-Clause;BSD-3-Clause;0BSD;BlueOak-1.0.0;CC0-1.0;CC-BY-4.0;Unlicense;Python-2.0;OFL-1.1\" --summary && npm audit --omit=dev --audit-level=high",
