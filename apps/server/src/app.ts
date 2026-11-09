@@ -9,6 +9,7 @@ import { pinoHttp } from 'pino-http';
 import { config, SERVER_ROOT, UPLOADS_PATH } from './config/env.js';
 import { FONT_DIRECTORIES } from './lib/fonts.js';
 import { logger } from './lib/logger.js';
+import { rejectNulInput } from './lib/validation.js';
 import { authenticate } from './middlewares/auth.js';
 import { csrfProtection } from './middlewares/csrf.js';
 import { errorHandler, notFoundHandler } from './middlewares/errorHandler.js';
@@ -163,6 +164,7 @@ export function createApp(options: AppOptions = {}): Express {
 
   app.use(authenticate);
   app.use(resolveRequestLocale);
+  app.use(rejectNulInput);
   app.use(templateLocals);
   app.use(csrfProtection);
   // Pages and API responses depend on the session and set the CSRF cookie: the browser may keep them and revalidate

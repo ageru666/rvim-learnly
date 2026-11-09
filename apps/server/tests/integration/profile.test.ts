@@ -63,6 +63,20 @@ describe('profile (FR-PROFILE-1)', () => {
     );
     expect(await request(app).patch(ME).set(auth).send({ name: 'x'.repeat(61) })).toHaveProperty('status', 400);
   });
+
+  it('refuses a NUL character in the body or the query as invalid input, not a server error (lab 5)', async () => {
+    const { auth } = await signedIn();
+    const body = await request(app).patch(`${ME}?lang=en`).set(auth).send({ name: 'Olha', bio: 'about\u0000me' });
+    expect(body.status).toBe(400);
+    expect(body.body.error.details).toEqual([
+      { path: 'bio', message: 'The text contains a character that is not allowed.' },
+    ]);
+
+    const query = await request(app).get(`${ME}/enrollments`).query({ search: '\u0000' }).set(auth);
+    expect(query.status).toBe(400);
+    // The site catalog parses its query leniently, so the global guard is what stops it there.
+    expect(await request(app).get('/courses').query({ search: 'x\u0000' })).toHaveProperty('status', 400);
+  });
 });
 
 describe('avatar (FR-PROFILE-2)', () => {
@@ -102,6 +116,20 @@ describe('avatar (FR-PROFILE-2)', () => {
 
     const missing = await request(app).post(`${ME}/avatar`).set(auth);
     expect(missing.status).toBe(400);
+  });
+
+  it('answers a malformed multipart body or an unexpected field with 400, not 500 (lab 5)', async () => {
+    const { auth } = await signedIn();
+    const truncated = await request(app)
+      .post(`${ME}/avatar`)
+      .set(auth)
+      .set('Content-Type', 'multipart/form-data; boundary=zap')
+      .send('--zap\r\nContent-Disposition: form-data; name="file"; filename="a.png"\r\n\r\nno end');
+    expect(truncated.status).toBe(400);
+    expect(truncated.body.error.code).toBe('VALIDATION_ERROR');
+
+    const otherField = await request(app).post(`${ME}/avatar`).set(auth).attach('picture', await png(10, 10), 'me.png');
+    expect(otherField.status).toBe(400);
   });
 });
 

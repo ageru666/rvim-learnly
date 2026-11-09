@@ -1133,6 +1133,9 @@ export const en = {
     video: {
       url: 'Enter a YouTube or Vimeo link.',
     },
+    text: {
+      nul: 'The text contains a character that is not allowed.',
+    },
     quiz: {
       singleNeedsOneCorrect: 'A single-answer question needs exactly one correct option.',
       multipleNeedsCorrect: 'Mark at least one correct option.',

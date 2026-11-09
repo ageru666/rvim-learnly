@@ -1130,6 +1130,9 @@ export const uk = {
     video: {
       url: 'Вкажіть посилання на YouTube або Vimeo.',
     },
+    text: {
+      nul: 'Текст містить недопустимий символ.',
+    },
     quiz: {
       singleNeedsOneCorrect: 'У питанні з однією відповіддю має бути рівно одна правильна.',
       multipleNeedsCorrect: 'Позначте хоча б одну правильну відповідь.',
