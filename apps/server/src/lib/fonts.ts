@@ -5,8 +5,8 @@ const require = createRequire(import.meta.url);
 
 /** Font stylesheets of the packages referenced by packages/design-tokens/fonts.css. */
 const FONT_STYLESHEETS = [
-  '@fontsource-variable/inter/wght.css',
-  '@fontsource-variable/roboto-condensed/wght.css',
+  '@fontsource-variable/manrope/wght.css',
+  '@fontsource-variable/montserrat/wght.css',
   '@fontsource/jetbrains-mono/400.css',
 ];
 

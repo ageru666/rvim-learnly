@@ -9,8 +9,8 @@ const require = createRequire(import.meta.url);
 const OUTPUT = 'packages/design-tokens/fonts.css';
 const SUBSETS = ['cyrillic-ext', 'cyrillic', 'latin-ext', 'latin'];
 const SOURCES = [
-  '@fontsource-variable/inter/wght.css',
-  '@fontsource-variable/roboto-condensed/wght.css',
+  '@fontsource-variable/manrope/wght.css',
+  '@fontsource-variable/montserrat/wght.css',
   '@fontsource/jetbrains-mono/400.css',
 ];
 

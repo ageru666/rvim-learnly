@@ -15,8 +15,8 @@
     "packages/design-tokens": {
       "entry": [],
       "ignoreDependencies": [
-        "@fontsource-variable/inter",
-        "@fontsource-variable/roboto-condensed",
+        "@fontsource-variable/manrope",
+        "@fontsource-variable/montserrat",
         "@fontsource/jetbrains-mono"
       ]
     },

@@ -673,7 +673,7 @@ Colour reference: the design system in `ch-design-system`. Only the palette and 
 - **Monochrome base**: light theme (white background, near-black text), dark theme (near-black background, white text). The primary button is "ink": black on light, white on dark.
 - **Accent colours** (only for category tags, statuses, charts, progress, illustrations): yellow `#ffb411`, green `#10d690`, cyan `#1abbe5`, blue `#357cff`, indigo `#4123e8`, red `#f94128`, pink `#d81879`, magenta `#b20c6f`. Text on coloured backgrounds uses variants with at least WCAG AA contrast in both themes.
 - **Semantics**: success (green), warning (yellow), error (red), info (blue). Status is always duplicated by text or an icon, never colour alone.
-- **Fonts**: Inter (body) and Roboto Condensed (large headings, numbers in statistics; chosen over Barlow Condensed because Barlow has no Cyrillic), JetBrains Mono (code); local font files from the `@fontsource` packages (no external CDN requests), `font-display: swap`. All three cover Cyrillic and Latin.
+- **Fonts**: Manrope (body) and Montserrat (large headings, numbers in statistics), JetBrains Mono (code); local font files from the `@fontsource` packages (no external CDN requests), `font-display: swap`. All three cover Cyrillic and Latin.
 - **Radii and shadows**: small radii (4–8 px for inputs and buttons, 16 px for cards), minimal shadows, separation by borders and surfaces.
 - **Learnly logo**: a simple wordmark and a square icon (SVG) made from scratch.
 - **Text length**: layouts tolerate both languages (Ukrainian strings are often 20–30 % longer); no fixed-width buttons for text labels.
